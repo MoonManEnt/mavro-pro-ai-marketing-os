@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useCallback, useEffect, useReducer } from 'react';
 import { 
   Bell, Settings, Mic, MicOff, Sparkles, Zap, TrendingUp, Target, BarChart3, Home, Users, MessageCircle, 
   CreditCard, FileText, User, Calendar, Upload, Image, Play, Check, X, Hash, Music, Clock, ChevronLeft, 
@@ -254,6 +254,168 @@ interface ExactMavroPlusDashboardProps {
   isBetaUser?: boolean;
 }
 
+interface DashboardState {
+  ui: {
+    activeMode: 'plan' | 'track' | 'grow' | 'learn';
+    currentView: 'dashboard' | 'campaigns' | 'reviews' | 'crm' | 'foursight' | 'settings' | 'geosmart' | 'compliance' | 'clientportal' | 'inventory' | 'vivistore' | 'magicstudio' | 'aistudio' | 'betafeedback';
+    showNotifications: boolean;
+    showPersonaDropdown: boolean;
+    showThemeSelector: boolean;
+    showGamifiedProgress: boolean;
+    showOnboardingTooltips: boolean;
+    animationTrigger: boolean;
+    showBusinessInfo: boolean;
+  };
+  content: {
+    uploadedFiles: UploadedFile[];
+    contentData: ContentData;
+    selectedPlatforms: string[];
+    selectedFormats: string[];
+    previewIndex: number;
+    currentPreviewPlatform: number;
+    currentAspectRatio: number;
+    activeContentType: string;
+    performanceMetrics: {
+      engagement: number;
+      reach: number;
+      conversion: number;
+    };
+    trendingTopics: string[];
+    optimalPostingTimes: { [key: string]: string };
+  };
+  demo: {
+    showAutoTour: boolean;
+    showHotspots: boolean;
+    showProgressTracker: boolean;
+    liveDataActive: boolean;
+    showSuccessAnimation: boolean;
+    showConfetti: boolean;
+    showPersonaComparison: boolean;
+    notificationSystemActive: boolean;
+    showTourGuide: boolean;
+    showWelcomeModal: boolean;
+  };
+  vivi: {
+    viviAutonomyLevel: number;
+    viviBehaviorFlow: any;
+    interactionType: 'hover' | 'click' | 'success' | 'engagement' | 'achievement';
+    viviMinimized: boolean;
+    showViViAutomation: boolean;
+    showFeatureDashboard: string | null;
+    viviButtonClicked: string | null;
+  };
+  voice: {
+    voiceEnabled: boolean;
+    isListening: boolean;
+    speechRecognition: any;
+  };
+  wizard: {
+    currentStep: number;
+  };
+  theme: {
+    selectedTheme: any;
+    showThemeNotification: boolean;
+    themeNotificationData: {
+      name: string;
+      color: string;
+    };
+  };
+  modals: {
+    showSaveDraftModal: boolean;
+    showConfirmationModal: boolean;
+  };
+  dragDrop: {
+    draggedItem: string | null;
+    draggedOverItem: string | null;
+    menuOrder: string[];
+    isDragModeEnabled: boolean;
+  };
+  notifications: Array<{
+    id: number;
+    title: string;
+    message: string;
+    time: string;
+    read: boolean;
+    type: string;
+  }>;
+  currentPersona: string;
+}
+
+type DashboardAction = 
+  | { type: 'SET_UI_STATE'; payload: Partial<DashboardState['ui']> }
+  | { type: 'SET_CONTENT_STATE'; payload: Partial<DashboardState['content']> }
+  | { type: 'SET_DEMO_STATE'; payload: Partial<DashboardState['demo']> }
+  | { type: 'SET_VIVI_STATE'; payload: Partial<DashboardState['vivi']> }
+  | { type: 'SET_VOICE_STATE'; payload: Partial<DashboardState['voice']> }
+  | { type: 'SET_WIZARD_STATE'; payload: Partial<DashboardState['wizard']> }
+  | { type: 'SET_THEME_STATE'; payload: Partial<DashboardState['theme']> }
+  | { type: 'SET_MODAL_STATE'; payload: Partial<DashboardState['modals']> }
+  | { type: 'SET_DRAG_DROP_STATE'; payload: Partial<DashboardState['dragDrop']> }
+  | { type: 'SET_NOTIFICATIONS'; payload: DashboardState['notifications'] }
+  | { type: 'SET_PERSONA'; payload: string }
+  | { type: 'RESET_DEMO' }
+  | { type: 'UPDATE_PERFORMANCE_METRICS'; payload: Partial<DashboardState['content']['performanceMetrics']> };
+
+const dashboardReducer = (state: DashboardState, action: DashboardAction): DashboardState => {
+  switch (action.type) {
+    case 'SET_UI_STATE':
+      return { ...state, ui: { ...state.ui, ...action.payload } };
+    case 'SET_CONTENT_STATE':
+      return { ...state, content: { ...state.content, ...action.payload } };
+    case 'SET_DEMO_STATE':
+      return { ...state, demo: { ...state.demo, ...action.payload } };
+    case 'SET_VIVI_STATE':
+      return { ...state, vivi: { ...state.vivi, ...action.payload } };
+    case 'SET_VOICE_STATE':
+      return { ...state, voice: { ...state.voice, ...action.payload } };
+    case 'SET_WIZARD_STATE':
+      return { ...state, wizard: { ...state.wizard, ...action.payload } };
+    case 'SET_THEME_STATE':
+      return { ...state, theme: { ...state.theme, ...action.payload } };
+    case 'SET_MODAL_STATE':
+      return { ...state, modals: { ...state.modals, ...action.payload } };
+    case 'SET_DRAG_DROP_STATE':
+      return { ...state, dragDrop: { ...state.dragDrop, ...action.payload } };
+    case 'SET_NOTIFICATIONS':
+      return { ...state, notifications: action.payload };
+    case 'SET_PERSONA':
+      return { ...state, currentPersona: action.payload };
+    case 'UPDATE_PERFORMANCE_METRICS':
+      return { 
+        ...state, 
+        content: { 
+          ...state.content, 
+          performanceMetrics: { ...state.content.performanceMetrics, ...action.payload } 
+        } 
+      };
+    case 'RESET_DEMO':
+      return {
+        ...state,
+        currentPersona: 'kemar',
+        ui: { ...state.ui, currentView: 'dashboard', activeMode: 'plan', showBusinessInfo: false },
+        demo: { 
+          ...state.demo, 
+          showWelcomeModal: false, 
+          showAutoTour: true, 
+          showHotspots: true, 
+          liveDataActive: true, 
+          notificationSystemActive: true,
+          showSuccessAnimation: true,
+          showConfetti: true
+        },
+        content: {
+          ...state.content,
+          uploadedFiles: [],
+          contentData: { caption: '', hashtags: [], music: '', scheduledTime: undefined, quickSchedule: '' },
+          selectedPlatforms: ['instagram', 'linkedin', 'tiktok'],
+          selectedFormats: ['portrait']
+        }
+      };
+    default:
+      return state;
+  }
+};
+
 export default function ExactMavroPlusDashboard({ isDemoMode = false, isBetaUser = false }: ExactMavroPlusDashboardProps) {
   const { userPersona } = useUserPersona();
   const analytics = useUserAnalytics();
@@ -269,15 +431,6 @@ export default function ExactMavroPlusDashboard({ isDemoMode = false, isBetaUser
     propsIsDemoMode: isDemoMode,
     propsIsBetaUser: isBetaUser
   });
-  const [activeMode, setActiveMode] = useState<'plan' | 'track' | 'grow' | 'learn'>('plan');
-  const [voiceEnabled, setVoiceEnabled] = useState(false);
-  const [isListening, setIsListening] = useState(false);
-  const [speechRecognition, setSpeechRecognition] = useState<any>(null);
-  const [currentStep, setCurrentStep] = useState(1);
-  const [showTourGuide, setShowTourGuide] = useState(false);
-  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
-  const [currentView, setCurrentView] = useState<'dashboard' | 'campaigns' | 'reviews' | 'crm' | 'foursight' | 'settings' | 'geosmart' | 'compliance' | 'clientportal' | 'inventory' | 'vivistore' | 'magicstudio' | 'aistudio' | 'betafeedback'>('dashboard');
-  const [showNotifications, setShowNotifications] = useState(false);
   
   // Conditional data initialization based on user type
   const getInitialNotifications = () => {
@@ -300,14 +453,6 @@ export default function ExactMavroPlusDashboard({ isDemoMode = false, isBetaUser
     return [];
   };
   
-  const [notifications, setNotifications] = useState(getInitialNotifications());
-  
-  // Drag and drop state for menu rearrangement
-  const [draggedItem, setDraggedItem] = useState<string | null>(null);
-  const [draggedOverItem, setDraggedOverItem] = useState<string | null>(null);
-  const [menuOrder, setMenuOrder] = useState<string[]>([]);
-  const [isDragModeEnabled, setIsDragModeEnabled] = useState(false);
-  
   // Set initial persona based on user type
   const getInitialPersona = () => {
     if (actualDemoMode) {
@@ -318,15 +463,100 @@ export default function ExactMavroPlusDashboard({ isDemoMode = false, isBetaUser
     }
     return 'kemar';
   };
-  
-  const [currentPersona, setCurrentPersona] = useState(() => {
+
+  const getInitialCurrentPersona = () => {
     // For beta users, don't use personas - use their actual business info
     if (actualBetaUser && userPersona) {
       return 'user'; // Use actual user data instead of demo personas
     }
     return getInitialPersona();
-  });
-  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(['instagram', 'linkedin', 'tiktok']);
+  };
+
+  // Initialize consolidated state
+  const initialState: DashboardState = {
+    ui: {
+      activeMode: 'plan',
+      currentView: 'dashboard',
+      showNotifications: false,
+      showPersonaDropdown: false,
+      showThemeSelector: false,
+      showGamifiedProgress: false,
+      showOnboardingTooltips: false,
+      animationTrigger: false,
+      showBusinessInfo: false,
+    },
+    content: {
+      uploadedFiles: [],
+      contentData: {
+        caption: '',
+        hashtags: [],
+        music: '',
+        scheduledTime: undefined,
+        quickSchedule: ''
+      },
+      selectedPlatforms: ['instagram', 'linkedin', 'tiktok'],
+      selectedFormats: ['portrait'],
+      previewIndex: 0,
+      currentPreviewPlatform: 0,
+      currentAspectRatio: 0,
+      activeContentType: 'Caption',
+      performanceMetrics: {
+        engagement: 0,
+        reach: 0,
+        conversion: 0
+      },
+      trendingTopics: [],
+      optimalPostingTimes: {},
+    },
+    demo: {
+      showAutoTour: false,
+      showHotspots: true,
+      showProgressTracker: false,
+      liveDataActive: true,
+      showSuccessAnimation: false,
+      showConfetti: false,
+      showPersonaComparison: false,
+      notificationSystemActive: true,
+      showTourGuide: false,
+      showWelcomeModal: false,
+    },
+    vivi: {
+      viviAutonomyLevel: 0.7,
+      viviBehaviorFlow: null,
+      interactionType: 'hover',
+      viviMinimized: false,
+      showViViAutomation: false,
+      showFeatureDashboard: null,
+      viviButtonClicked: null,
+    },
+    voice: {
+      voiceEnabled: false,
+      isListening: false,
+      speechRecognition: null,
+    },
+    wizard: {
+      currentStep: 1,
+    },
+    theme: {
+      selectedTheme: null,
+      showThemeNotification: false,
+      themeNotificationData: { name: '', color: '' },
+    },
+    modals: {
+      showSaveDraftModal: false,
+      showConfirmationModal: false,
+    },
+    dragDrop: {
+      draggedItem: null,
+      draggedOverItem: null,
+      menuOrder: [],
+      isDragModeEnabled: false,
+    },
+    notifications: getInitialNotifications(),
+    currentPersona: getInitialCurrentPersona(),
+  };
+
+  const [state, dispatch] = useReducer(dashboardReducer, initialState);
   
   // Initialize usePlayfulLoading hook
   const { 
@@ -338,38 +568,6 @@ export default function ExactMavroPlusDashboard({ isDemoMode = false, isBetaUser
   
   // Initialize ViVi Toast system
   const { toasts, showToast, hideToast, handleToastAction } = useViViToast();
-  const [selectedFormats, setSelectedFormats] = useState<string[]>(['portrait']);
-  const [showPersonaDropdown, setShowPersonaDropdown] = useState(false);
-  
-  // Advanced UI component states
-  const [showThemeSelector, setShowThemeSelector] = useState(false);
-  const [showGamifiedProgress, setShowGamifiedProgress] = useState(false);
-  const [showOnboardingTooltips, setShowOnboardingTooltips] = useState(false);
-  const [animationTrigger, setAnimationTrigger] = useState(false);
-  
-  // Enhanced demo component states
-  const [showAutoTour, setShowAutoTour] = useState(false);
-  const [showHotspots, setShowHotspots] = useState(true);
-  const [showProgressTracker, setShowProgressTracker] = useState(false);
-  const [liveDataActive, setLiveDataActive] = useState(true);
-  const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
-  const [showConfetti, setShowConfetti] = useState(false);
-  const [showPersonaComparison, setShowPersonaComparison] = useState(false);
-  const [notificationSystemActive, setNotificationSystemActive] = useState(true);
-  const [viviMinimized, setViviMinimized] = useState(false);
-  const [showFeatureDashboard, setShowFeatureDashboard] = useState<string | null>(null);
-  const [showViViAutomation, setShowViViAutomation] = useState(false);
-  
-  // ViVi Behavior Engine state
-  const [viviAutonomyLevel, setViviAutonomyLevel] = useState(0.7);
-  const [viviBehaviorFlow, setViviBehaviorFlow] = useState(null);
-  const [interactionType, setInteractionType] = useState<'hover' | 'click' | 'success' | 'engagement' | 'achievement'>('hover');
-  const [selectedTheme, setSelectedTheme] = useState<any>(null);
-  const [showThemeNotification, setShowThemeNotification] = useState(false);
-  const [themeNotificationData, setThemeNotificationData] = useState<{
-    name: string;
-    color: string;
-  }>({ name: '', color: '' });
   
   // Initialize theme system
   useEffect(() => {
@@ -377,7 +575,7 @@ export default function ExactMavroPlusDashboard({ isDemoMode = false, isBetaUser
     if (savedTheme) {
       try {
         const theme = JSON.parse(savedTheme);
-        setSelectedTheme(theme);
+        dispatch({ type: 'SET_THEME_STATE', payload: { selectedTheme: theme } });
       } catch (error) {
         console.error('Failed to load saved theme:', error);
       }
@@ -385,14 +583,16 @@ export default function ExactMavroPlusDashboard({ isDemoMode = false, isBetaUser
   }, []);
   
   // Handle theme changes
-  const handleThemeChange = (theme: any) => {
-    setSelectedTheme(theme);
-    setThemeNotificationData({
-      name: theme.name,
-      color: theme.primary
+  const handleThemeChange = useCallback((theme: any) => {
+    dispatch({ 
+      type: 'SET_THEME_STATE', 
+      payload: { 
+        selectedTheme: theme,
+        themeNotificationData: { name: theme.name, color: theme.primary },
+        showThemeNotification: true
+      } 
     });
-    setShowThemeNotification(true);
-    setShowThemeSelector(false);
+    dispatch({ type: 'SET_UI_STATE', payload: { showThemeSelector: false } });
     
     // Force CSS update by triggering a reflow
     setTimeout(() => {
@@ -400,30 +600,8 @@ export default function ExactMavroPlusDashboard({ isDemoMode = false, isBetaUser
       document.body.offsetHeight; // Force reflow
       document.body.style.display = '';
     }, 100);
-  };
-  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
-  const [contentData, setContentData] = useState<ContentData>({
-    caption: '',
-    hashtags: [],
-    music: '',
-    scheduledTime: undefined,
-    quickSchedule: ''
-  });
-  const [previewIndex, setPreviewIndex] = useState(0);
-  const [showSaveDraftModal, setShowSaveDraftModal] = useState(false);
-  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const [currentPreviewPlatform, setCurrentPreviewPlatform] = useState(0);
-  const [currentAspectRatio, setCurrentAspectRatio] = useState(0);
-  const [activeContentType, setActiveContentType] = useState('Caption');
-  const [performanceMetrics, setPerformanceMetrics] = useState({
-    engagement: 0,
-    reach: 0,
-    conversion: 0
-  });
-  const [trendingTopics, setTrendingTopics] = useState<string[]>([]);
-  const [optimalPostingTimes, setOptimalPostingTimes] = useState<{ [key: string]: string }>({});
-  const [showBusinessInfo, setShowBusinessInfo] = useState(false);
-  const [viviButtonClicked, setViviButtonClicked] = useState<string | null>(null);
+  }, []);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const personaDropdownRef = useRef<HTMLDivElement>(null);
 
@@ -433,61 +611,53 @@ export default function ExactMavroPlusDashboard({ isDemoMode = false, isBetaUser
     if (!hasCompletedOnboarding) {
       // Start onboarding after a brief delay to allow UI to render
       setTimeout(() => {
-        setShowOnboardingTooltips(true);
+        dispatch({ type: 'SET_UI_STATE', payload: { showOnboardingTooltips: true } });
       }, 2000);
     }
     
     // Auto-start tour guide for new users
     const hasSeenTour = localStorage.getItem('mavro-tour-completed');
     if (!hasSeenTour) {
-      setShowAutoTour(true);
+      dispatch({ type: 'SET_DEMO_STATE', payload: { showAutoTour: true } });
     }
   }, []);
 
   // Demo reset functionality
-  const handleDemoReset = () => {
+  const handleDemoReset = useCallback(() => {
     // Clear all local storage
     localStorage.removeItem('mavro-welcome-seen');
     localStorage.removeItem('mavro-tour-completed');
     localStorage.removeItem('mavro-theme-preference');
     localStorage.removeItem('mavro-onboarding-completed');
     
-    // Reset all states
-    setCurrentPersona('kemar');
-    setCurrentView('dashboard');
-    setActiveMode('plan');
-    setShowWelcomeModal(false);
-    setShowAutoTour(true);
-    setShowHotspots(true);
-    setLiveDataActive(true);
-    setNotificationSystemActive(true);
-    setUploadedFiles([]);
-    setContentData({ caption: '', hashtags: [], music: '', scheduledTime: undefined, quickSchedule: '' });
-    setSelectedPlatforms(['instagram', 'linkedin', 'tiktok']);
-    setSelectedFormats(['portrait']);
+    // Reset all states using reducer
+    dispatch({ type: 'RESET_DEMO' });
     
     // Show success animation
-    setShowSuccessAnimation(true);
-    setTimeout(() => setShowSuccessAnimation(false), 2000);
+    setTimeout(() => dispatch({ type: 'SET_DEMO_STATE', payload: { showSuccessAnimation: false } }), 2000);
     
     // Show confetti
-    setShowConfetti(true);
-    setTimeout(() => setShowConfetti(false), 3000);
-  };
+    setTimeout(() => dispatch({ type: 'SET_DEMO_STATE', payload: { showConfetti: false } }), 3000);
+  }, []);
 
   // Enhanced action handlers
-  const handleTourComplete = () => {
+  const handleTourComplete = useCallback(() => {
     localStorage.setItem('mavro-tour-completed', 'true');
-    setShowAutoTour(false);
-    setShowHotspots(true);
-  };
+    dispatch({ 
+      type: 'SET_DEMO_STATE', 
+      payload: { showAutoTour: false, showHotspots: true } 
+    });
+  }, []);
 
-  const handlePersonaComparisonToggle = () => {
-    setShowPersonaComparison(!showPersonaComparison);
-  };
+  const handlePersonaComparisonToggle = useCallback(() => {
+    dispatch({ 
+      type: 'SET_DEMO_STATE', 
+      payload: { showPersonaComparison: !state.demo.showPersonaComparison } 
+    });
+  }, [state.demo.showPersonaComparison]);
 
   // Voice activation functions
-  const initializeSpeechRecognition = () => {
+  const initializeSpeechRecognition = useCallback(() => {
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
       const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
       const recognition = new SpeechRecognition();
@@ -501,32 +671,37 @@ export default function ExactMavroPlusDashboard({ isDemoMode = false, isBetaUser
           .join('');
         
         if (event.results[event.results.length - 1].isFinal) {
-          setContentData(prev => ({ ...prev, caption: transcript }));
-          setIsListening(false);
+          dispatch({ 
+            type: 'SET_CONTENT_STATE', 
+            payload: { 
+              contentData: { ...state.content.contentData, caption: transcript } 
+            } 
+          });
+          dispatch({ type: 'SET_VOICE_STATE', payload: { isListening: false } });
         }
       };
       
       recognition.onerror = () => {
-        setIsListening(false);
+        dispatch({ type: 'SET_VOICE_STATE', payload: { isListening: false } });
       };
       
-      setSpeechRecognition(recognition);
+      dispatch({ type: 'SET_VOICE_STATE', payload: { speechRecognition: recognition } });
     }
-  };
+  }, [state.content.contentData]);
   
-  const startListening = () => {
-    if (speechRecognition) {
-      setIsListening(true);
-      speechRecognition.start();
+  const startListening = useCallback(() => {
+    if (state.voice.speechRecognition) {
+      dispatch({ type: 'SET_VOICE_STATE', payload: { isListening: true } });
+      state.voice.speechRecognition.start();
     }
-  };
+  }, [state.voice.speechRecognition]);
   
-  const stopListening = () => {
-    if (speechRecognition) {
-      speechRecognition.stop();
-      setIsListening(false);
+  const stopListening = useCallback(() => {
+    if (state.voice.speechRecognition) {
+      state.voice.speechRecognition.stop();
+      dispatch({ type: 'SET_VOICE_STATE', payload: { isListening: false } });
     }
-  };
+  }, [state.voice.speechRecognition]);
 
   // Initialize speech recognition and performance metrics
   useEffect(() => {
@@ -538,13 +713,13 @@ export default function ExactMavroPlusDashboard({ isDemoMode = false, isBetaUser
       reach: Math.floor(Math.random() * 25) + 10,
       conversion: Math.floor(Math.random() * 8) + 2
     };
-    setPerformanceMetrics(metrics);
+    dispatch({ type: 'UPDATE_PERFORMANCE_METRICS', payload: metrics });
     
     // Set trending topics based on persona
-    const topics = currentPersona === 'kemar' ? 
+    const topics = state.currentPersona === 'kemar' ? 
       ['#leadership', '#motivation', '#success', '#mindset', '#growth'] :
       ['#business', '#marketing', '#growth', '#success', '#tips'];
-    setTrendingTopics(topics);
+    dispatch({ type: 'SET_CONTENT_STATE', payload: { trendingTopics: topics } });
     
     // Set optimal posting times
     const times = {
@@ -554,14 +729,14 @@ export default function ExactMavroPlusDashboard({ isDemoMode = false, isBetaUser
       linkedin: '8:00 AM',
       tiktok: '6:00 PM'
     };
-    setOptimalPostingTimes(times);
-  }, [currentPersona]);
+    dispatch({ type: 'SET_CONTENT_STATE', payload: { optimalPostingTimes: times } });
+  }, [state.currentPersona, initializeSpeechRecognition]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (personaDropdownRef.current && !personaDropdownRef.current.contains(event.target as Node)) {
-        setShowPersonaDropdown(false);
+        dispatch({ type: 'SET_UI_STATE', payload: { showPersonaDropdown: false } });
       }
     };
 
@@ -570,132 +745,140 @@ export default function ExactMavroPlusDashboard({ isDemoMode = false, isBetaUser
   }, []);
 
   const defaultNavigationItems = [
-    { icon: Home, label: 'Command Center', active: currentView === 'dashboard', key: 'dashboard' },
-    { icon: Target, label: 'Campaigns', active: currentView === 'campaigns', key: 'campaigns' },
-    { icon: MessageCircle, label: 'Reviews', active: currentView === 'reviews', key: 'reviews' },
-    { icon: Users, label: 'CRM', active: currentView === 'crm', key: 'crm' },
-    { icon: FileText, label: 'FourSIGHT™', active: currentView === 'foursight', key: 'foursight' },
-    { icon: MapPin, label: 'GeoSmart™', active: currentView === 'geosmart', key: 'geosmart' },
+    { icon: Home, label: 'Command Center', active: state.ui.currentView === 'dashboard', key: 'dashboard' },
+    { icon: Target, label: 'Campaigns', active: state.ui.currentView === 'campaigns', key: 'campaigns' },
+    { icon: MessageCircle, label: 'Reviews', active: state.ui.currentView === 'reviews', key: 'reviews' },
+    { icon: Users, label: 'CRM', active: state.ui.currentView === 'crm', key: 'crm' },
+    { icon: FileText, label: 'FourSIGHT™', active: state.ui.currentView === 'foursight', key: 'foursight' },
+    { icon: MapPin, label: 'GeoSmart™', active: state.ui.currentView === 'geosmart', key: 'geosmart' },
 
-    { icon: Zap, label: 'AI Studio', active: currentView === 'aistudio', key: 'aistudio' },
-    { icon: Brain, label: 'ViVi Store', active: currentView === 'vivistore', key: 'vivistore' },
-    { icon: MessageSquare, label: 'Beta Feedback', active: currentView === 'betafeedback', key: 'betafeedback' },
-    { icon: Settings, label: 'Settings', active: currentView === 'settings', key: 'settings' },
+    { icon: Zap, label: 'AI Studio', active: state.ui.currentView === 'aistudio', key: 'aistudio' },
+    { icon: Brain, label: 'ViVi Store', active: state.ui.currentView === 'vivistore', key: 'vivistore' },
+    { icon: MessageSquare, label: 'Beta Feedback', active: state.ui.currentView === 'betafeedback', key: 'betafeedback' },
+    { icon: Settings, label: 'Settings', active: state.ui.currentView === 'settings', key: 'settings' },
   ];
 
   // Initialize menu order from localStorage or default order
   useEffect(() => {
     const savedOrder = localStorage.getItem('menuOrder');
     if (savedOrder) {
-      setMenuOrder(JSON.parse(savedOrder));
+      dispatch({ type: 'SET_DRAG_DROP_STATE', payload: { menuOrder: JSON.parse(savedOrder) } });
     } else {
       const defaultOrder = defaultNavigationItems.map(item => item.key);
-      setMenuOrder(defaultOrder);
+      dispatch({ type: 'SET_DRAG_DROP_STATE', payload: { menuOrder: defaultOrder } });
     }
   }, []);
 
   // Save menu order to localStorage when it changes
   useEffect(() => {
-    if (menuOrder.length > 0) {
-      localStorage.setItem('menuOrder', JSON.stringify(menuOrder));
+    if (state.dragDrop.menuOrder.length > 0) {
+      localStorage.setItem('menuOrder', JSON.stringify(state.dragDrop.menuOrder));
     }
-  }, [menuOrder]);
+  }, [state.dragDrop.menuOrder]);
 
   // Create ordered navigation items based on user's custom order
-  const getOrderedNavigationItems = () => {
-    if (menuOrder.length === 0) return defaultNavigationItems;
+  const getOrderedNavigationItems = useCallback(() => {
+    if (state.dragDrop.menuOrder.length === 0) return defaultNavigationItems;
     
     const orderedItems = [];
     const itemsMap = new Map(defaultNavigationItems.map(item => [item.key, item]));
     
     // Add items in user's preferred order
-    for (const key of menuOrder) {
+    for (const key of state.dragDrop.menuOrder) {
       const item = itemsMap.get(key);
       if (item) {
         orderedItems.push({
           ...item,
-          active: currentView === key || (key === 'dashboard' && currentView === 'dashboard')
+          active: state.ui.currentView === key || (key === 'dashboard' && state.ui.currentView === 'dashboard')
         });
       }
     }
     
     // Add any new items that weren't in the saved order
     for (const item of defaultNavigationItems) {
-      if (!menuOrder.includes(item.key)) {
+      if (!state.dragDrop.menuOrder.includes(item.key)) {
         orderedItems.push({
           ...item,
-          active: currentView === item.key || (item.key === 'dashboard' && currentView === 'dashboard')
+          active: state.ui.currentView === item.key || (item.key === 'dashboard' && state.ui.currentView === 'dashboard')
         });
       }
     }
     
     return orderedItems;
-  };
+  }, [state.dragDrop.menuOrder, state.ui.currentView]);
 
   const navigationItems = getOrderedNavigationItems();
 
   // Drag and drop handlers
-  const handleDragStart = (e: React.DragEvent, itemKey: string) => {
-    setDraggedItem(itemKey);
+  const handleDragStart = useCallback((e: React.DragEvent, itemKey: string) => {
+    dispatch({ type: 'SET_DRAG_DROP_STATE', payload: { draggedItem: itemKey } });
     e.dataTransfer.effectAllowed = 'move';
-  };
+  }, []);
 
-  const handleDragOver = (e: React.DragEvent, itemKey: string) => {
+  const handleDragOver = useCallback((e: React.DragEvent, itemKey: string) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
-    setDraggedOverItem(itemKey);
-  };
+    dispatch({ type: 'SET_DRAG_DROP_STATE', payload: { draggedOverItem: itemKey } });
+  }, []);
 
-  const handleDragLeave = () => {
-    setDraggedOverItem(null);
-  };
+  const handleDragLeave = useCallback(() => {
+    dispatch({ type: 'SET_DRAG_DROP_STATE', payload: { draggedOverItem: null } });
+  }, []);
 
-  const handleDrop = (e: React.DragEvent, targetKey: string) => {
+  const handleDrop = useCallback((e: React.DragEvent, targetKey: string) => {
     e.preventDefault();
     
-    if (!draggedItem || draggedItem === targetKey) {
-      setDraggedItem(null);
-      setDraggedOverItem(null);
+    if (!state.dragDrop.draggedItem || state.dragDrop.draggedItem === targetKey) {
+      dispatch({ 
+        type: 'SET_DRAG_DROP_STATE', 
+        payload: { draggedItem: null, draggedOverItem: null } 
+      });
       return;
     }
 
-    const newOrder = [...menuOrder];
-    const draggedIndex = newOrder.indexOf(draggedItem);
+    const newOrder = [...state.dragDrop.menuOrder];
+    const draggedIndex = newOrder.indexOf(state.dragDrop.draggedItem);
     const targetIndex = newOrder.indexOf(targetKey);
 
     if (draggedIndex !== -1 && targetIndex !== -1) {
       // Remove the dragged item and insert it at the target position
       newOrder.splice(draggedIndex, 1);
-      newOrder.splice(targetIndex, 0, draggedItem);
-      setMenuOrder(newOrder);
+      newOrder.splice(targetIndex, 0, state.dragDrop.draggedItem);
+      dispatch({ 
+        type: 'SET_DRAG_DROP_STATE', 
+        payload: { 
+          menuOrder: newOrder,
+          draggedItem: null,
+          draggedOverItem: null
+        } 
+      });
     }
+  }, [state.dragDrop.draggedItem, state.dragDrop.menuOrder]);
 
-    setDraggedItem(null);
-    setDraggedOverItem(null);
-  };
-
-  const handleDragEnd = () => {
-    setDraggedItem(null);
-    setDraggedOverItem(null);
-  };
+  const handleDragEnd = useCallback(() => {
+    dispatch({ 
+      type: 'SET_DRAG_DROP_STATE', 
+      payload: { draggedItem: null, draggedOverItem: null } 
+    });
+  }, []);
 
   // Add specialized pages based on persona
   const specializedPages = [];
-  if (['sarah', 'karen', 'david', 'alex', 'kemar'].includes(currentPersona)) {
-    specializedPages.push({ icon: Shield, label: 'Compliance', active: currentView === 'compliance', key: 'compliance' });
+  if (['sarah', 'karen', 'david', 'alex', 'kemar'].includes(state.currentPersona)) {
+    specializedPages.push({ icon: Shield, label: 'Compliance', active: state.ui.currentView === 'compliance', key: 'compliance' });
   }
 
-  if (['marco', 'david', 'alex'].includes(currentPersona)) {
-    specializedPages.push({ icon: Package, label: 'Inventory', active: currentView === 'inventory', key: 'inventory' });
+  if (['marco', 'david', 'alex'].includes(state.currentPersona)) {
+    specializedPages.push({ icon: Package, label: 'Inventory', active: state.ui.currentView === 'inventory', key: 'inventory' });
   }
 
   const allNavigationItems = [...navigationItems, ...specializedPages];
 
   const wizardSteps = [
-    { id: 1, title: 'Upload Media', subtitle: 'Add photos and videos', active: currentStep === 1 },
-    { id: 2, title: 'Select Platforms', subtitle: 'Choose where to post', active: currentStep === 2 },
-    { id: 3, title: 'Create Content', subtitle: 'Write your caption', active: currentStep === 3 },
-    { id: 4, title: 'Schedule & Preview', subtitle: 'Set timing and review', active: currentStep === 4 },
+    { id: 1, title: 'Upload Media', subtitle: 'Add photos and videos', active: state.wizard.currentStep === 1 },
+    { id: 2, title: 'Select Platforms', subtitle: 'Choose where to post', active: state.wizard.currentStep === 2 },
+    { id: 3, title: 'Create Content', subtitle: 'Write your caption', active: state.wizard.currentStep === 3 },
+    { id: 4, title: 'Schedule & Preview', subtitle: 'Set timing and review', active: state.wizard.currentStep === 4 },
   ];
 
   const platforms = [
@@ -762,7 +945,7 @@ export default function ExactMavroPlusDashboard({ isDemoMode = false, isBetaUser
     { id: 'story', name: 'Story', ratio: '9:16', icon: '📲' },
     { id: 'landscape', name: 'Landscape', ratio: '16:9', icon: '🖼️' },
     // For beta users, show all format options (not persona-specific)
-    ...(!actualBetaUser && currentPersona === 'kemar' ? [
+    ...(!actualBetaUser && state.currentPersona === 'kemar' ? [
       { id: 'reel', name: 'Reel', ratio: '9:16', icon: '🎬' },
       { id: 'carousel', name: 'Carousel', ratio: '1:1', icon: '📝' },
       { id: 'event-promo', name: 'Event Promo', ratio: '16:9', icon: '🎯' },
@@ -773,25 +956,34 @@ export default function ExactMavroPlusDashboard({ isDemoMode = false, isBetaUser
     ] : []),
   ];
 
-  const toggleVoice = () => {
-    setVoiceEnabled(!voiceEnabled);
-  };
+  const toggleVoice = useCallback(() => {
+    dispatch({ 
+      type: 'SET_VOICE_STATE', 
+      payload: { voiceEnabled: !state.voice.voiceEnabled } 
+    });
+  }, [state.voice.voiceEnabled]);
 
-  const togglePlatform = (platformId: string) => {
-    setSelectedPlatforms(prev => 
-      prev.includes(platformId) 
-        ? prev.filter(id => id !== platformId)
-        : [...prev, platformId]
-    );
-  };
+  const togglePlatform = useCallback((platformId: string) => {
+    const newPlatforms = state.content.selectedPlatforms.includes(platformId) 
+      ? state.content.selectedPlatforms.filter(id => id !== platformId)
+      : [...state.content.selectedPlatforms, platformId];
+    
+    dispatch({ 
+      type: 'SET_CONTENT_STATE', 
+      payload: { selectedPlatforms: newPlatforms } 
+    });
+  }, [state.content.selectedPlatforms]);
 
-  const toggleFormat = (formatId: string) => {
-    setSelectedFormats(prev => 
-      prev.includes(formatId) 
-        ? prev.filter(id => id !== formatId)
-        : [...prev, formatId]
-    );
-  };
+  const toggleFormat = useCallback((formatId: string) => {
+    const newFormats = state.content.selectedFormats.includes(formatId) 
+      ? state.content.selectedFormats.filter(id => id !== formatId)
+      : [...state.content.selectedFormats, formatId];
+    
+    dispatch({ 
+      type: 'SET_CONTENT_STATE', 
+      payload: { selectedFormats: newFormats } 
+    });
+  }, [state.content.selectedFormats]);
 
   // ViVi Behavior Engine initialization - disabled in demo mode, preserved for beta testing
   useEffect(() => {
@@ -1495,10 +1687,10 @@ export default function ExactMavroPlusDashboard({ isDemoMode = false, isBetaUser
                           startLoading(`ViVi is switching to ${persona.name}'s persona...`, 2500);
                           
                           setTimeout(() => {
-                            setCurrentPersona(persona.id);
-                            setShowPersonaDropdown(false);
+                            dispatch({ type: 'SET_PERSONA', payload: persona.id });
+                            dispatch({ type: 'SET_UI_STATE', payload: { showPersonaDropdown: false } });
                             stopLoading();
-                            setShowSuccessAnimation(true);
+                            dispatch({ type: 'SET_DEMO_STATE', payload: { showSuccessAnimation: true } });
                             setTimeout(() => setShowSuccessAnimation(false), 2000);
                           }, 2500);
                         }}
@@ -1614,7 +1806,7 @@ export default function ExactMavroPlusDashboard({ isDemoMode = false, isBetaUser
                 }`}
               >
                 <button
-                  onClick={() => setCurrentView(item.key as any)}
+                  onClick={() => dispatch({ type: 'SET_UI_STATE', payload: { currentView: item.key as any } })}
                   className={`w-full flex items-center space-x-3 px-4 py-3 text-left rounded-lg transition-colors ${
                     item.active
                       ? 'bg-purple-50 text-purple-700 border border-purple-200'
@@ -1869,9 +2061,9 @@ export default function ExactMavroPlusDashboard({ isDemoMode = false, isBetaUser
           {/* Mode Selector */}
           <div className="flex">
             <button
-              onClick={() => setActiveMode('plan')}
+              onClick={() => dispatch({ type: 'SET_UI_STATE', payload: { activeMode: 'plan' } })}
               className={`flex-1 p-6 rounded-l-2xl border-2 transition-all duration-300 ${
-                activeMode === 'plan'
+                state.ui.activeMode === 'plan'
                   ? 'border-purple-400 bg-purple-50 shadow-lg'
                   : 'border-gray-200 bg-white hover:border-purple-200 hover:shadow-md'
               }`}
@@ -1890,9 +2082,9 @@ export default function ExactMavroPlusDashboard({ isDemoMode = false, isBetaUser
             </button>
 
             <button
-              onClick={() => setActiveMode('track')}
+              onClick={() => dispatch({ type: 'SET_UI_STATE', payload: { activeMode: 'track' } })}
               className={`flex-1 p-6 border-2 transition-all duration-300 ${
-                activeMode === 'track'
+                state.ui.activeMode === 'track'
                   ? 'border-green-400 bg-green-50 shadow-lg'
                   : 'border-gray-200 bg-white hover:border-green-200 hover:shadow-md'
               }`}
@@ -1911,9 +2103,9 @@ export default function ExactMavroPlusDashboard({ isDemoMode = false, isBetaUser
             </button>
 
             <button
-              onClick={() => setActiveMode('grow')}
+              onClick={() => dispatch({ type: 'SET_UI_STATE', payload: { activeMode: 'grow' } })}
               className={`flex-1 p-6 border-2 transition-all duration-300 ${
-                activeMode === 'grow'
+                state.ui.activeMode === 'grow'
                   ? 'border-blue-400 bg-blue-50 shadow-lg'
                   : 'border-gray-200 bg-white hover:border-blue-200 hover:shadow-md'
               }`}
@@ -1932,9 +2124,9 @@ export default function ExactMavroPlusDashboard({ isDemoMode = false, isBetaUser
             </button>
 
             <button
-              onClick={() => setActiveMode('learn')}
+              onClick={() => dispatch({ type: 'SET_UI_STATE', payload: { activeMode: 'learn' } })}
               className={`flex-1 p-6 rounded-r-2xl border-2 transition-all duration-300 ${
-                activeMode === 'learn'
+                state.ui.activeMode === 'learn'
                   ? 'border-orange-400 bg-orange-50 shadow-lg'
                   : 'border-gray-200 bg-white hover:border-orange-200 hover:shadow-md'
               }`}
