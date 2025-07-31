@@ -1,0 +1,91 @@
+🧠 REPLIT PROMPT: Mavro Pro Unified Overhaul Build
+Project Title:
+Mavro Pro – Unified Nirvana Build (ViVi-Powered Full System + Plus-Polished UI)
+🧩 OBJECTIVE
+Merge the robust backend and enterprise features of Mavro Pro with the dynamic, visually polished, and persona-driven demo environment of Mavro Plus to create a powerful, full-stack AI Marketing OS platform.
+🧱 CODE STRUCTURE OVERHAUL
+✅ Keep from Mavro Pro:
+mavro-pro/
+├── client/src/components/
+│   ├── ai/                 # ViVi MCP tools
+│   ├── crm/                # HubSpot, Salesforce integrations
+│   ├── analytics/          # Revenue, attribution, KPI charts
+│   ├── dashboard/          # Modular widgets (DnD)
+│   ├── campaigns/          # Campaign editor, A/B tests
+│   ├── content-manager/    # Central content hub
+├── server/
+│   ├── ai/                 # AdvancedAIEngine
+│   ├── vivi-mcp.ts         # 12-tool engine
+│   ├── crm-integrations/   # HubSpot/Salesforce classes
+│   └── routes.ts           # API layer (auth, CRM, campaigns)
+🔁 Replace/Upgrade Using From Mavro Plus:
+mavro-pro/
+├── client/src/components/
+│   ├── PersonaLoader/              # loads mock data per industry persona
+│   ├── TourGuide/                  # Zendaya-styled ViVi tour engine
+│   ├── TrendTapLiteTicker/         # Ticker-style trend insights
+│   ├── BoostSummaryPanel/          # 1x/2x/3x campaign boost logic
+│   ├── SchedulerUI/                # Improved calendar + time selector
+│   ├── PostPreviewPanel/           # Live platform UI previews
+│   ├── NotificationCenter/         # Unified toast + bell alerts
+│   ├── FourSIGHTBoard/             # Enhanced KPI dashboard
+│   ├── SettingsDashboard.jsx       # User preferences + system config
+│   ├── MavroMagicComposer/         # Central post engine
+│   └── ViViAgentStore/             # Add-on logic with visual toggle system
+💻 UNIFIED FRONTEND OVERHAUL
+Replace Mavro Pro dashboard home (/dashboard) with new unified layout from Mavro Plus:
+Glassmorphic cards + Sierra Canyon Sunset gradient theme
+Drag-and-drop still powered by @dnd-kit, but clean layout adapted from Mavro Plus spacing/model
+Tabs: Plan Mode, Track Mode, Grow Mode
+🔧 SYSTEM MERGE STRATEGY
+Area	Keep From Pro	Upgrade From Plus
+ViVi AI Engine	✅ MCP + AdvancedAIEngine	🔁 Add Zendaya-style tone, nudges
+CRM Integrations	✅ Salesforce/HubSpot bi-sync	➕ Add toggleable demo mode
+Campaigns	✅ Multi-channel A/B + sync rules	➕ Boost Panel, scheduler upgrade
+Content Studio	✅ AI-generated, ROI-tuned	🔁 Replace UI with Mavro Magic Wizard
+Analytics	✅ Attribution, revenue charts	🔁 Replace UI with FourSIGHT Board
+Persona Data	🔲 Not present	✅ Merge PersonaLoader for sample switch
+Settings	Basic Theme toggle	✅ Full SettingsDashboard from Plus
+Trend System	🔲 Lacking	✅ Add TrendTapLiteTicker
+ViVi Chat	✅ FloatingViVi	➕ Add post-aware prompts + tour integration
+Onboarding	✅ Wizard exists	🔁 Replace with TourGuide from Plus
+Mock Data	Functional	➕ Add rich example fields per persona
+🗃️ FILES TO MERGE / MIGRATE
+From Mavro Plus (ported over to client/src/demo/ or data/)
+profiles.json – personas: Sarah (MedSpa), Marco (Restaurant), etc.
+campaigns.json – mock campaigns per persona
+leads.json – CRM sample leads
+analytics.json – content engagement data
+trendData.json – auto-scroll trend prompts
+tourSteps.json – step-by-step UI intro
+🧠 AI ENGINE UNIFICATION (server/vivi-mcp.ts)
+Update ViVi's MCP engine to include:
+personaContext: string as a required field
+Ability to simulate 3 behavior modes:
+Demo: Use mock JSON, no network call
+Hybrid: Predict + auto-fill blanks with fake ROI
+Live: Use actual synced CRM/campaign data
+if (context.mode === "demo") {
+  return mockPredictionEngine(userPersona, toolRequest);
+}
+🎨 UI/UX GUIDELINES
+Keep glassmorphism + floating card style from Mavro Plus
+Stick to shadcn/ui for all components
+Maintain responsive, drag-and-drop flexibility
+Adopt Zendaya-style tone for ViVi
+Ensure ALL modules are demo-safe or toggled with switch
+🔐 ACCESS MODES
+Mode	Description
+DEMO	Uses mock persona data and JSON files
+LIVE	Uses authenticated CRM, OpenAI, user campaigns
+HYBRID	Blends user data with predictive auto-fill logic
+Controlled via AppContext.mode and localStorage
+✅ OUTPUT & DEPLOYMENT REQUIREMENTS
+100% portable ZIP with mock/demo data preloaded
+No required external API tokens for DEMO mode
+/demo-login: logs user in as mock persona
+/dashboard = new Plan/Track/Grow layout
+/crm, /analytics, /ai-studio, /roi-tools = extended
+Deploy with clear README and GitHub bundling instructions
+🎯 GOAL
+Unify the brilliance of Mavro Plus’s polish and simulation with the raw horsepower of Mavro Pro’s enterprise system — delivering a demo-safe, production-ready, investor-presentable AI marketing OS that feels as powerful as it looks.

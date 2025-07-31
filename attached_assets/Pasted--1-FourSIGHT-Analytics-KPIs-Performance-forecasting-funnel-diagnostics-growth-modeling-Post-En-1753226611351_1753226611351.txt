@@ -1,0 +1,94 @@
+🧠 1. FourSIGHT Analytics™ KPIs
+Performance forecasting, funnel diagnostics, growth modeling
+Post Engagement Growth Rate (%)
+Forecasted Lead Velocity (weekly/monthly)
+ROI per Campaign (%)
+Cost per Engagement (CPE)
+Conversion Funnel Drop-off % (per stage)
+Client Retention Rate (%)
+Churn Risk Index (0–100)
+Platform Efficiency Score (performance/cost ratio)
+Average Campaign Lifespan (days before fatigue)
+🧩 2. Agent Pack Intelligence KPIs
+Performance of owned and recommended ViVi Agent Packs
+Agent Pack Activation Rate (%)
+Upsell Conversion Rate (%)
+Avg. ROI per Activated Pack (%)
+Time to First Impact (days post-activation)
+Top Performing Pack (by persona/vertical)
+Pack Adoption Frequency (uses/month)
+Unused Pack Opportunity Value ($)
+Incremental Leads per Pack (%)
+🎯 3. Audience Drill Down KPIs
+Demographic and behavioral breakdowns
+Top Demographic by Engagement (e.g. Females 25–34)
+Avg. Engagement Rate per Demographic (%)
+Top Performing Content Format per Persona
+Engagement by Time of Day
+Engagement by Day of Week
+Holiday/Event Engagement Lift (%)
+Geo Engagement Rank (by city/state/zip)
+Device Split Engagement (Mobile vs. Desktop vs. Tablet)
+Sentiment Score (1–5 stars or polarity index)
+📊 4. Competitor Intelligence KPIs
+Relative benchmarks vs. top local/industry players
+Share of Voice (SoV) by Platform (%)
+Post Frequency Comparison (You vs. Competitor)
+Competitor Average Engagement Rate (%)
+Reputation Delta (Review Avg: You vs. Top 3 Competitors)
+Content Type Gap (X types you’re not using)
+Review Volume Delta (per platform vs. average)
+Offer Alignment Score (%)
+Trend Adoption Lag Time (days behind competitors)
+🌍 5. GeoSmart™ Heatmap KPIs
+Regional traction and opportunity detection
+Reach by Zip/County/City (total + % change)
+Lead Density per Region (leads/1,000 users)
+CPL by Region ($)
+Territory Penetration Rate (%)
+Geo Engagement Growth MoM (%)
+Untapped Region Opportunity Score (0–100)
+📣 6. Campaign ROI KPIs
+Real attribution and post-level economics
+Cost per Lead (CPL)
+Cost per Acquisition (CPA)
+Post ROI (%)
+Top Performing Campaign by Channel
+Click-Through Rate (CTR) per Campaign (%)
+Lead Attribution Accuracy (%)
+Boost Effectiveness Delta (%)
+Time to First Conversion (avg per campaign)
+⭐ 7. Review & UGC KPIs
+Reputation and user-generated content insights
+Review Volume per Week/Platform
+Avg. Response Time to Reviews (hours)
+Review Sentiment Score (1–5)
+Repurposable Review Rate (%)
+Review Engagement Score (likes/comments per review-based post)
+UGC Conversion Rate (%)
+Influencer/Advocate Detection Score (0–100)
+🔍 8. TrendTap™ Insights KPIs
+Real-time cultural signal intelligence
+Trending Hashtag Use Rate (%)
+Trending Sound Alignment (Y/N per platform)
+Trend Velocity Score (how fast user adopts trends)
+Campaign Trend Match Rate (%)
+Local Trend Surge Index (%)
+Time to Trend (days between trend start and user engagement)
+🧠 9. ViVi Smart Nudges & Prescriptions KPIs
+Proactive ViVi-driven behavior improvement metrics
+Nudge Adoption Rate (%)
+Impact Per Nudge (Δ leads, clicks, reach, etc.)
+Ignored Nudges (count/month)
+Avg. Uplift per Executed Nudge (%)
+Smart Nudge Recommendation Accuracy (%)
+Action Response Time (from nudge to action)
+ViVi-Influenced Revenue %
+🎯 10. Smart Goals Tracker KPIs
+Progress against user-set or AI-suggested milestones
+Goals Met vs. Set (%)
+Projected Timeline to Goal (days/weeks)
+Top 3 Contributors to Goal Completion
+Lagging Goal Category (content, reviews, ads, etc.)
+Goal Acceleration Suggestions Executed (%)
+Goal Achievement Trendline (last 3 months)

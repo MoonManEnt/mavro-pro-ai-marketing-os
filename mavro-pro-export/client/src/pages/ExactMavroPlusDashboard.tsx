@@ -1,0 +1,4244 @@
+import { useState, useRef, useCallback, useEffect } from 'react';
+import { Bell, Settings, Mic, MicOff, Sparkles, Zap, TrendingUp, Target, BarChart3, Home, Users, MessageCircle, CreditCard, FileText, User, Calendar, Upload, Image, Play, Check, X, Hash, Music, Clock, ChevronLeft, ChevronRight, Send, Save, Globe, ChevronDown, AlertTriangle, Eye, ArrowRight, Share2, MessageSquare, BookOpen, Trophy, Heart, Minimize, RotateCcw, MapPin, Share, Shield, Package, Palette, Award, Star, Medal, Gift, Crown, Brain } from 'lucide-react';
+import ViViLogo from '../components/ViViLogo';
+import GeoSmartDemo from '../components/GeoSmartDemo';
+import GeoSmartPage from './GeoSmartPage';
+import { FaInstagram, FaLinkedin, FaTiktok, FaYoutube, FaSnapchat, FaFacebook } from 'react-icons/fa';
+import { SiX } from 'react-icons/si';
+import CampaignsPage from './CampaignsPage';
+import ReviewsPage from './ReviewsPage';
+import CRMPage from './CRMPage';
+import FourSIGHTPage from './FourSIGHTPage';
+import SettingsPage from './SettingsPage';
+import ComplianceCenterPage from './ComplianceCenterPage';
+import ClientPortalPage from './ClientPortalPage';
+import InventoryManagerPage from './InventoryManagerPage';
+import ViViStorePage from './ViViStorePage';
+
+// Import advanced UI components
+import PersonalizedInteractionAnimations from '../components/PersonalizedInteractionAnimations';
+import ContextualMicroInteractions from '../components/ContextualMicroInteractions';
+import AdaptiveColorThemeSelector from '../components/AdaptiveColorThemeSelector';
+import GamifiedUserProgress from '../components/GamifiedUserProgress';
+import SmartOnboardingTooltips from '../components/SmartOnboardingTooltips';
+import ThemeChangeNotification from '../components/ThemeChangeNotification';
+import AutoStartTourGuide from '../components/AutoStartTourGuide';
+import InteractiveHotspots from '../components/InteractiveHotspots';
+import DemoProgressTracker from '../components/DemoProgressTracker';
+import LiveDataSimulator from '../components/LiveDataSimulator';
+import EnhancedMicroAnimations, { LoadingSkeleton, SuccessAnimation, ConfettiAnimation } from '../components/EnhancedMicroAnimations';
+import RealTimeNotificationSystem from '../components/RealTimeNotificationSystem';
+import PersonaComparisonMode from '../components/PersonaComparisonMode';
+import MobileOptimizedNavigation from '../components/MobileOptimizedNavigation';
+import EnhancedViViAssistant from '../components/EnhancedViViAssistant';
+
+// Custom X Icon Component  
+const XIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+  </svg>
+);
+
+interface UploadedFile {
+  id: string;
+  file: File;
+  type: 'image' | 'video';
+  preview: string;
+  size: number;
+  duration?: number;
+}
+
+interface ContentData {
+  caption: string;
+  hashtags: string[];
+  music?: string;
+  scheduledTime?: Date;
+  quickSchedule?: string;
+}
+
+export default function ExactMavroPlusDashboard() {
+  const [activeMode, setActiveMode] = useState<'plan' | 'track' | 'grow' | 'learn'>('plan');
+  const [voiceEnabled, setVoiceEnabled] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [speechRecognition, setSpeechRecognition] = useState<any>(null);
+  const [currentStep, setCurrentStep] = useState(1);
+  const [showTourGuide, setShowTourGuide] = useState(false);
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+  const [currentView, setCurrentView] = useState<'dashboard' | 'campaigns' | 'reviews' | 'crm' | 'foursight' | 'settings' | 'geosmart' | 'compliance' | 'clientportal' | 'inventory' | 'vivistore'>('dashboard');
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState([
+    { id: 1, title: 'New campaign performance', message: 'Your keynote promotion campaign is performing 23% above average', time: '2 min ago', read: false, type: 'success' },
+    { id: 2, title: 'Content suggestion ready', message: 'ViVi has generated 5 new content ideas for your speaking events', time: '1 hour ago', read: false, type: 'info' },
+    { id: 3, title: 'Analytics update', message: 'Weekly performance report is now available', time: '2 hours ago', read: true, type: 'info' },
+    { id: 4, title: 'Trending topic alert', message: 'Leadership development is trending in your industry', time: '3 hours ago', read: false, type: 'trend' },
+    { id: 5, title: 'Engagement milestone', message: 'You\'ve reached 10K followers on LinkedIn!', time: '1 day ago', read: true, type: 'success' }
+  ]);
+  const [currentPersona, setCurrentPersona] = useState('kemar');
+  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(['instagram', 'linkedin', 'tiktok']);
+  const [selectedFormats, setSelectedFormats] = useState<string[]>(['square']);
+  const [showPersonaDropdown, setShowPersonaDropdown] = useState(false);
+  
+  // Advanced UI component states
+  const [showThemeSelector, setShowThemeSelector] = useState(false);
+  const [showGamifiedProgress, setShowGamifiedProgress] = useState(false);
+  const [showOnboardingTooltips, setShowOnboardingTooltips] = useState(false);
+  const [animationTrigger, setAnimationTrigger] = useState(false);
+  
+  // Enhanced demo component states
+  const [showAutoTour, setShowAutoTour] = useState(false);
+  const [showHotspots, setShowHotspots] = useState(true);
+  const [showProgressTracker, setShowProgressTracker] = useState(false);
+  const [liveDataActive, setLiveDataActive] = useState(true);
+  const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [showPersonaComparison, setShowPersonaComparison] = useState(false);
+  const [notificationSystemActive, setNotificationSystemActive] = useState(true);
+  const [viviMinimized, setViviMinimized] = useState(false);
+  const [interactionType, setInteractionType] = useState<'hover' | 'click' | 'success' | 'engagement' | 'achievement'>('hover');
+  const [selectedTheme, setSelectedTheme] = useState<any>(null);
+  const [showThemeNotification, setShowThemeNotification] = useState(false);
+  const [themeNotificationData, setThemeNotificationData] = useState<{
+    name: string;
+    color: string;
+  }>({ name: '', color: '' });
+  
+  // Initialize theme system
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('mavro-theme');
+    if (savedTheme) {
+      try {
+        const theme = JSON.parse(savedTheme);
+        setSelectedTheme(theme);
+      } catch (error) {
+        console.error('Failed to load saved theme:', error);
+      }
+    }
+  }, []);
+  
+  // Handle theme changes
+  const handleThemeChange = (theme: any) => {
+    setSelectedTheme(theme);
+    setThemeNotificationData({
+      name: theme.name,
+      color: theme.primary
+    });
+    setShowThemeNotification(true);
+    setShowThemeSelector(false);
+    
+    // Force CSS update by triggering a reflow
+    setTimeout(() => {
+      document.body.style.display = 'none';
+      document.body.offsetHeight; // Force reflow
+      document.body.style.display = '';
+    }, 100);
+  };
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
+  const [contentData, setContentData] = useState<ContentData>({
+    caption: '',
+    hashtags: [],
+    music: '',
+    scheduledTime: undefined,
+    quickSchedule: ''
+  });
+  const [previewIndex, setPreviewIndex] = useState(0);
+  const [showSaveDraftModal, setShowSaveDraftModal] = useState(false);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [currentPreviewPlatform, setCurrentPreviewPlatform] = useState(0);
+  const [currentAspectRatio, setCurrentAspectRatio] = useState(0);
+  const [activeContentType, setActiveContentType] = useState('Caption');
+  const [performanceMetrics, setPerformanceMetrics] = useState({
+    engagement: 0,
+    reach: 0,
+    conversion: 0
+  });
+  const [trendingTopics, setTrendingTopics] = useState<string[]>([]);
+  const [optimalPostingTimes, setOptimalPostingTimes] = useState<{ [key: string]: string }>({});
+  const [showBusinessInfo, setShowBusinessInfo] = useState(false);
+  const [viviButtonClicked, setViviButtonClicked] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const personaDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Auto-start onboarding on first login
+  useEffect(() => {
+    const hasCompletedOnboarding = localStorage.getItem('mavro-onboarding-completed');
+    if (!hasCompletedOnboarding) {
+      // Start onboarding after a brief delay to allow UI to render
+      setTimeout(() => {
+        setShowOnboardingTooltips(true);
+      }, 2000);
+    }
+    
+    // Auto-start tour guide for new users
+    const hasSeenTour = localStorage.getItem('mavro-tour-completed');
+    if (!hasSeenTour) {
+      setShowAutoTour(true);
+    }
+  }, []);
+
+  // Demo reset functionality
+  const handleDemoReset = () => {
+    // Clear all local storage
+    localStorage.removeItem('mavro-welcome-seen');
+    localStorage.removeItem('mavro-tour-completed');
+    localStorage.removeItem('mavro-theme-preference');
+    localStorage.removeItem('mavro-onboarding-completed');
+    
+    // Reset all states
+    setCurrentPersona('kemar');
+    setCurrentView('dashboard');
+    setActiveMode('plan');
+    setShowWelcomeModal(false);
+    setShowAutoTour(true);
+    setShowHotspots(true);
+    setLiveDataActive(true);
+    setNotificationSystemActive(true);
+    setUploadedFiles([]);
+    setContentData({ caption: '', hashtags: [], music: '', scheduledTime: undefined, quickSchedule: '' });
+    setSelectedPlatforms(['instagram', 'linkedin', 'tiktok']);
+    setSelectedFormats(['square']);
+    
+    // Show success animation
+    setShowSuccessAnimation(true);
+    setTimeout(() => setShowSuccessAnimation(false), 2000);
+    
+    // Show confetti
+    setShowConfetti(true);
+    setTimeout(() => setShowConfetti(false), 3000);
+  };
+
+  // Enhanced action handlers
+  const handleTourComplete = () => {
+    localStorage.setItem('mavro-tour-completed', 'true');
+    setShowAutoTour(false);
+    setShowHotspots(true);
+  };
+
+  const handlePersonaComparisonToggle = () => {
+    setShowPersonaComparison(!showPersonaComparison);
+  };
+
+  // Voice activation functions
+  const initializeSpeechRecognition = () => {
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'en-US';
+      
+      recognition.onresult = (event: any) => {
+        const transcript = Array.from(event.results)
+          .map((result: any) => result[0].transcript)
+          .join('');
+        
+        if (event.results[event.results.length - 1].isFinal) {
+          setContentData(prev => ({ ...prev, caption: transcript }));
+          setIsListening(false);
+        }
+      };
+      
+      recognition.onerror = () => {
+        setIsListening(false);
+      };
+      
+      setSpeechRecognition(recognition);
+    }
+  };
+  
+  const startListening = () => {
+    if (speechRecognition) {
+      setIsListening(true);
+      speechRecognition.start();
+    }
+  };
+  
+  const stopListening = () => {
+    if (speechRecognition) {
+      speechRecognition.stop();
+      setIsListening(false);
+    }
+  };
+
+  // Initialize speech recognition and performance metrics
+  useEffect(() => {
+    initializeSpeechRecognition();
+    
+    // Initialize performance metrics with persona-specific data
+    const metrics = {
+      engagement: Math.floor(Math.random() * 15) + 5,
+      reach: Math.floor(Math.random() * 25) + 10,
+      conversion: Math.floor(Math.random() * 8) + 2
+    };
+    setPerformanceMetrics(metrics);
+    
+    // Set trending topics based on persona
+    const topics = currentPersona === 'kemar' ? 
+      ['#leadership', '#motivation', '#success', '#mindset', '#growth'] :
+      ['#business', '#marketing', '#growth', '#success', '#tips'];
+    setTrendingTopics(topics);
+    
+    // Set optimal posting times
+    const times = {
+      instagram: '12:00 PM',
+      facebook: '3:00 PM',
+      x: '9:00 AM',
+      linkedin: '8:00 AM',
+      tiktok: '6:00 PM'
+    };
+    setOptimalPostingTimes(times);
+  }, [currentPersona]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (personaDropdownRef.current && !personaDropdownRef.current.contains(event.target as Node)) {
+        setShowPersonaDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const navigationItems = [
+    { icon: Home, label: 'Command Center', active: currentView === 'dashboard', key: 'dashboard' },
+    { icon: Target, label: 'Campaigns', active: currentView === 'campaigns', key: 'campaigns' },
+    { icon: MessageCircle, label: 'Reviews', active: currentView === 'reviews', key: 'reviews' },
+    { icon: Users, label: 'CRM', active: currentView === 'crm', key: 'crm' },
+    { icon: FileText, label: 'FourSIGHT™', active: currentView === 'foursight', key: 'foursight' },
+    { icon: MapPin, label: 'GeoSmart™', active: currentView === 'geosmart', key: 'geosmart' },
+    { icon: Brain, label: 'ViVi Store', active: currentView === 'vivistore', key: 'vivistore' },
+    { icon: Settings, label: 'Settings', active: currentView === 'settings', key: 'settings' },
+  ];
+
+  // Add specialized pages based on persona
+  const specializedPages = [];
+  if (['sarah', 'karen', 'david', 'alex', 'kemar'].includes(currentPersona)) {
+    specializedPages.push({ icon: Shield, label: 'Compliance', active: currentView === 'compliance', key: 'compliance' });
+  }
+  if (['sarah', 'alex', 'kemar'].includes(currentPersona)) {
+    specializedPages.push({ icon: Calendar, label: 'Client Portal', active: currentView === 'clientportal', key: 'clientportal' });
+  }
+  if (['marco', 'david', 'alex'].includes(currentPersona)) {
+    specializedPages.push({ icon: Package, label: 'Inventory', active: currentView === 'inventory', key: 'inventory' });
+  }
+
+  const allNavigationItems = [...navigationItems, ...specializedPages];
+
+  const wizardSteps = [
+    { id: 1, title: 'Upload Media', subtitle: 'Add photos and videos', active: currentStep === 1 },
+    { id: 2, title: 'Select Platforms', subtitle: 'Choose where to post', active: currentStep === 2 },
+    { id: 3, title: 'Create Content', subtitle: 'Write your caption', active: currentStep === 3 },
+    { id: 4, title: 'Schedule & Preview', subtitle: 'Set timing and review', active: currentStep === 4 },
+  ];
+
+  const platforms = [
+    { 
+      id: 'instagram', 
+      name: 'Instagram', 
+      icon: FaInstagram, 
+      color: 'bg-gradient-to-r from-purple-500 to-pink-500',
+      ratios: ['1:1', '4:5', '9:16'], // Square posts, Portrait posts, Stories/Reels
+      description: '1:1 • 4:5 • more'
+    },
+    { 
+      id: 'facebook', 
+      name: 'Facebook', 
+      icon: FaFacebook, 
+      color: 'bg-blue-600',
+      ratios: ['16:9', '1:1', '4:5'], // Landscape posts, Square posts, Portrait posts
+      description: '16:9 • 1:1 • more'
+    },
+    { 
+      id: 'x', 
+      name: 'X', 
+      icon: XIcon, 
+      color: 'bg-black',
+      ratios: ['16:9', '1:1'], // Landscape images, Square images
+      description: '16:9 • 1:1'
+    },
+    { 
+      id: 'linkedin', 
+      name: 'LinkedIn', 
+      icon: FaLinkedin, 
+      color: 'bg-blue-700',
+      ratios: ['1:1', '16:9'], // Square posts, Landscape posts
+      description: '1:1 • 16:9'
+    },
+    { 
+      id: 'tiktok', 
+      name: 'TikTok', 
+      icon: FaTiktok, 
+      color: 'bg-black',
+      ratios: ['9:16'], // Vertical videos only
+      description: '9:16'
+    },
+    { 
+      id: 'snapchat', 
+      name: 'Snapchat', 
+      icon: FaSnapchat, 
+      color: 'bg-yellow-400',
+      ratios: ['9:16'], // Vertical content only
+      description: '9:16'
+    },
+  ];
+
+  const formats = [
+    { id: 'square', name: 'Square', ratio: '1:1', icon: '⬜' },
+    { id: 'portrait', name: 'Portrait', ratio: '4:5', icon: '📱' },
+    { id: 'story', name: 'Story', ratio: '9:16', icon: '📲' },
+    { id: 'landscape', name: 'Landscape', ratio: '16:9', icon: '🖼️' },
+    ...(currentPersona === 'kemar' ? [
+      { id: 'reel', name: 'Reel', ratio: '9:16', icon: '🎬' },
+      { id: 'carousel', name: 'Carousel', ratio: '1:1', icon: '📝' },
+      { id: 'event-promo', name: 'Event Promo', ratio: '16:9', icon: '🎯' },
+    ] : []),
+  ];
+
+  const toggleVoice = () => {
+    setVoiceEnabled(!voiceEnabled);
+  };
+
+  const togglePlatform = (platformId: string) => {
+    setSelectedPlatforms(prev => 
+      prev.includes(platformId) 
+        ? prev.filter(id => id !== platformId)
+        : [...prev, platformId]
+    );
+  };
+
+  const toggleFormat = (formatId: string) => {
+    setSelectedFormats(prev => 
+      prev.includes(formatId) 
+        ? prev.filter(id => id !== formatId)
+        : [...prev, formatId]
+    );
+  };
+
+  // File upload handling
+  const handleFileUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files) return;
+
+    console.log('Files selected:', Array.from(files).map(f => ({ name: f.name, type: f.type, size: f.size })));
+
+    Array.from(files).forEach(file => {
+      const isVideo = file.type.startsWith('video/');
+      const isImage = file.type.startsWith('image/');
+      
+      console.log('Processing file:', { name: file.name, type: file.type, isVideo, isImage });
+      
+      if (isVideo) {
+        // For videos, use URL.createObjectURL for proper playback
+        const previewUrl = URL.createObjectURL(file);
+        const newFile: UploadedFile = {
+          id: Date.now().toString() + Math.random(),
+          file,
+          type: 'video',
+          preview: previewUrl,
+          size: file.size,
+          duration: 0
+        };
+        console.log('Adding video file:', newFile);
+        setUploadedFiles(prev => {
+          const updated = [...prev, newFile];
+          console.log('Updated files array:', updated);
+          return updated;
+        });
+      } else if (isImage) {
+        // For images, use FileReader as before
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const newFile: UploadedFile = {
+            id: Date.now().toString() + Math.random(),
+            file,
+            type: 'image',
+            preview: e.target?.result as string,
+            size: file.size
+          };
+          console.log('Adding image file:', newFile);
+          setUploadedFiles(prev => {
+            const updated = [...prev, newFile];
+            console.log('Updated files array:', updated);
+            return updated;
+          });
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }, []);
+
+  const removeFile = (fileId: string) => {
+    setUploadedFiles(prev => {
+      const fileToRemove = prev.find(f => f.id === fileId);
+      if (fileToRemove && fileToRemove.type === 'video') {
+        // Clean up object URL for videos to prevent memory leaks
+        URL.revokeObjectURL(fileToRemove.preview);
+      }
+      return prev.filter(f => f.id !== fileId);
+    });
+  };
+
+  // Platform-specific character limits
+  const getCharacterLimit = (platformId: string) => {
+    switch (platformId) {
+      case 'instagram': return 2200;
+      case 'facebook': return 63206;
+      case 'x': return 280;
+      case 'linkedin': return 3000;
+      case 'tiktok': return 150;
+      case 'snapchat': return 80;
+      default: return 280;
+    }
+  };
+
+  const getTotalCharacterLimit = (): number => {
+    return selectedPlatforms.reduce((total, platform) => total + getCharacterLimit(platform), 0);
+  };
+
+  const useContentSuggestion = (suggestion: string) => {
+    setContentData(prev => ({
+      ...prev,
+      caption: suggestion
+    }));
+  };
+
+  const getContentSuggestions = (type: string) => {
+    const suggestions = {
+      Caption: [
+        {
+          text: "Ready to transform your [industry] experience? Here's what makes us different...",
+          tags: ["High Engagement", "Professional"],
+          gradient: "from-indigo-50 to-purple-50",
+          border: "border-indigo-200",
+          icon: Zap,
+          iconBg: "bg-indigo-500",
+          buttonColor: "text-indigo-600 hover:text-indigo-800"
+        },
+        {
+          text: "The secret to [benefit] that [target audience] don't want you to know...",
+          tags: ["Curiosity Hook", "Viral Potential"],
+          gradient: "from-purple-50 to-pink-50",
+          border: "border-purple-200",
+          icon: Target,
+          iconBg: "bg-purple-500",
+          buttonColor: "text-purple-600 hover:text-purple-800"
+        },
+        {
+          text: "Drop a 🔥 if you agree! What's your biggest challenge with [topic]?",
+          tags: ["Engagement", "Community"],
+          gradient: "from-green-50 to-teal-50",
+          border: "border-green-200",
+          icon: MessageCircle,
+          iconBg: "bg-green-500",
+          buttonColor: "text-green-600 hover:text-green-800"
+        }
+      ],
+      Hook: [
+        {
+          text: "Stop scrolling! This will change everything you know about [topic]",
+          tags: ["Scroll Stopper", "Attention Grabber"],
+          gradient: "from-red-50 to-orange-50",
+          border: "border-red-200",
+          icon: AlertTriangle,
+          iconBg: "bg-red-500",
+          buttonColor: "text-red-600 hover:text-red-800"
+        },
+        {
+          text: "POV: You just discovered the game-changing secret that [industry] doesn't want you to know",
+          tags: ["Trending Format", "Mystery"],
+          gradient: "from-yellow-50 to-amber-50",
+          border: "border-yellow-200",
+          icon: Eye,
+          iconBg: "bg-yellow-500",
+          buttonColor: "text-yellow-600 hover:text-yellow-800"
+        },
+        {
+          text: "Wait, what?! I can't believe this actually works for [benefit]...",
+          tags: ["Surprise Factor", "Curiosity"],
+          gradient: "from-blue-50 to-cyan-50",
+          border: "border-blue-200",
+          icon: Zap,
+          iconBg: "bg-blue-500",
+          buttonColor: "text-blue-600 hover:text-blue-800"
+        }
+      ],
+      CTA: [
+        {
+          text: "Ready to get started? Click the link in bio and transform your [outcome] today!",
+          tags: ["Direct Action", "Urgency"],
+          gradient: "from-emerald-50 to-green-50",
+          border: "border-emerald-200",
+          icon: ArrowRight,
+          iconBg: "bg-emerald-500",
+          buttonColor: "text-emerald-600 hover:text-emerald-800"
+        },
+        {
+          text: "Don't miss out! Save this post and tag 3 friends who need to see this",
+          tags: ["Social Sharing", "FOMO"],
+          gradient: "from-pink-50 to-rose-50",
+          border: "border-pink-200",
+          icon: Share2,
+          iconBg: "bg-pink-500",
+          buttonColor: "text-pink-600 hover:text-pink-800"
+        },
+        {
+          text: "Comment 'YES' if you want the free guide to [solution] sent to your DMs",
+          tags: ["Lead Generation", "Engagement"],
+          gradient: "from-violet-50 to-purple-50",
+          border: "border-violet-200",
+          icon: MessageSquare,
+          iconBg: "bg-violet-500",
+          buttonColor: "text-violet-600 hover:text-violet-800"
+        }
+      ],
+      Story: [
+        {
+          text: "Last month, I was struggling with [problem]. Then I discovered this simple trick that changed everything...",
+          tags: ["Personal Journey", "Transformation"],
+          gradient: "from-teal-50 to-cyan-50",
+          border: "border-teal-200",
+          icon: BookOpen,
+          iconBg: "bg-teal-500",
+          buttonColor: "text-teal-600 hover:text-teal-800"
+        },
+        {
+          text: "My client came to me saying '[problem]' - here's exactly how we solved it in 30 days...",
+          tags: ["Case Study", "Results"],
+          gradient: "from-orange-50 to-red-50",
+          border: "border-orange-200",
+          icon: Trophy,
+          iconBg: "bg-orange-500",
+          buttonColor: "text-orange-600 hover:text-orange-800"
+        },
+        {
+          text: "Behind the scenes: The mistake that cost me [consequence] and how I turned it into my biggest win...",
+          tags: ["Vulnerability", "Learning"],
+          gradient: "from-slate-50 to-gray-50",
+          border: "border-slate-200",
+          icon: Heart,
+          iconBg: "bg-slate-500",
+          buttonColor: "text-slate-600 hover:text-slate-800"
+        }
+      ]
+    };
+    return suggestions[type] || suggestions.Caption;
+  };
+
+  // Sample hashtags for each platform
+  const platformHashtags: { [key: string]: string[] } = {
+    instagram: currentPersona === 'kemar' ? 
+      ['#keynotespeaker', '#thoughtleader', '#speaker', '#publicspeaking', '#leadership', '#motivation', '#inspiration', '#businessgrowth', '#personalbrand', '#influence', '#mindset', '#success', '#entrepreneur', '#coaching', '#conference', '#eventpromo', '#speakerlife', '#leadershipdevelopment', '#professionaldevelopment', '#businesscoach'] :
+      ['#instagood', '#photooftheday', '#instadaily', '#picoftheday', '#love', '#beautiful', '#happy', '#fashion', '#follow', '#like4like'],
+    facebook: currentPersona === 'kemar' ? 
+      ['#keynotespeaker', '#thoughtleadership', '#publicspeaking', '#businessleadership', '#professionaldevelopment', '#speakerlife', '#leadership', '#motivation', '#businessgrowth', '#personalbrand', '#influence', '#mindset', '#success', '#entrepreneur', '#coaching', '#conference', '#eventpromo', '#businesscoach', '#leadershipdevelopment', '#inspiration'] :
+      ['#facebook', '#socialmedia', '#marketing', '#business', '#entrepreneur', '#success', '#motivation', '#inspiration', '#community', '#engagement'],
+    x: currentPersona === 'kemar' ? 
+      ['#keynotespeaker', '#thoughtleader', '#leadership', '#publicspeaking', '#businessleadership', '#speaker', '#motivation', '#inspiration', '#businessgrowth', '#personalbrand', '#influence', '#mindset', '#success', '#entrepreneur', '#coaching', '#conference', '#eventpromo', '#businesscoach', '#leadershipdevelopment'] :
+      ['#trending', '#news', '#breaking', '#twitter', '#social', '#tech', '#business', '#politics', '#sports', '#entertainment'],
+    linkedin: currentPersona === 'kemar' ? 
+      ['#keynotespeaker', '#thoughtleadership', '#publicspeaking', '#businessleadership', '#professionaldevelopment', '#leadership', '#speaker', '#motivation', '#inspiration', '#businessgrowth', '#personalbrand', '#influence', '#mindset', '#success', '#entrepreneur', '#coaching', '#conference', '#eventpromo', '#businesscoach', '#leadershipdevelopment'] :
+      ['#linkedin', '#professional', '#business', '#career', '#networking', '#leadership', '#entrepreneur', '#success', '#growth', '#industry'],
+    tiktok: currentPersona === 'kemar' ? 
+      ['#keynotespeaker', '#speaker', '#leadership', '#motivation', '#inspiration', '#businesstips', '#personalbrand', '#influence', '#mindset', '#success', '#entrepreneur', '#coaching', '#leadershipdevelopment', '#businesscoach', '#thoughtleader', '#publicspeaking', '#businessgrowth', '#professionaldevelopment', '#speakerlife', '#conference'] :
+      ['#fyp', '#viral', '#trending', '#foryou', '#tiktok', '#dance', '#music', '#funny', '#comedy', '#challenge'],
+    snapchat: currentPersona === 'kemar' ? 
+      ['#keynotespeaker', '#speaker', '#leadership', '#motivation', '#inspiration', '#businesstips', '#personalbrand', '#influence', '#mindset', '#success', '#entrepreneur', '#coaching', '#leadershipdevelopment', '#businesscoach', '#thoughtleader', '#publicspeaking', '#businessgrowth', '#professionaldevelopment', '#speakerlife'] :
+      ['#snapchat', '#snap', '#story', '#filter', '#lens', '#friends', '#memories', '#moments', '#discover', '#explore']
+  };
+
+  // Sample music/sounds for platforms
+  const platformMusic: { [key: string]: string[] } = {
+    instagram: ['Original Audio', 'Trending Audio', 'Pop Music', 'Hip Hop', 'Electronic', 'Jazz', 'Classical', 'Rock', 'Country', 'R&B'],
+    tiktok: ['Trending Sound', 'Viral Audio', 'Original Sound', 'Popular Music', 'Dance Music', 'Comedy Sound', 'Trending Song', 'Remix', 'Mashup', 'Sound Effect'],
+    snapchat: ['Snap Original', 'Trending Sound', 'Popular Song', 'Background Music', 'Sound Effect', 'Viral Audio', 'Original Audio', 'Music Track', 'Audio Clip', 'Sound Bite']
+  };
+
+  // Quick schedule options
+  const quickScheduleOptions = [
+    { id: 'now', label: 'Post Now', time: new Date() },
+    { id: '1hour', label: '1 Hour from Now', time: new Date(Date.now() + 60 * 60 * 1000) },
+    { id: '3hours', label: '3 Hours from Now', time: new Date(Date.now() + 3 * 60 * 60 * 1000) },
+    { id: '1day', label: 'Tomorrow', time: new Date(Date.now() + 24 * 60 * 60 * 1000) },
+    { id: 'besttime', label: 'Best Time to Post', time: new Date(Date.now() + 24 * 60 * 60 * 1000) },
+    { id: '1week', label: 'Next Week', time: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) }
+  ];
+
+  // Navigation functions
+  const nextStep = () => {
+    if (currentStep < 4) setCurrentStep(currentStep + 1);
+  };
+
+  const prevStep = () => {
+    if (currentStep > 1) setCurrentStep(currentStep - 1);
+  };
+
+  const handleSaveDraft = () => {
+    setShowSaveDraftModal(true);
+  };
+
+  const confirmSaveDraft = () => {
+    setShowSaveDraftModal(false);
+    setShowConfirmationModal(true);
+    
+    // Auto-hide confirmation after 3 seconds
+    setTimeout(() => {
+      setShowConfirmationModal(false);
+      // Reset wizard state or navigate away
+    }, 3000);
+  };
+
+  // ViVi button handlers
+  const handleViviMagicClick = () => {
+    setViviButtonClicked('magic');
+    setShowBusinessInfo(true);
+  };
+
+  const handleViviNotNowClick = () => {
+    setViviButtonClicked('not_now');
+    setShowBusinessInfo(true);
+  };
+
+  // Get persona business information
+  const getPersonaBusinessInfo = () => {
+    const personas = {
+      'kemar': {
+        name: 'Kemar Hinds',
+        business: 'Keynote Speaker & Leadership Expert',
+        description: 'Professional speaker specializing in leadership, motivation, and business transformation.',
+        industry: 'Professional Speaking',
+        services: ['Keynote Speaking', 'Leadership Training', 'Corporate Workshops', 'Executive Coaching'],
+        achievements: ['500+ Speaking Events', 'Fortune 500 Clients', 'International Recognition', 'Best-Selling Author']
+      },
+      'karen': {
+        name: 'Karen Thompson',
+        business: 'Premium Real Estate Services',
+        description: 'Top-performing real estate agent specializing in luxury properties and downtown condos.',
+        industry: 'Real Estate',
+        services: ['Property Sales', 'Market Analysis', 'Investment Consulting', 'Property Management'],
+        achievements: ['Top 1% Agent', '$50M+ Sales Volume', '200+ Happy Clients', 'Market Expert']
+      },
+      'sarah': {
+        name: 'Sarah Martinez',
+        business: 'Radiant MedSpa & Wellness',
+        description: 'Leading medical spa offering advanced anti-aging treatments and wellness services.',
+        industry: 'Medical Spa',
+        services: ['Anti-Aging Treatments', 'Facial Rejuvenation', 'Wellness Programs', 'Skincare Consultation'],
+        achievements: ['5-Star Rated', 'Certified Practitioners', '1000+ Transformations', 'Award-Winning Spa']
+      },
+      'marco': {
+        name: 'Marco Romano',
+        business: 'Nonna\'s Authentic Italian Kitchen',
+        description: 'Family-owned Italian restaurant serving authentic farm-to-table dishes.',
+        industry: 'Restaurant',
+        services: ['Authentic Italian Cuisine', 'Private Dining', 'Catering Services', 'Cooking Classes'],
+        achievements: ['Family Recipe Legacy', 'Farm-to-Table Pioneer', 'Local Favorite', 'Authentic Ingredients']
+      },
+      'alex': {
+        name: 'Alex Chen',
+        business: 'Peak Performance Fitness',
+        description: 'Personal training and fitness coaching focused on transformation and results.',
+        industry: 'Fitness & Wellness',
+        services: ['Personal Training', 'Fitness Coaching', 'Nutrition Planning', 'Group Classes'],
+        achievements: ['Certified Trainer', '500+ Transformations', 'Competition Coach', 'Fitness Expert']
+      },
+      'david': {
+        name: 'David Wilson',
+        business: 'Wilson Premium Auto',
+        description: 'Premium automotive dealership specializing in luxury and electric vehicles.',
+        industry: 'Automotive',
+        services: ['Vehicle Sales', 'Trade-In Services', 'Financing Options', 'Service & Maintenance'],
+        achievements: ['Top Dealer Award', 'EV Specialist', '20+ Years Experience', 'Customer Satisfaction']
+      }
+    };
+
+    return personas[currentPersona as keyof typeof personas] || personas.kemar;
+  };
+
+  return (
+    <div className="min-h-screen bg-white flex">
+      {/* Left Sidebar */}
+      <div className="w-64 bg-white border-r border-gray-100 flex flex-col">
+        {/* Logo */}
+        <div className="p-6 border-b border-gray-100">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-lg">M</span>
+            </div>
+            <div>
+              <h1 className="text-lg font-semibold text-gray-900">Mavro Pro</h1>
+              <p className="text-sm text-gray-500">Marketing OS</p>
+            </div>
+          </div>
+        </div>
+
+        {/* User Profile */}
+        <div className="p-6 border-b border-gray-100">
+          <div className="flex items-center space-x-3">
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-medium ${
+              currentPersona === 'kemar' ? 'bg-gradient-to-r from-purple-500 to-pink-500' :
+              currentPersona === 'karen' ? 'bg-green-500' :
+              currentPersona === 'sarah' ? 'bg-pink-500' :
+              currentPersona === 'marco' ? 'bg-red-500' :
+              currentPersona === 'alex' ? 'bg-blue-500' :
+              currentPersona === 'david' ? 'bg-purple-500' : 'bg-gradient-to-r from-purple-500 to-pink-500'
+            }`}>
+              {currentPersona === 'kemar' ? 'KH' :
+               currentPersona === 'karen' ? 'KT' :
+               currentPersona === 'sarah' ? 'SM' :
+               currentPersona === 'marco' ? 'MR' :
+               currentPersona === 'alex' ? 'AC' :
+               currentPersona === 'david' ? 'DW' : 'JK'}
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-medium text-gray-900">
+                {currentPersona === 'kemar' ? 'Kemar Hinds' :
+                 currentPersona === 'karen' ? 'Karen Thompson' :
+                 currentPersona === 'sarah' ? 'Sarah Martinez' :
+                 currentPersona === 'marco' ? 'Marco Romano' :
+                 currentPersona === 'alex' ? 'Alex Chen' :
+                 currentPersona === 'david' ? 'David Wilson' : 'Kemar Hinds'}
+              </p>
+              <p className="text-xs text-gray-500 text-center">
+                {currentPersona === 'kemar' ? 'Keynote speaker' :
+                 currentPersona === 'karen' ? 'Top-performing' :
+                 currentPersona === 'sarah' ? 'Award-winning' :
+                 currentPersona === 'marco' ? 'Authentic Italian' :
+                 currentPersona === 'alex' ? 'Certified trainer' :
+                 currentPersona === 'david' ? 'Premium dealer' : 'Keynote speaker'}
+              </p>
+              <p className="text-xs text-gray-500 text-center">
+                {currentPersona === 'kemar' ? 'thought leader' :
+                 currentPersona === 'karen' ? 'real estate agent' :
+                 currentPersona === 'sarah' ? 'spa owner' :
+                 currentPersona === 'marco' ? 'chef & owner' :
+                 currentPersona === 'alex' ? 'fitness coach' :
+                 currentPersona === 'david' ? 'auto sales' : 'thought leader'}
+              </p>
+              <div className="mt-1">
+                <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                  currentPersona === 'kemar' ? 'bg-gradient-to-r from-purple-100 to-pink-100 text-purple-800' :
+                  currentPersona === 'karen' ? 'bg-blue-100 text-blue-800' :
+                  currentPersona === 'sarah' ? 'bg-pink-100 text-pink-800' :
+                  currentPersona === 'marco' ? 'bg-red-100 text-red-800' :
+                  currentPersona === 'alex' ? 'bg-blue-100 text-blue-800' :
+                  currentPersona === 'david' ? 'bg-purple-100 text-purple-800' : 'bg-gradient-to-r from-purple-100 to-pink-100 text-purple-800'
+                }`}>
+                  {currentPersona === 'kemar' ? 'Personal Brand' :
+                   currentPersona === 'karen' ? 'Real Estate' :
+                   currentPersona === 'sarah' ? 'Health & Wellness' :
+                   currentPersona === 'marco' ? 'Food & Beverage' :
+                   currentPersona === 'alex' ? 'Fitness' :
+                   currentPersona === 'david' ? 'Automotive' : 'Personal Brand'}
+                </span>
+              </div>
+            </div>
+          </div>
+          
+          {/* Persona Dropdown */}
+          <div className="mt-4 relative" ref={personaDropdownRef}>
+            <button
+              onClick={() => setShowPersonaDropdown(!showPersonaDropdown)}
+              className="w-full flex items-center justify-center px-3 py-2 text-xs bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg transition-colors relative"
+            >
+              <span className="text-gray-600">Select Your Persona</span>
+              <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform absolute right-3 ${showPersonaDropdown ? 'rotate-180' : ''}`} />
+            </button>
+            
+            {showPersonaDropdown && (
+              <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                <div className="p-2">
+                  <div className="text-xs font-medium text-gray-500 mb-2 px-2">Available Personas</div>
+                  <div className="space-y-1">
+                    {[
+                      { id: 'kemar', name: 'Kemar Hinds', role: 'Keynote Speaker', business: 'Thought Leadership', color: 'bg-gradient-to-r from-purple-500 to-pink-500', initials: 'KH' },
+                      { id: 'karen', name: 'Karen Thompson', role: 'Real Estate Agent', business: 'Premium Properties', color: 'bg-green-500', initials: 'KT' },
+                      { id: 'sarah', name: 'Sarah Martinez', role: 'MedSpa Owner', business: 'Glow Wellness', color: 'bg-pink-500', initials: 'SM' },
+                      { id: 'marco', name: 'Marco Romano', role: 'Restaurant Owner', business: 'Bella Vista', color: 'bg-red-500', initials: 'MR' },
+                      { id: 'alex', name: 'Alex Chen', role: 'Fitness Coach', business: 'Elite Fitness', color: 'bg-blue-500', initials: 'AC' },
+                      { id: 'david', name: 'David Wilson', role: 'Auto Dealer', business: 'Wilson Motors', color: 'bg-purple-500', initials: 'DW' }
+                    ].map(persona => (
+                      <button
+                        key={persona.id}
+                        onClick={() => {
+                          setCurrentPersona(persona.id);
+                          setShowPersonaDropdown(false);
+                        }}
+                        className="w-full flex items-center space-x-3 px-2 py-2 text-left hover:bg-gray-50 rounded-lg transition-colors"
+                      >
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-medium text-xs ${persona.color}`}>
+                          {persona.initials}
+                        </div>
+                        <div className="flex-1 min-w-0 text-center">
+                          <p className="text-sm font-medium text-gray-900 truncate">{persona.name}</p>
+                          <p className="text-xs text-gray-500 truncate">{persona.role}</p>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Navigation */}
+        <nav className="flex-1 p-4 navigation-menu" data-tooltip-target="navigation-menu">
+          <div className="space-y-2">
+            {allNavigationItems.map((item) => (
+              <button
+                key={item.label}
+                onClick={() => setCurrentView(item.key as any)}
+                className={`w-full flex items-center space-x-3 px-4 py-3 text-left rounded-lg transition-colors ${
+                  item.active
+                    ? 'bg-purple-50 text-purple-700 border border-purple-200'
+                    : 'text-gray-600 hover:bg-gray-50'
+                }`}
+                data-tooltip-target={item.label === 'Settings' ? 'settings-button' : undefined}
+              >
+                <item.icon className="w-5 h-5" />
+                <span className="text-sm font-medium">{item.label}</span>
+              </button>
+            ))}
+          </div>
+        </nav>
+
+        {/* Voice Toggle */}
+        <div className="p-4 border-t border-gray-100">
+          <button
+            onClick={toggleVoice}
+            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-300 ${
+              voiceEnabled
+                ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-lg'
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            }`}
+          >
+            {voiceEnabled ? (
+              <>
+                <Mic className="w-5 h-5" />
+                <span className="text-sm font-medium">ViVi Voice: ON</span>
+                <div className="flex items-center space-x-1 ml-auto">
+                  <div className="w-1 bg-white rounded-full" style={{ animation: 'waveHeight 1.2s ease-in-out infinite', animationDelay: '0s' }}></div>
+                  <div className="w-1 bg-white rounded-full" style={{ animation: 'waveHeight 1.2s ease-in-out infinite', animationDelay: '0.1s' }}></div>
+                  <div className="w-1 bg-white rounded-full" style={{ animation: 'waveHeight 1.2s ease-in-out infinite', animationDelay: '0.2s' }}></div>
+                  <div className="w-1 bg-white rounded-full" style={{ animation: 'waveHeight 1.2s ease-in-out infinite', animationDelay: '0.3s' }}></div>
+                  <div className="w-1 bg-white rounded-full" style={{ animation: 'waveHeight 1.2s ease-in-out infinite', animationDelay: '0.4s' }}></div>
+                </div>
+              </>
+            ) : (
+              <>
+                <MicOff className="w-5 h-5" />
+                <span className="text-sm font-medium">ViVi Voice: OFF</span>
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col">
+        {/* Header */}
+        <header className="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-6 main-header" data-tooltip-target="main-header">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">
+              {currentView === 'dashboard' ? 'Command Center' :
+               currentView === 'campaigns' ? 'Campaigns' :
+               currentView === 'reviews' ? 'Reviews' :
+               currentView === 'crm' ? 'CRM' :
+               currentView === 'foursight' ? 'FourSIGHT™' :
+               currentView === 'geosmart' ? 'GeoSmart™' :
+               currentView === 'vivistore' ? 'ViVi Store' :
+               currentView === 'compliance' ? 'Compliance Center' :
+               currentView === 'clientportal' ? 'Client Portal' :
+               currentView === 'inventory' ? 'Inventory Manager' :
+               currentView === 'settings' ? 'Settings' : 'Command Center'}
+            </h2>
+            <p className="text-sm text-gray-600">
+              {currentView === 'dashboard' ? 
+                `Welcome back, ${currentPersona === 'kemar' ? 'Kemar' :
+                                currentPersona === 'karen' ? 'Karen' :
+                                currentPersona === 'sarah' ? 'Sarah' :
+                                currentPersona === 'marco' ? 'Marco' :
+                                currentPersona === 'alex' ? 'Alex' :
+                                currentPersona === 'david' ? 'David' : 'Kemar'}! Here's your marketing overview.` :
+               currentView === 'campaigns' ? 'Manage your marketing campaigns and track performance' :
+               currentView === 'reviews' ? 'Monitor and respond to customer reviews across all platforms' :
+               currentView === 'crm' ? 'Manage your customer relationships and contacts' :
+               currentView === 'foursight' ? 'Advanced analytics and reporting for your marketing efforts' :
+               currentView === 'geosmart' ? 'Geographic intelligence and persona adaptation powered by AI' :
+               currentView === 'vivistore' ? 'Discover and install AI-powered marketing tools for your business' :
+               currentView === 'compliance' ? 'Ensure compliance with industry regulations and requirements' :
+               currentView === 'clientportal' ? 'Manage client appointments, documents, and communications' :
+               currentView === 'inventory' ? 'Track and manage your inventory and stock levels' :
+               currentView === 'settings' ? 'Configure your preferences and integrations' : 'Command Center'}
+            </p>
+          </div>
+          <div className="flex items-center space-x-4">
+            <button 
+              onClick={() => {
+                // Reset demo to initial state
+                setActiveMode('plan');
+                setCurrentPersona('kemar');
+                setCurrentStep(1);
+                setCurrentView('dashboard');
+                setVoiceEnabled(false);
+                setIsListening(false);
+                setUploadedFiles([]);
+                setContentData({
+                  caption: '',
+                  hashtags: [],
+                  music: '',
+                  scheduledTime: undefined,
+                  quickSchedule: ''
+                });
+                setSelectedPlatforms(['instagram', 'linkedin', 'tiktok']);
+                setSelectedFormats(['square']);
+                setShowPersonaDropdown(false);
+                setShowSaveDraftModal(false);
+                setShowConfirmationModal(false);
+                setPreviewIndex(0);
+                setCurrentPreviewPlatform(0);
+                setCurrentAspectRatio(0);
+                setActiveContentType('Caption');
+                
+                // Reset all local storage
+                localStorage.removeItem('mavro-demo-completed');
+                localStorage.removeItem('mavro-current-persona');
+                localStorage.removeItem('mavro-current-mode');
+                localStorage.removeItem('mavro-tour-completed');
+                localStorage.removeItem('mavro-content-data');
+                localStorage.removeItem('mavro-selected-platforms');
+                
+                // Show confirmation that demo has been reset
+                alert('Demo has been reset! All data cleared and returned to initial state.');
+              }}
+              className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center space-x-2"
+            >
+              <RotateCcw className="w-4 h-4" />
+              <span>Reset Demo</span>
+            </button>
+            <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center space-x-2">
+              <FileText className="w-4 h-4" />
+              <span>Generate Report</span>
+            </button>
+            <div className="relative">
+              <button 
+                onClick={() => setShowNotifications(!showNotifications)}
+                className="relative p-2 text-gray-400 hover:text-gray-500"
+              >
+                <Bell className="w-5 h-5" />
+                {notifications.filter(n => !n.read).length > 0 && (
+                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+                )}
+              </button>
+              
+              {/* Notifications Dropdown */}
+              {showNotifications && (
+                <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+                  <div className="p-4 border-b border-gray-200">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-lg font-semibold text-gray-900">Notifications</h3>
+                      <div className="flex items-center space-x-2">
+                        <button 
+                          onClick={() => setNotifications(prev => prev.map(n => ({ ...n, read: true })))}
+                          className="text-sm text-purple-600 hover:text-purple-800"
+                        >
+                          Mark all read
+                        </button>
+                        <button 
+                          onClick={() => setShowNotifications(false)}
+                          className="text-gray-400 hover:text-gray-600"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="max-h-96 overflow-y-auto">
+                    {notifications.map((notification) => (
+                      <div 
+                        key={notification.id}
+                        className={`p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer ${
+                          !notification.read ? 'bg-blue-50' : ''
+                        }`}
+                        onClick={() => {
+                          setNotifications(prev => 
+                            prev.map(n => 
+                              n.id === notification.id ? { ...n, read: true } : n
+                            )
+                          );
+                        }}
+                      >
+                        <div className="flex items-start space-x-3">
+                          <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${
+                            notification.type === 'success' ? 'bg-green-500' :
+                            notification.type === 'trend' ? 'bg-yellow-500' :
+                            'bg-blue-500'
+                          }`}></div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-gray-900">{notification.title}</p>
+                            <p className="text-sm text-gray-600 mt-1">{notification.message}</p>
+                            <p className="text-xs text-gray-500 mt-2">{notification.time}</p>
+                          </div>
+                          {!notification.read && (
+                            <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div className="p-4 border-t border-gray-200">
+                    <button className="w-full text-center text-sm text-purple-600 hover:text-purple-800 font-medium">
+                      View all notifications
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            {/* Advanced UI Buttons */}
+            <div className="flex items-center space-x-2">
+              <button 
+                onClick={() => setShowThemeSelector(true)}
+                className="p-2 text-gray-400 hover:text-purple-500 transition-colors"
+                title="Adaptive Color Theme Selector"
+              >
+                <Palette className="w-5 h-5" />
+              </button>
+              
+              <button 
+                onClick={() => setShowGamifiedProgress(true)}
+                className="p-2 text-gray-400 hover:text-yellow-500 transition-colors"
+                title="Gamified User Progress"
+              >
+                <Trophy className="w-5 h-5" />
+              </button>
+              
+              <button 
+                onClick={() => {
+                  localStorage.removeItem('mavro-onboarding-completed');
+                  setShowOnboardingTooltips(true);
+                }}
+                className="p-2 text-gray-400 hover:text-blue-500 transition-colors"
+                title="Start Smart Onboarding Tour"
+              >
+                <Target className="w-5 h-5" />
+              </button>
+              
+              <button 
+                onClick={() => {
+                  setInteractionType('achievement');
+                  setAnimationTrigger(true);
+                }}
+                className="p-2 text-gray-400 hover:text-green-500 transition-colors"
+                title="Trigger Animation"
+              >
+                <Sparkles className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        </header>
+
+        {/* Content */}
+        <main className="flex-1 p-6 space-y-6">
+          {/* Render content based on current view */}
+          {currentView === 'dashboard' && (
+            <>
+              {/* ViVi AI Assistant Card or Business Info Display */}
+              {!showBusinessInfo ? (
+                <div className="bg-gradient-to-r from-purple-500 via-purple-600 to-yellow-500 rounded-xl p-6 text-white vivi-assistant" data-tooltip-target="vivi-assistant">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+                        <ViViLogo size={24} className="text-white" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold">ViVi AI Assistant</h3>
+                        <p className="text-purple-100">
+                          {currentPersona === 'kemar' ? 'I noticed speaking events are trending in your industry. Ready to create a keynote promotion campaign?' :
+                           currentPersona === 'karen' ? 'Market trends show increased interest in condos downtown. Want me to create a targeted campaign?' :
+                           currentPersona === 'sarah' ? 'Anti-aging treatments are trending this season. Should I create content highlighting your services?' :
+                           currentPersona === 'marco' ? 'Farm-to-table dining is gaining popularity. Want me to showcase your authentic Italian ingredients?' :
+                           currentPersona === 'alex' ? 'New Year fitness resolutions are peaking. Ready to create a transformation campaign?' :
+                           currentPersona === 'david' ? 'Electric vehicle interest is surging. Should I create content about your EV inventory?' : 'I noticed speaking events are trending in your industry. Ready to create a keynote promotion campaign?'}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <button className="p-2 bg-white/10 rounded-lg hover:bg-white/20 transition-colors">
+                        <Settings className="w-5 h-5" />
+                      </button>
+                      <button className="p-2 bg-white/10 rounded-lg hover:bg-white/20 transition-colors">
+                        <Zap className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="mt-4 flex items-center space-x-4">
+                    <button 
+                      onClick={handleViviMagicClick}
+                      className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center space-x-2 transition-all duration-200"
+                    >
+                      <Sparkles className="w-4 h-4" />
+                      <span>{currentPersona === 'kemar' ? 'Create Speaker Content' : 'Let\'s Make Magic'}</span>
+                    </button>
+                    <button 
+                      onClick={handleViviNotNowClick}
+                      className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center space-x-2 transition-all duration-200"
+                    >
+                      <Minimize className="w-4 h-4" />
+                      <span>Not Right Now</span>
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-gradient-to-r from-purple-500 via-purple-600 to-yellow-500 rounded-xl p-6 text-white animate-fade-in">
+                  <div className="flex items-center justify-between">
+                    <div className="text-center w-full">
+                      <h3 className="text-2xl font-bold animate-slide-up animate-glow">
+                        {getPersonaBusinessInfo().business}
+                      </h3>
+                      <div className="mt-2 flex justify-center">
+                        <div className="w-16 h-0.5 bg-white/30 animate-expand"></div>
+                      </div>
+                    </div>
+                    <button 
+                      onClick={() => setShowBusinessInfo(false)}
+                      className="p-2 bg-white/10 rounded-lg hover:bg-white/20 transition-all duration-200 hover:scale-105 ml-4"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
+              )}
+
+          {/* Mode Selector */}
+          <div className="flex">
+            <button
+              onClick={() => setActiveMode('plan')}
+              className={`flex-1 p-6 rounded-l-2xl border-2 transition-all duration-300 ${
+                activeMode === 'plan'
+                  ? 'border-purple-400 bg-purple-50 shadow-lg'
+                  : 'border-gray-200 bg-white hover:border-purple-200 hover:shadow-md'
+              }`}
+            >
+              <div className="flex items-center justify-center space-x-4">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
+                  activeMode === 'plan' ? 'bg-purple-500 text-white' : 'bg-gray-100 text-gray-600'
+                }`}>
+                  <Calendar className="w-5 h-5" />
+                </div>
+                <div className="text-center">
+                  <h4 className="font-semibold text-gray-900">Plan</h4>
+                  <p className="text-sm text-gray-500">Schedule content & boost</p>
+                </div>
+              </div>
+            </button>
+
+            <button
+              onClick={() => setActiveMode('track')}
+              className={`flex-1 p-6 border-2 transition-all duration-300 ${
+                activeMode === 'track'
+                  ? 'border-green-400 bg-green-50 shadow-lg'
+                  : 'border-gray-200 bg-white hover:border-green-200 hover:shadow-md'
+              }`}
+            >
+              <div className="flex items-center justify-center space-x-4">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
+                  activeMode === 'track' ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-600'
+                }`}>
+                  <TrendingUp className="w-5 h-5" />
+                </div>
+                <div className="text-center">
+                  <h4 className="font-semibold text-gray-900">Track</h4>
+                  <p className="text-sm text-gray-500">Reminders & History</p>
+                </div>
+              </div>
+            </button>
+
+            <button
+              onClick={() => setActiveMode('grow')}
+              className={`flex-1 p-6 border-2 transition-all duration-300 ${
+                activeMode === 'grow'
+                  ? 'border-blue-400 bg-blue-50 shadow-lg'
+                  : 'border-gray-200 bg-white hover:border-blue-200 hover:shadow-md'
+              }`}
+            >
+              <div className="flex items-center justify-center space-x-4">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
+                  activeMode === 'grow' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-600'
+                }`}>
+                  <BarChart3 className="w-5 h-5" />
+                </div>
+                <div className="text-center">
+                  <h4 className="font-semibold text-gray-900">Grow</h4>
+                  <p className="text-sm text-gray-500">FourSIGHT Analytics</p>
+                </div>
+              </div>
+            </button>
+
+            <button
+              onClick={() => setActiveMode('learn')}
+              className={`flex-1 p-6 rounded-r-2xl border-2 transition-all duration-300 ${
+                activeMode === 'learn'
+                  ? 'border-orange-400 bg-orange-50 shadow-lg'
+                  : 'border-gray-200 bg-white hover:border-orange-200 hover:shadow-md'
+              }`}
+            >
+              <div className="flex items-center justify-center space-x-4">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
+                  activeMode === 'learn' ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-600'
+                }`}>
+                  <BookOpen className="w-5 h-5" />
+                </div>
+                <div className="text-center">
+                  <h4 className="font-semibold text-gray-900">Learn</h4>
+                  <p className="text-sm text-gray-500">GRIO Academy</p>
+                </div>
+              </div>
+            </button>
+          </div>
+
+          {/* Plan Mode Content */}
+          {activeMode === 'plan' && (
+            <div className="rounded-3xl bg-white shadow-2xl border border-gray-100 overflow-hidden">
+              {/* Header */}
+              <div className="bg-gradient-to-r from-purple-600 to-blue-600 p-8 text-white">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-2xl font-bold mb-2">Content Creation Wizard</h3>
+                    <p className="text-purple-100 text-lg">Create engaging content across all platforms</p>
+                  </div>
+                  <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 relative">
+                    <svg className="w-8 h-8 text-white" viewBox="0 0 24 24" fill="currentColor">
+                      {/* Magic Wand Handle */}
+                      <path d="M18 6L6 18L4 16L16 4L18 6Z" fill="currentColor" stroke="currentColor" strokeWidth="1" />
+                      {/* Wand Tip */}
+                      <circle cx="18" cy="6" r="1.5" fill="gold" />
+                      {/* Handle Detail */}
+                      <path d="M6 18L4 16L5 15L7 17L6 18Z" fill="currentColor" />
+                      {/* Stars emanating from tip */}
+                      <path d="M20 4L20.5 5.5L22 5L21.5 3.5L20 4Z" fill="gold" />
+                      <path d="M19 2L19.5 3.5L21 3L20.5 1.5L19 2Z" fill="gold" />
+                      <path d="M21 7L21.5 8.5L23 8L22.5 6.5L21 7Z" fill="gold" />
+                    </svg>
+                    {/* Floating sparkles */}
+                    <div className="absolute -top-1 -right-1 w-3 h-3 text-yellow-300 animate-pulse">
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2L15.09 8.26L22 9L17 14.74L18.18 21.02L12 17.77L5.82 21.02L7 14.74L2 9L8.91 8.26L12 2Z" />
+                      </svg>
+                    </div>
+                    <div className="absolute -bottom-1 -left-1 w-2 h-2 text-yellow-300 animate-pulse" style={{animationDelay: '0.5s'}}>
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2L15.09 8.26L22 9L17 14.74L18.18 21.02L12 17.77L5.82 21.02L7 14.74L2 9L8.91 8.26L12 2Z" />
+                      </svg>
+                    </div>
+                    <div className="absolute top-0 right-2 w-1.5 h-1.5 text-yellow-300 animate-pulse" style={{animationDelay: '1s'}}>
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2L15.09 8.26L22 9L17 14.74L18.18 21.02L12 17.77L5.82 21.02L7 14.74L2 9L8.91 8.26L12 2Z" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Step Progress */}
+              <div className="bg-gray-50 px-12 py-10">
+                <div className="max-w-5xl mx-auto">
+                  {/* Step Indicators Container */}
+                  <div className="relative">
+                    {/* Progress Bar - positioned to align with step centers */}
+                    <div className="absolute top-8 left-0 w-full h-1 bg-gray-200 rounded-full" style={{ left: '8%', width: '84%' }}>
+                      <div 
+                        className="h-full bg-gradient-to-r from-purple-500 to-blue-500 transition-all duration-500 rounded-full"
+                        style={{ width: `${((currentStep - 1) / 3) * 100}%` }}
+                      />
+                    </div>
+                    
+                    {/* Step Indicators */}
+                    <div className="flex items-start justify-between w-full relative z-10">
+                      {wizardSteps.map((step, index) => (
+                        <div key={step.id} className="flex flex-col items-center" style={{ width: '200px' }}>
+                          <div className={`w-16 h-16 rounded-full flex items-center justify-center text-lg font-bold shadow-lg transition-all duration-300 ${
+                            step.id < currentStep ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white scale-110' : 
+                            step.id === currentStep ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white scale-110' : 
+                            'bg-white text-gray-400 border-2 border-gray-200'
+                          }`}>
+                            {step.id < currentStep ? <Check className="w-6 h-6" /> : step.id}
+                          </div>
+                          <div className="text-center mt-4 px-2">
+                            <p className={`text-base font-semibold leading-tight ${
+                              step.id <= currentStep ? 'text-gray-900' : 'text-gray-400'
+                            }`}>
+                              {step.title}
+                            </p>
+                            <p className={`text-sm mt-1 leading-tight ${
+                              step.id <= currentStep ? 'text-gray-600' : 'text-gray-400'
+                            }`}>
+                              {step.subtitle}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Step 1: Upload Media */}
+              {currentStep === 1 && (
+                <div className="px-8 py-6 space-y-8">
+                  <div className="text-center">
+                    <h4 className="text-2xl font-bold text-gray-900 mb-2">Upload Your Media</h4>
+                    <p className="text-gray-600">Add photos and videos to create your content</p>
+                  </div>
+
+                  {/* Upload Area */}
+                  <div 
+                    className="border-2 border-dashed border-gray-300 rounded-2xl p-12 text-center hover:border-purple-400 transition-colors duration-200 cursor-pointer"
+                    onClick={() => fileInputRef.current?.click()}
+                    style={{ 
+                      borderColor: 'var(--color-accent, #d1d5db)',
+                      '--hover-border-color': 'var(--color-primary, #8b5cf6)'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = 'var(--color-primary, #8b5cf6)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = 'var(--color-accent, #d1d5db)';
+                    }}
+                  >
+                    <div className="mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-4 theme-bg-primary">
+                      <Upload className="w-8 h-8 text-white" />
+                    </div>
+                    <h5 className="text-lg font-semibold text-gray-900 mb-2">
+                      {uploadedFiles.length === 0 ? 'Upload your photos and videos' : 'Upload more files'}
+                    </h5>
+                    <p className="text-gray-500 mb-4">
+                      Drag and drop files here, or click to browse
+                    </p>
+                    <p className="text-sm text-gray-400">
+                      Supports: JPG, PNG, GIF, MP4, MOV, AVI (Max 100MB)
+                    </p>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      multiple
+                      accept="image/*,video/*"
+                      onChange={handleFileUpload}
+                      className="hidden"
+                    />
+                  </div>
+
+                  {/* Uploaded Files Grid */}
+                  {uploadedFiles.length > 0 && (
+                    <div className="space-y-4">
+                      <h5 className="text-lg font-semibold text-gray-900">
+                        Uploaded Files ({uploadedFiles.length})
+                      </h5>
+                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        {uploadedFiles.map((file) => (
+                          <div key={file.id} className="relative group">
+                            <div className="aspect-square bg-gray-100 rounded-xl overflow-hidden">
+                              {file.type === 'image' ? (
+                                <img 
+                                  src={file.preview} 
+                                  alt="Upload preview"
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <div className="relative w-full h-full bg-black">
+                                  <video
+                                    src={file.preview}
+                                    className="w-full h-full object-cover"
+                                    preload="metadata"
+                                    muted
+                                  />
+                                  <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
+                                    <div className="w-10 h-10 bg-white bg-opacity-80 rounded-full flex items-center justify-center">
+                                      <Play className="w-5 h-5 text-gray-800 ml-0.5" />
+                                    </div>
+                                  </div>
+                                  <div className="absolute top-2 right-2 bg-black bg-opacity-60 text-white text-xs px-1.5 py-0.5 rounded">
+                                    Video
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                            <button
+                              onClick={() => removeFile(file.id)}
+                              className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              <X className="w-4 h-4 text-white" />
+                            </button>
+                            <div className="mt-2 text-xs text-gray-500">
+                              {file.type.toUpperCase()} • {(file.size / 1024 / 1024).toFixed(1)}MB
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Step 2: Platform Selection */}
+              {currentStep === 2 && (
+                <div className="px-8 py-6 space-y-8 bg-gray-50">
+                  <div className="text-center">
+                    <h4 className="text-2xl font-bold text-gray-900 mb-2">Choose Your Platforms</h4>
+                    <p className="text-gray-600">Select where you want to share your content</p>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-6">
+                    {platforms.map((platform) => {
+                      const Icon = platform.icon;
+                      const isSelected = selectedPlatforms.includes(platform.id);
+                      
+                      return (
+                        <button
+                          key={platform.id}
+                          onClick={() => togglePlatform(platform.id)}
+                          className={`group relative p-6 rounded-2xl border-2 transition-all duration-300 hover:scale-105 ${
+                            isSelected 
+                              ? 'border-purple-400 bg-white shadow-xl ring-4 ring-purple-100' 
+                              : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-lg'
+                          }`}
+                        >
+                          <div className="flex items-center space-x-4">
+                            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-white shadow-lg transition-transform duration-200 ${
+                              isSelected ? 'scale-110' : 'group-hover:scale-105'
+                            } ${platform.color}`}>
+                              <Icon className="w-7 h-7" />
+                            </div>
+                            <div className="text-left flex-1">
+                              <h5 className="font-bold text-gray-900 text-lg">{platform.name}</h5>
+                              <p className="text-sm text-gray-500 mt-1">
+                                {platform.ratios.slice(0, 2).join(' • ')}
+                                {platform.ratios.length > 2 && ' • +more'}
+                              </p>
+                            </div>
+                            <div className={`w-6 h-6 rounded-full flex items-center justify-center transition-all duration-200 ${
+                              isSelected 
+                                ? 'bg-purple-500 shadow-lg' 
+                                : 'bg-gray-200 group-hover:bg-gray-300'
+                            }`}>
+                              {isSelected && <Check className="w-4 h-4 text-white" />}
+                            </div>
+                          </div>
+                          
+                          {/* Selection Indicator */}
+                          {isSelected && (
+                            <div className="absolute -top-2 -right-2 w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center shadow-lg">
+                              <Check className="w-4 h-4 text-white" />
+                            </div>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Format Selection */}
+                  <div className="mt-12">
+                    <div className="text-center mb-8">
+                      <h4 className="text-2xl font-bold text-gray-900 mb-2">Aspect Ratio</h4>
+                      <p className="text-gray-600">Pick from all available formats based on your selection</p>
+                      {selectedFormats.length > 0 && (
+                        <p className="text-sm text-purple-600 mt-2 font-medium">
+                          {selectedFormats.length} format{selectedFormats.length > 1 ? 's' : ''} selected
+                        </p>
+                      )}
+                    </div>
+                    <div className="grid grid-cols-3 gap-6">
+                      {(() => {
+                        // Get available formats based on selected platforms
+                        const availableRatios = new Set();
+                        selectedPlatforms.forEach(platformId => {
+                          const platform = platforms.find(p => p.id === platformId);
+                          if (platform) {
+                            platform.ratios.forEach(ratio => availableRatios.add(ratio));
+                          }
+                        });
+
+                        // Filter formats to show only available ones
+                        const availableFormats = selectedPlatforms.length > 0 
+                          ? formats.filter(format => availableRatios.has(format.ratio))
+                          : formats;
+
+                        return availableFormats.map((format) => {
+                          const isSelected = selectedFormats.includes(format.id);
+                          return (
+                            <button
+                              key={format.id}
+                              onClick={() => toggleFormat(format.id)}
+                              className={`group relative p-8 rounded-2xl border-2 transition-all duration-300 hover:scale-105 ${
+                                isSelected
+                                  ? 'border-purple-400 bg-purple-50 shadow-xl ring-4 ring-purple-100'
+                                  : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-lg'
+                              }`}
+                            >
+                              <div className="text-center">
+                                <div className={`text-4xl mb-4 transition-transform duration-200 ${
+                                  isSelected ? 'scale-110' : 'group-hover:scale-105'
+                                }`}>
+                                  {format.icon}
+                                </div>
+                                <h5 className="font-bold text-gray-900 text-lg mb-1">{format.name}</h5>
+                                <p className="text-sm text-gray-500 font-medium">{format.ratio}</p>
+                              </div>
+                              
+                              {/* Selection Indicator */}
+                              {isSelected && (
+                                <div className="absolute -top-2 -right-2 w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center shadow-lg">
+                                  <Check className="w-4 h-4 text-white" />
+                                </div>
+                              )}
+                            </button>
+                          );
+                        });
+                      })()}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Step 3: Create Content */}
+              {currentStep === 3 && (
+                <div className="px-12 py-8 space-y-10">
+                  <div className="text-center">
+                    <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-4 relative">
+                      <svg className="w-12 h-12 text-white" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2L15.09 8.26L22 9L17 14.74L18.18 21.02L12 17.77L5.82 21.02L7 14.74L2 9L8.91 8.26L12 2Z" />
+                        <path d="M12 4.5L9.5 9.5L4 10L8 14.5L6.5 20L12 17L17.5 20L16 14.5L20 10L14.5 9.5L12 4.5Z" fill="none" stroke="currentColor" strokeWidth="1"/>
+                      </svg>
+                      <div className="absolute -top-1 -right-1 w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center">
+                        <svg className="w-3 h-3 text-yellow-800" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M7 2v11h3v9l7-12h-4l4-8z"/>
+                        </svg>
+                      </div>
+                    </div>
+                    <h4 className="responsive-heading font-bold text-gray-900 mb-3">Create Content</h4>
+                    <p className="responsive-subheading text-gray-600">Craft your perfect caption and add trending hashtags</p>
+                  </div>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                    {/* Left Column - Content Creation */}
+                    <div className="space-y-8 content-creation" data-tooltip-target="content-creation">
+                      {/* Caption Input */}
+                      <div className="bg-white rounded-2xl border-2 border-gray-100 p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 hover-lift">
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center">
+                              <FileText className="w-5 h-5 text-white" />
+                            </div>
+                            <label className="text-xl font-bold text-gray-900">Caption</label>
+                          </div>
+                          <div className="bg-gray-100 px-4 py-2 rounded-full">
+                            <span className="text-sm font-semibold text-gray-700">
+                              {contentData.caption.length} / {getTotalCharacterLimit()}
+                            </span>
+                          </div>
+                        </div>
+                        <textarea
+                          value={contentData.caption}
+                          onChange={(e) => setContentData(prev => ({ ...prev, caption: e.target.value }))}
+                          placeholder="Write your engaging caption here... Tell your story, share your thoughts, or inspire your audience!"
+                          className="w-full h-40 px-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-purple-200 focus:border-purple-400 resize-none text-lg leading-relaxed transition-all duration-200"
+                          maxLength={getTotalCharacterLimit()}
+                        />
+                        <div className="mt-4 flex items-center justify-between">
+                          <div className="flex items-center space-x-4">
+                            <div className="flex items-center space-x-2">
+                              <Sparkles className="w-5 h-5 text-purple-500" />
+                              <span className="text-sm text-gray-600">AI suggestions available</span>
+                            </div>
+                            <button 
+                              onClick={isListening ? stopListening : startListening}
+                              className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${
+                                isListening 
+                                  ? 'bg-red-500 text-white hover:bg-red-600' 
+                                  : 'bg-blue-500 text-white hover:bg-blue-600'
+                              }`}
+                            >
+                              <Mic className="w-4 h-4" />
+                              <span>{isListening ? 'Stop Listening' : 'Voice Input'}</span>
+                            </button>
+                          </div>
+                          <button className="text-purple-600 hover:text-purple-800 text-sm font-medium">
+                            Generate with AI
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Music Selection */}
+                      {selectedPlatforms.some(p => ['instagram', 'tiktok', 'snapchat'].includes(p)) && (
+                        <div className="bg-white rounded-2xl border-2 border-gray-100 p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                          <div className="flex items-center space-x-3 mb-6">
+                            <div className="w-10 h-10 bg-gradient-to-r from-pink-500 to-red-500 rounded-xl flex items-center justify-center">
+                              <Music className="w-5 h-5 text-white" />
+                            </div>
+                            <label className="text-xl font-bold text-gray-900">Music & Audio</label>
+                          </div>
+                          <div className="space-y-4">
+                            {selectedPlatforms.filter(p => ['instagram', 'tiktok', 'snapchat'].includes(p)).map(platformId => {
+                              const platform = platforms.find(p => p.id === platformId);
+                              const music = platformMusic[platformId] || [];
+                              const Icon = platform?.icon;
+                              return (
+                                <div key={platformId} className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-5 hover:from-gray-100 hover:to-gray-200 transition-all duration-200">
+                                  <div className="flex items-center space-x-3 mb-4">
+                                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${platform?.color || 'bg-gray-400'} shadow-md`}>
+                                      {Icon && <Icon className="w-4 h-4 text-white" />}
+                                    </div>
+                                    <span className="font-bold text-gray-900">{platform?.name}</span>
+                                    <span className="text-sm text-gray-600">• Trending sounds</span>
+                                  </div>
+                                  <div className="relative">
+                                    <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-pink-500 text-lg">
+                                      🎵
+                                    </div>
+                                    <select
+                                      value={contentData.music}
+                                      onChange={(e) => setContentData(prev => ({ ...prev, music: e.target.value }))}
+                                      className="w-full pl-10 pr-4 py-4 bg-white border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-pink-200 focus:border-pink-400 text-gray-900 font-medium shadow-sm hover:shadow-md transition-all duration-200 appearance-none cursor-pointer"
+                                      style={{
+                                        backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
+                                        backgroundPosition: 'right 1rem center',
+                                        backgroundRepeat: 'no-repeat',
+                                        backgroundSize: '1.25rem'
+                                      }}
+                                    >
+                                      <option value="" className="text-gray-500">Select trending audio</option>
+                                      {music.map(track => (
+                                        <option key={track} value={track} className="text-gray-900 font-medium">
+                                          {track}
+                                        </option>
+                                      ))}
+                                    </select>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* AI Content Suggestions */}
+                      <div className="bg-white rounded-2xl border-2 border-gray-100 p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 hover-lift hover-glow">
+                        <div className="flex items-center space-x-3 mb-6">
+                          <div className="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center">
+                            <Sparkles className="w-5 h-5 text-white" />
+                          </div>
+                          <label className="text-xl font-bold text-gray-900">AI Content Suggestions</label>
+                        </div>
+                        
+                        <div className="space-y-4">
+                          {/* Content Type Selector */}
+                          <div className="flex space-x-2">
+                            {['Caption', 'Hook', 'CTA', 'Story'].map(type => (
+                              <button
+                                key={type}
+                                onClick={() => setActiveContentType(type)}
+                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors hover-scale ${
+                                  activeContentType === type
+                                    ? `persona-gradient persona-${currentPersona} text-white shadow-lg`
+                                    : 'bg-gray-100 text-gray-700 hover:bg-indigo-100 hover:text-indigo-700'
+                                }`}
+                              >
+                                {type}
+                              </button>
+                            ))}
+                          </div>
+                          
+                          {/* AI Suggestions */}
+                          <div className="space-y-3">
+                            {getContentSuggestions(activeContentType).map((suggestion, index) => {
+                              const IconComponent = suggestion.icon;
+                              return (
+                                <div key={index} className={`p-4 bg-gradient-to-r ${suggestion.gradient} rounded-xl border ${suggestion.border}`}>
+                                  <div className="flex items-start space-x-3">
+                                    <div className={`w-8 h-8 ${suggestion.iconBg} rounded-full flex items-center justify-center flex-shrink-0`}>
+                                      <IconComponent className="w-4 h-4 text-white" />
+                                    </div>
+                                    <div className="flex-1">
+                                      <p className="text-sm text-gray-700 mb-2">
+                                        {suggestion.text}
+                                      </p>
+                                      <div className="flex items-center justify-between">
+                                        <div className="flex items-center space-x-2">
+                                          {suggestion.tags.map((tag, tagIndex) => (
+                                            <span key={tagIndex} className={`text-xs px-2 py-1 rounded-full ${
+                                              tagIndex === 0 ? 'bg-gray-100 text-gray-700' : 'bg-gray-50 text-gray-600'
+                                            }`}>
+                                              {tag}
+                                            </span>
+                                          ))}
+                                        </div>
+                                        <button 
+                                          onClick={() => useContentSuggestion(suggestion.text)}
+                                          className={`text-sm font-medium ${suggestion.buttonColor}`}
+                                        >
+                                          Use This
+                                        </button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                          
+                          {/* Generate More Button */}
+                          <button className="w-full py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl font-medium hover:from-indigo-600 hover:to-purple-600 transition-all duration-200 shadow-md hover:shadow-lg">
+                            Generate More Suggestions
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Right Column - Hashtag Management */}
+                    <div className="space-y-8 h-full">
+                      <div className="bg-white rounded-2xl border-2 border-gray-100 p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 h-full flex flex-col">
+                        <div className="flex items-center justify-between mb-6">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-teal-500 rounded-xl flex items-center justify-center shadow-md">
+                              <Hash className="w-5 h-5 text-white" />
+                            </div>
+                            <label className="text-xl font-bold text-gray-900">Trending Hashtags</label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <TrendingUp className="w-5 h-5 text-green-500" />
+                            <span className="text-sm font-medium text-gray-600">Powered by TrendTap™</span>
+                          </div>
+                        </div>
+                        
+                        {/* Platform Hashtag Suggestions */}
+                        <div className="space-y-4 flex-1">
+                          {selectedPlatforms.length > 0 ? (
+                            selectedPlatforms.map(platformId => {
+                              const platform = platforms.find(p => p.id === platformId);
+                              const hashtags = platformHashtags[platformId] || [];
+                              const Icon = platform?.icon;
+                              return (
+                                <div key={platformId} className="bg-gradient-to-br from-gray-50 via-white to-gray-100 rounded-xl p-4 border border-gray-200 hover:shadow-md transition-all duration-200">
+                                  <div className="flex items-center justify-between mb-3">
+                                    <div className="flex items-center space-x-2">
+                                      <div className={`w-6 h-6 rounded-lg flex items-center justify-center ${platform?.color || 'bg-gray-400'} shadow-sm`}>
+                                        {Icon && <Icon className="w-3 h-3 text-white" />}
+                                      </div>
+                                      <span className="font-semibold text-gray-900 text-sm">{platform?.name}</span>
+                                      <span className="text-xs text-gray-600">• Top performing</span>
+                                    </div>
+                                    <div className="flex items-center space-x-1">
+                                      <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+                                      <span className="text-xs text-green-600 font-medium">LIVE</span>
+                                    </div>
+                                  </div>
+                                  <div className={`grid gap-2 mb-3 ${selectedPlatforms.length === 1 ? 'grid-cols-3' : 'grid-cols-2'}`}>
+                                    {hashtags.slice(0, selectedPlatforms.length === 1 ? 12 : 8).map((tag, index) => (
+                                      <button
+                                        key={tag}
+                                        onClick={() => {
+                                          if (!contentData.hashtags.includes(tag)) {
+                                            setContentData(prev => ({ ...prev, hashtags: [...prev.hashtags, tag] }));
+                                          }
+                                        }}
+                                        className={`relative group text-left px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 ${
+                                          contentData.hashtags.includes(tag)
+                                            ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-md transform scale-105'
+                                            : 'bg-white text-gray-700 border border-gray-200 hover:border-purple-300 hover:bg-purple-50 hover:shadow-sm'
+                                        }`}
+                                      >
+                                        <div className="flex items-center justify-between">
+                                          <span className="truncate">{tag}</span>
+                                          {index < 3 && (
+                                            <div className="flex items-center space-x-1 ml-1">
+                                              <div className="w-1 h-1 bg-orange-500 rounded-full"></div>
+                                              <span className="text-xs text-orange-600 font-bold">HOT</span>
+                                            </div>
+                                          )}
+                                        </div>
+                                        {contentData.hashtags.includes(tag) && (
+                                          <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
+                                            <Check className="w-2 h-2 text-white" />
+                                          </div>
+                                        )}
+                                      </button>
+                                    ))}
+                                  </div>
+                                  {hashtags.length > (selectedPlatforms.length === 1 ? 12 : 8) && (
+                                    <button className="w-full py-2 text-xs text-gray-600 hover:text-purple-600 font-medium transition-colors border border-dashed border-gray-300 rounded-lg hover:border-purple-300 hover:bg-purple-50">
+                                      +{hashtags.length - (selectedPlatforms.length === 1 ? 12 : 8)} more
+                                    </button>
+                                  )}
+                                </div>
+                              );
+                            })
+                          ) : (
+                            <div className="text-center py-8 text-gray-500">
+                              <Hash className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+                              <p className="text-sm">Select platforms in Step 1 to see trending hashtags</p>
+                            </div>
+                          )}
+                          
+                          {/* Custom Hashtag Input - Compact */}
+                          <div className="bg-gradient-to-br from-orange-50 via-white to-yellow-50 rounded-xl p-4 border border-orange-200 hover:shadow-md transition-all duration-200">
+                            <div className="flex items-center justify-between mb-3">
+                              <div className="flex items-center space-x-2">
+                                <div className="w-6 h-6 rounded-lg flex items-center justify-center bg-orange-500 shadow-sm">
+                                  <Hash className="w-3 h-3 text-white" />
+                                </div>
+                                <span className="font-semibold text-gray-900 text-sm">Add Custom Hashtag</span>
+                              </div>
+                              <div className="flex items-center space-x-1">
+                                <div className="w-1.5 h-1.5 bg-orange-500 rounded-full animate-pulse"></div>
+                                <span className="text-xs text-orange-600 font-medium">CUSTOM</span>
+                              </div>
+                            </div>
+                            
+                            {/* Custom Hashtag Input */}
+                            <div className="mb-3">
+                              <div className="flex space-x-2">
+                                <div className="flex-1 relative">
+                                  <div className="absolute left-2 top-1/2 transform -translate-y-1/2 text-orange-500 font-bold text-sm">
+                                    #
+                                  </div>
+                                  <input
+                                    type="text"
+                                    placeholder="Enter custom hashtag"
+                                    className="w-full pl-6 pr-3 py-2 bg-white border border-orange-200 rounded-lg focus:ring-2 focus:ring-orange-200 focus:border-orange-400 text-gray-900 text-sm shadow-sm hover:shadow-md transition-all duration-200"
+                                    onKeyPress={(e) => {
+                                      if (e.key === 'Enter') {
+                                        const input = e.target as HTMLInputElement;
+                                        const value = input.value.trim();
+                                        if (value && !contentData.hashtags.includes(`#${value}`)) {
+                                          setContentData(prev => ({ ...prev, hashtags: [...prev.hashtags, `#${value}`] }));
+                                          input.value = '';
+                                        }
+                                      }
+                                    }}
+                                  />
+                                </div>
+                                <button
+                                  onClick={() => {
+                                    const input = document.querySelector('input[placeholder="Enter custom hashtag"]') as HTMLInputElement;
+                                    const value = input?.value.trim();
+                                    if (value && !contentData.hashtags.includes(`#${value}`)) {
+                                      setContentData(prev => ({ ...prev, hashtags: [...prev.hashtags, `#${value}`] }));
+                                      input.value = '';
+                                    }
+                                  }}
+                                  className="px-4 py-2 bg-gradient-to-r from-orange-500 to-yellow-500 text-white rounded-lg font-medium hover:from-orange-600 hover:to-yellow-600 transition-all duration-200 shadow-sm hover:shadow-md text-sm"
+                                >
+                                  Add
+                                </button>
+                              </div>
+                            </div>
+                            
+                            {/* Popular Custom Hashtag Suggestions */}
+                            <div className="grid grid-cols-2 gap-2">
+                              {['#brandname', '#yourcompany', '#localbusiness', '#customoffer'].map((tag, index) => (
+                                <button
+                                  key={tag}
+                                  onClick={() => {
+                                    if (!contentData.hashtags.includes(tag)) {
+                                      setContentData(prev => ({ ...prev, hashtags: [...prev.hashtags, tag] }));
+                                    }
+                                  }}
+                                  className={`relative group text-left px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 ${
+                                    contentData.hashtags.includes(tag)
+                                      ? 'bg-gradient-to-r from-orange-500 to-yellow-500 text-white shadow-md transform scale-105'
+                                      : 'bg-white text-gray-700 border border-gray-200 hover:border-orange-300 hover:bg-orange-50 hover:shadow-sm'
+                                  }`}
+                                >
+                                  <span className="truncate">{tag}</span>
+                                  {contentData.hashtags.includes(tag) && (
+                                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
+                                      <Check className="w-2 h-2 text-white" />
+                                    </div>
+                                  )}
+                                </button>
+                              ))}
+                            </div>
+                            
+                            {/* Tips */}
+                            <div className="mt-4 p-3 bg-orange-100 rounded-lg border border-orange-200">
+                              <div className="flex items-start space-x-2">
+                                <div className="w-5 h-5 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                                  <span className="text-white text-xs font-bold">!</span>
+                                </div>
+                                <div>
+                                  <p className="text-sm text-orange-800 font-medium mb-1">Custom Hashtag Tips:</p>
+                                  <ul className="text-xs text-orange-700 space-y-1">
+                                    <li>• Use your brand name or unique identifiers</li>
+                                    <li>• Keep it short and memorable</li>
+                                    <li>• Check if it's already in use by others</li>
+                                  </ul>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {/* Selected Hashtags */}
+                        {contentData.hashtags.length > 0 && (
+                          <div className="mt-6 p-5 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border-2 border-purple-200 shadow-inner">
+                            <div className="flex items-center justify-between mb-4">
+                              <div className="flex items-center space-x-2">
+                                <div className="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center">
+                                  <span className="text-white font-bold text-xs">{contentData.hashtags.length}</span>
+                                </div>
+                                <span className="font-bold text-purple-900">Selected Hashtags</span>
+                              </div>
+                              <button
+                                onClick={() => setContentData(prev => ({ ...prev, hashtags: [] }))}
+                                className="flex items-center space-x-1 text-purple-600 hover:text-purple-800 text-sm font-medium hover:bg-purple-100 px-3 py-1 rounded-full transition-all duration-200"
+                              >
+                                <X className="w-4 h-4" />
+                                <span>Clear all</span>
+                              </button>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                              {contentData.hashtags.map(tag => (
+                                <span
+                                  key={tag}
+                                  className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-gradient-to-r from-purple-200 to-pink-200 text-purple-800 border border-purple-300 shadow-sm hover:shadow-md transition-shadow duration-200"
+                                >
+                                  {tag}
+                                  <button
+                                    onClick={() => setContentData(prev => ({ ...prev, hashtags: prev.hashtags.filter(h => h !== tag) }))}
+                                    className="ml-2 w-4 h-4 rounded-full bg-purple-500 text-white hover:bg-purple-600 flex items-center justify-center font-bold transition-colors"
+                                  >
+                                    ×
+                                  </button>
+                                </span>
+                              ))}
+                            </div>
+                            <div className="mt-4 flex items-center justify-between text-sm">
+                              <span className="text-purple-700">
+                                Optimal reach: <span className="font-bold text-green-600">
+                                  {contentData.hashtags.length < 5 ? 'Add more' : contentData.hashtags.length > 15 ? 'Too many' : 'Perfect'}
+                                </span>
+                              </span>
+                              <span className="text-purple-600">
+                                Recommended: 5-15 hashtags
+                              </span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Step 4: Schedule & Preview */}
+              {currentStep === 4 && (
+                <div className="px-8 py-6 space-y-8">
+                  <div className="text-center">
+                    <h4 className="text-2xl font-bold text-gray-900 mb-2">Schedule & Preview</h4>
+                    <p className="text-gray-600">Set your posting time and preview your content</p>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-8">
+                    {/* Schedule Section */}
+                    <div className="space-y-6">
+                      <div className="flex items-center space-x-3">
+                        <Clock className="w-5 h-5 text-purple-600" />
+                        <h5 className="text-lg font-semibold text-gray-900">Schedule</h5>
+                      </div>
+                      
+                      {/* Quick Schedule Options */}
+                      <div className="space-y-2">
+                        <span className="text-sm font-medium text-gray-700">Quick Options</span>
+                        <div className="grid grid-cols-2 gap-2">
+                          {quickScheduleOptions.map(option => (
+                            <button
+                              key={option.id}
+                              onClick={() => setContentData(prev => ({ ...prev, quickSchedule: option.id, scheduledTime: option.time }))}
+                              className={`p-3 rounded-lg border-2 transition-all duration-200 text-sm ${
+                                contentData.quickSchedule === option.id
+                                  ? 'border-purple-400 bg-purple-50 text-purple-700'
+                                  : 'border-gray-200 hover:border-gray-300'
+                              }`}
+                            >
+                              {option.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Custom Date/Time */}
+                      <div className="space-y-2">
+                        <span className="text-sm font-medium text-gray-700">Custom Date & Time</span>
+                        <input
+                          type="datetime-local"
+                          value={contentData.scheduledTime ? contentData.scheduledTime.toISOString().slice(0, 16) : ''}
+                          onChange={(e) => setContentData(prev => ({ ...prev, scheduledTime: new Date(e.target.value), quickSchedule: '' }))}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Preview Section */}
+                    <div className="space-y-6">
+                      <div className="flex items-center justify-between">
+                        <h5 className="text-lg font-semibold text-gray-900">Preview</h5>
+                        <div className="flex items-center space-x-2">
+                          <button
+                            onClick={() => setCurrentPreviewPlatform(Math.max(0, currentPreviewPlatform - 1))}
+                            disabled={currentPreviewPlatform === 0}
+                            className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            <ChevronLeft className="w-4 h-4" />
+                          </button>
+                          <span className="text-sm text-gray-600">
+                            {currentPreviewPlatform + 1} / {selectedPlatforms.length}
+                          </span>
+                          <button
+                            onClick={() => setCurrentPreviewPlatform(Math.min(selectedPlatforms.length - 1, currentPreviewPlatform + 1))}
+                            disabled={currentPreviewPlatform === selectedPlatforms.length - 1}
+                            className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            <ChevronRight className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Aspect Ratio Selector */}
+                      {selectedPlatforms.length > 0 && (() => {
+                        const currentPlatform = platforms.find(p => p.id === selectedPlatforms[currentPreviewPlatform]);
+                        const ratios = currentPlatform?.ratios || ['1:1'];
+                        
+                        return (
+                          <div className="space-y-2">
+                            <span className="text-sm font-medium text-gray-700">Aspect Ratio</span>
+                            <div className="flex space-x-2">
+                              {ratios.map((ratio, index) => (
+                                <button
+                                  key={ratio}
+                                  onClick={() => setCurrentAspectRatio(index)}
+                                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                                    currentAspectRatio === index
+                                      ? 'bg-purple-500 text-white shadow-lg'
+                                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                  }`}
+                                >
+                                  {ratio}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      })()}
+
+                      {/* Platform Preview */}
+                      {selectedPlatforms.length > 0 && (
+                        <div className="max-w-sm mx-auto">
+                          {(() => {
+                            const platformId = selectedPlatforms[currentPreviewPlatform];
+                            const platform = platforms.find(p => p.id === platformId);
+                            const Icon = platform?.icon;
+                            const currentRatio = platform?.ratios?.[currentAspectRatio] || '1:1';
+                            
+                            // Calculate aspect ratio dimensions
+                            const getAspectRatioClass = (ratio: string) => {
+                              switch (ratio) {
+                                case '1:1': return 'aspect-square';
+                                case '4:5': return 'aspect-[4/5]';
+                                case '9:16': return 'aspect-[9/16]';
+                                case '16:9': return 'aspect-[16/9]';
+                                default: return 'aspect-square';
+                              }
+                            };
+                            
+                            // Platform-specific preview components
+                            const renderPlatformPreview = () => {
+                              // Enhanced media element that shows all uploaded files
+                              const mediaElement = uploadedFiles.length > 0 ? (
+                                uploadedFiles[0].type === 'video' ? (
+                                  <video
+                                    key={uploadedFiles[0].id}
+                                    src={uploadedFiles[0].preview}
+                                    controls
+                                    className="w-full h-full object-cover"
+                                    preload="metadata"
+                                    playsInline
+                                    muted
+                                    loop
+                                    onLoadedMetadata={() => {
+                                      console.log('Video loaded successfully:', uploadedFiles[0].preview);
+                                    }}
+                                    onError={(e) => {
+                                      console.error('Video failed to load:', uploadedFiles[0].preview);
+                                    }}
+                                  />
+                                ) : uploadedFiles[0].type === 'image' ? (
+                                  <img 
+                                    key={uploadedFiles[0].id}
+                                    src={uploadedFiles[0].preview} 
+                                    alt="Content preview"
+                                    className="w-full h-full object-cover"
+                                    onLoad={() => {
+                                      console.log('Image loaded successfully:', uploadedFiles[0].preview);
+                                    }}
+                                    onError={(e) => {
+                                      console.error('Image failed to load:', uploadedFiles[0].preview);
+                                    }}
+                                  />
+                                ) : (
+                                  <div className="w-full h-full bg-gray-300 flex items-center justify-center">
+                                    <span className="text-gray-500">Unsupported file type: {uploadedFiles[0].type}</span>
+                                  </div>
+                                )
+                              ) : (
+                                <div className="w-full h-full bg-gray-300 flex items-center justify-center">
+                                  <span className="text-gray-500">No media uploaded</span>
+                                </div>
+                              );
+                              
+                              switch (platformId) {
+                                case 'instagram':
+                                  return (
+                                    <div className="bg-black rounded-3xl shadow-2xl overflow-hidden max-w-[400px] mx-auto">
+                                      {/* Instagram Post */}
+                                      <div className="bg-black">
+                                        {/* Instagram Header */}
+                                        <div className="flex items-center justify-between p-3">
+                                          <div className="flex items-center space-x-3">
+                                            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 p-0.5">
+                                              <div className="w-full h-full rounded-full bg-black flex items-center justify-center">
+                                                <span className="text-white text-xs font-bold">YB</span>
+                                              </div>
+                                            </div>
+                                            <div>
+                                              <div className="text-white font-medium text-sm">mralwaysreadyy</div>
+                                              <div className="text-gray-400 text-xs">Monica • Angel of Mine</div>
+                                            </div>
+                                          </div>
+                                          <div className="text-white text-lg">⋯</div>
+                                        </div>
+                                        
+                                        {/* Instagram Content */}
+                                        <div className={`${getAspectRatioClass(currentRatio)} relative`}>
+                                          {uploadedFiles.length > 0 && uploadedFiles[0].type === 'video' ? (
+                                            <video
+                                              key={uploadedFiles[0].id}
+                                              src={uploadedFiles[0].preview}
+                                              controls
+                                              className="w-full h-full object-cover"
+                                              preload="metadata"
+                                              playsInline
+                                              muted
+                                              loop
+                                            />
+                                          ) : (
+                                            mediaElement
+                                          )}
+                                          
+                                          {/* Instagram Story Dots */}
+                                          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+                                            <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                                            <div className="w-2 h-2 bg-white bg-opacity-50 rounded-full"></div>
+                                            <div className="w-2 h-2 bg-white bg-opacity-50 rounded-full"></div>
+                                          </div>
+                                          
+                                          {/* Instagram Volume Control */}
+                                          <div className="absolute top-4 right-4 w-8 h-8 bg-black bg-opacity-50 rounded-full flex items-center justify-center">
+                                            <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                              <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+                                            </svg>
+                                          </div>
+                                        </div>
+                                        
+                                        {/* Instagram Actions */}
+                                        <div className="p-3">
+                                          <div className="flex items-center justify-between mb-3">
+                                            <div className="flex items-center space-x-4">
+                                              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                              </svg>
+                                              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                                              </svg>
+                                              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                                              </svg>
+                                            </div>
+                                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+                                            </svg>
+                                          </div>
+                                          
+                                          <div className="text-white text-sm font-medium mb-1">61 likes</div>
+                                          
+                                          {/* Instagram Caption */}
+                                          <div className="text-white text-sm leading-relaxed">
+                                            <span className="font-medium">mralwaysreadyy</span> {contentData.caption || 'To my wife Caron—'}
+                                          </div>
+                                          
+                                          {/* Instagram Hashtags */}
+                                          {contentData.hashtags.length > 0 && (
+                                            <div className="text-blue-400 text-sm mt-1">
+                                              {contentData.hashtags.join(' ')}
+                                            </div>
+                                          )}
+                                          
+                                          <div className="text-gray-400 text-xs mt-2">2 hours ago</div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  );
+                                  
+                                case 'tiktok':
+                                  return (
+                                    <div className="bg-black rounded-xl shadow-2xl overflow-hidden max-w-[280px] mx-auto">
+                                      {/* TikTok Mobile Interface */}
+                                      <div className="relative">
+                                        {/* Main Video Content */}
+                                        <div className="aspect-[9/16] relative bg-black">
+                                          {/* Content Area */}
+                                          <div className="absolute inset-0 flex items-center justify-center">
+                                            {uploadedFiles.length > 0 ? (
+                                              uploadedFiles[0].type === 'image' ? (
+                                                <img 
+                                                  src={uploadedFiles[0].preview} 
+                                                  alt="Content preview" 
+                                                  className="w-full h-full object-cover"
+                                                />
+                                              ) : (
+                                                <video 
+                                                  src={uploadedFiles[0].preview} 
+                                                  className="w-full h-full object-cover"
+                                                  controls={false}
+                                                  muted
+                                                />
+                                              )
+                                            ) : (
+                                              <div className="w-full h-full flex items-center justify-center">
+                                                <div className="text-center">
+                                                  <div className="w-16 h-16 bg-purple-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                                                    <Image className="w-8 h-8 text-white" />
+                                                  </div>
+                                                  <div className="text-white text-sm font-medium">Professional Photo 1</div>
+                                                </div>
+                                              </div>
+                                            )}
+                                          </div>
+                                          
+                                          {/* Right Side Actions - Mobile Style */}
+                                          <div className="absolute right-3 bottom-24 flex flex-col space-y-6">
+                                            {/* Like Button */}
+                                            <div className="flex flex-col items-center">
+                                              <div className="w-12 h-12 bg-gray-800 bg-opacity-50 rounded-full flex items-center justify-center">
+                                                <Heart className="w-7 h-7 text-white" />
+                                              </div>
+                                              <span className="text-white text-xs font-medium mt-1">12.5K</span>
+                                            </div>
+                                            
+                                            {/* Comment Button */}
+                                            <div className="flex flex-col items-center">
+                                              <div className="w-12 h-12 bg-gray-800 bg-opacity-50 rounded-full flex items-center justify-center">
+                                                <MessageCircle className="w-7 h-7 text-white" />
+                                              </div>
+                                              <span className="text-white text-xs font-medium mt-1">1,234</span>
+                                            </div>
+                                            
+                                            {/* Share Button */}
+                                            <div className="flex flex-col items-center">
+                                              <div className="w-12 h-12 bg-gray-800 bg-opacity-50 rounded-full flex items-center justify-center">
+                                                <Share className="w-7 h-7 text-white" />
+                                              </div>
+                                              <span className="text-white text-xs font-medium mt-1">567</span>
+                                            </div>
+                                          </div>
+                                          
+                                          {/* Bottom Content Area */}
+                                          <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/60 to-transparent">
+                                            {/* User Info */}
+                                            <div className="flex items-center space-x-2 mb-2">
+                                              <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center">
+                                                <span className="text-white text-xs font-bold">
+                                                  {currentPersona === 'kemar' ? 'K' : 
+                                                   currentPersona === 'karen' ? 'K' : 
+                                                   currentPersona === 'sarah' ? 'S' : 
+                                                   currentPersona === 'marco' ? 'M' : 
+                                                   currentPersona === 'alex' ? 'A' : 'D'}
+                                                </span>
+                                              </div>
+                                              <span className="text-white font-semibold text-sm">
+                                                @{currentPersona === 'kemar' ? 'karenthomas' : 
+                                                  currentPersona === 'karen' ? 'karenthomas' : 
+                                                  currentPersona === 'sarah' ? 'sarahsmedspa' : 
+                                                  currentPersona === 'marco' ? 'marcoromano' : 
+                                                  currentPersona === 'alex' ? 'alexfitness' : 'davidauto'}
+                                              </span>
+                                            </div>
+                                            
+                                            {/* Caption */}
+                                            <div className="text-white text-sm mb-2 line-clamp-3">
+                                              {contentData.caption || 'sdfghyjukilo;'}
+                                            </div>
+                                            
+                                            {/* Hashtags */}
+                                            {contentData.hashtags.length > 0 && (
+                                              <div className="text-white text-sm mb-2">
+                                                {contentData.hashtags.join(' ')}
+                                              </div>
+                                            )}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  );
+                                  
+                                case 'x':
+                                  return (
+                                    <div className="bg-black rounded-3xl shadow-2xl overflow-hidden max-w-[500px] mx-auto border border-gray-800">
+                                      {/* X Tweet */}
+                                      <div className="p-4">
+                                        <div className="flex items-start space-x-3">
+                                          <div className="w-10 h-10 rounded-full bg-gradient-to-r from-gray-600 to-gray-700 flex items-center justify-center">
+                                            <span className="text-white text-xs font-bold">YB</span>
+                                          </div>
+                                          <div className="flex-1">
+                                            <div className="flex items-center space-x-2">
+                                              <div className="text-white font-bold text-sm">Your Business</div>
+                                              <div className="text-gray-500 text-sm">@yourbusiness</div>
+                                              <div className="text-gray-500 text-sm">•</div>
+                                              <div className="text-gray-500 text-sm">2h</div>
+                                            </div>
+                                            
+                                            {/* X Content */}
+                                            <div className="mt-2">
+                                              <div className="text-white text-sm mb-3 leading-relaxed">
+                                                {contentData.caption || 'Your caption will appear here...'}
+                                              </div>
+                                              
+                                              {/* X Hashtags */}
+                                              {contentData.hashtags.length > 0 && (
+                                                <div className="text-blue-400 text-sm mb-3">
+                                                  {contentData.hashtags.join(' ')}
+                                                </div>
+                                              )}
+                                              
+                                              {uploadedFiles.length > 0 && (
+                                                <div className={`${getAspectRatioClass(currentRatio)} rounded-2xl overflow-hidden mb-3 border border-gray-700`}>
+                                                  {mediaElement}
+                                                </div>
+                                              )}
+                                              
+                                              {/* X Actions */}
+                                              <div className="flex items-center justify-between text-gray-500 text-sm pt-2 border-t border-gray-800">
+                                                <div className="flex items-center space-x-1 hover:text-blue-400 cursor-pointer">
+                                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                                                  </svg>
+                                                  <span>42</span>
+                                                </div>
+                                                <div className="flex items-center space-x-1 hover:text-green-400 cursor-pointer">
+                                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                                                  </svg>
+                                                  <span>12</span>
+                                                </div>
+                                                <div className="flex items-center space-x-1 hover:text-pink-400 cursor-pointer">
+                                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                                  </svg>
+                                                  <span>156</span>
+                                                </div>
+                                                <div className="flex items-center space-x-1 hover:text-blue-400 cursor-pointer">
+                                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+                                                  </svg>
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  );
+                                  
+                                case 'linkedin':
+                                  return (
+                                    <div className="bg-white rounded-2xl p-4 shadow-2xl border border-gray-200">
+                                      {/* LinkedIn Header */}
+                                      <div className="flex items-center space-x-3 mb-3">
+                                        <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-600 to-blue-700 flex items-center justify-center">
+                                          <span className="text-white text-xs font-bold">YB</span>
+                                        </div>
+                                        <div>
+                                          <div className="text-gray-900 font-medium text-sm">Your Business</div>
+                                          <div className="text-gray-500 text-xs">LinkedIn • {currentRatio}</div>
+                                        </div>
+                                      </div>
+                                      
+                                      {/* LinkedIn Content */}
+                                      <div className="text-gray-900 text-sm mb-3">
+                                        {contentData.caption || 'Your caption will appear here...'}
+                                      </div>
+                                      
+                                      {uploadedFiles.length > 0 && (
+                                        <div className={`${getAspectRatioClass(currentRatio)} rounded-lg overflow-hidden mb-3`}>
+                                          {mediaElement}
+                                        </div>
+                                      )}
+                                      
+                                      {/* LinkedIn Hashtags */}
+                                      {contentData.hashtags.length > 0 && (
+                                        <div className="text-blue-600 text-sm mb-3">
+                                          {contentData.hashtags.join(' ')}
+                                        </div>
+                                      )}
+                                      
+                                      {/* LinkedIn Actions */}
+                                      <div className="flex items-center justify-between text-gray-500 text-sm border-t pt-3">
+                                        <span>👍 Like</span>
+                                        <span>💬 Comment</span>
+                                        <span>📤 Share</span>
+                                      </div>
+                                    </div>
+                                  );
+                                  
+                                default:
+                                  return (
+                                    <div className="bg-gray-900 rounded-2xl p-4 shadow-2xl">
+                                      <div className="text-white text-center">
+                                        Platform preview not available
+                                      </div>
+                                    </div>
+                                  );
+                              }
+                            };
+                            
+                            return renderPlatformPreview();
+                          })()}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Navigation Buttons */}
+              <div className="px-8 py-6 bg-white border-t border-gray-100">
+                <div className="flex items-center justify-between">
+                  <button 
+                    onClick={prevStep}
+                    disabled={currentStep === 1}
+                    className={`px-6 py-3 font-medium transition-all duration-200 rounded-lg ${
+                      currentStep === 1 
+                        ? 'text-gray-400 cursor-not-allowed' 
+                        : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
+                    }`}
+                  >
+                    ← Previous Step
+                  </button>
+                  <div className="flex items-center space-x-4">
+                    <button 
+                      onClick={handleSaveDraft}
+                      className="px-6 py-3 text-gray-600 hover:text-gray-800 hover:bg-gray-50 font-medium transition-all duration-200 rounded-lg"
+                    >
+                      Save Draft
+                    </button>
+                    <button 
+                      onClick={currentStep === 4 ? () => setShowConfirmationModal(true) : nextStep}
+                      className="px-8 py-3 font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:from-purple-600 hover:to-blue-600"
+                    >
+                      {currentStep === 4 ? 'Complete' : 'Continue →'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Track Mode - TrendTap & Speaking Industry Trends */}
+          {activeMode === 'track' && (
+            <div className="rounded-3xl bg-white shadow-2xl border border-gray-100 overflow-hidden">
+              <div className="bg-gradient-to-r from-green-600 to-teal-600 p-8 text-white">
+                <h3 className="text-2xl font-bold mb-2">TrendTap Lite™</h3>
+                <p className="text-green-100 text-lg">
+                  {currentPersona === 'kemar' 
+                    ? 'Track speaking industry trends and event opportunities' 
+                    : 'Monitor your campaigns and track performance'
+                  }
+                </p>
+              </div>
+              
+              {currentPersona === 'kemar' ? (
+                <div className="p-8 space-y-6">
+                  {/* Speaking Industry Trends */}
+                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200">
+                    <h4 className="text-xl font-bold text-gray-900 mb-4">🎯 Speaking Industry Trends</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {[
+                        { trend: 'Virtual & Hybrid Events', growth: '+45%', note: 'Post-pandemic adaptation' },
+                        { trend: 'Leadership Development', growth: '+32%', note: 'High demand in Q1' },
+                        { trend: 'AI & Future of Work', growth: '+67%', note: 'Emerging hot topic' },
+                        { trend: 'Wellness & Mental Health', growth: '+28%', note: 'Corporate focus' },
+                        { trend: 'Diversity & Inclusion', growth: '+41%', note: 'Sustained interest' },
+                        { trend: 'Entrepreneurship', growth: '+25%', note: 'Always popular' }
+                      ].map((item, index) => (
+                        <div key={index} className="bg-white rounded-xl p-4 border border-blue-200 hover:shadow-md transition-shadow">
+                          <div className="flex items-center justify-between mb-2">
+                            <h5 className="font-semibold text-gray-900">{item.trend}</h5>
+                            <span className="text-green-600 font-bold">{item.growth}</span>
+                          </div>
+                          <p className="text-sm text-gray-600">{item.note}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Event Opportunities */}
+                  <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-6 border border-purple-200">
+                    <h4 className="text-xl font-bold text-gray-900 mb-4">🎤 Upcoming Event Opportunities</h4>
+                    <div className="space-y-4">
+                      {[
+                        { event: 'Tech Leadership Summit 2025', date: 'March 15-17', type: 'Keynote', audience: '2,500+' },
+                        { event: 'Women in Business Conference', date: 'April 8-10', type: 'Panel', audience: '1,200+' },
+                        { event: 'Innovation & Growth Expo', date: 'May 22-24', type: 'Workshop', audience: '800+' },
+                        { event: 'Future of Work Symposium', date: 'June 5-7', type: 'Keynote', audience: '3,000+' }
+                      ].map((event, index) => (
+                        <div key={index} className="bg-white rounded-xl p-4 border border-purple-200 hover:shadow-md transition-shadow">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <h5 className="font-semibold text-gray-900">{event.event}</h5>
+                              <p className="text-sm text-gray-600">{event.date} • {event.type} • {event.audience} attendees</p>
+                            </div>
+                            <button className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors">
+                              Apply
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Content Reminders */}
+                  <div className="bg-gradient-to-r from-orange-50 to-yellow-50 rounded-2xl p-6 border border-orange-200">
+                    <h4 className="text-xl font-bold text-gray-900 mb-4">🔔 Content Reminders</h4>
+                    <div className="space-y-3">
+                      <div className="bg-white rounded-xl p-4 border border-orange-200">
+                        <p className="text-gray-900 font-medium">📺 You missed your scheduled Reel today</p>
+                        <p className="text-sm text-gray-600 mt-1">Scheduled for 10:00 AM - "Leadership Mindset Tips"</p>
+                        <button className="mt-2 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors">
+                          Post Now
+                        </button>
+                      </div>
+                      <div className="bg-white rounded-xl p-4 border border-orange-200">
+                        <p className="text-gray-900 font-medium">♻️ Want to remix your best-performing quote post?</p>
+                        <p className="text-sm text-gray-600 mt-1">Your "Success Mindset" post got 1.2K likes. Perfect for TikTok!</p>
+                        <button className="mt-2 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors">
+                          Remix
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="p-8 space-y-6">
+                  {/* Karen Thompson - Real Estate Agent */}
+                  {currentPersona === 'karen' && (
+                    <>
+                      <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl p-6 border border-emerald-200">
+                        <h4 className="text-xl font-bold text-gray-900 mb-4">🏠 Real Estate Market Trends</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {[
+                            { trend: 'Home Buyer Demand', growth: '+28%', note: 'Spring market surge' },
+                            { trend: 'Luxury Properties', growth: '+45%', note: 'High-end market boom' },
+                            { trend: 'First-Time Buyers', growth: '+18%', note: 'Interest rate impact' },
+                            { trend: 'Virtual Tours', growth: '+67%', note: 'Tech adoption rising' },
+                            { trend: 'Investment Properties', growth: '+31%', note: 'Portfolio growth' },
+                            { trend: 'Suburban Market', growth: '+22%', note: 'Location preferences' }
+                          ].map((item, index) => (
+                            <div key={index} className="bg-white rounded-xl p-4 border border-emerald-200 hover:shadow-md transition-shadow">
+                              <div className="flex items-center justify-between mb-2">
+                                <h5 className="font-semibold text-gray-900">{item.trend}</h5>
+                                <span className="text-green-600 font-bold">{item.growth}</span>
+                              </div>
+                              <p className="text-sm text-gray-600">{item.note}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      
+                      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200 analytics-section" data-tooltip-target="analytics-section">
+                        <h4 className="text-xl font-bold text-gray-900 mb-4">📊 Lead Generation Analytics</h4>
+                        <div className="space-y-4">
+                          <div className="bg-white rounded-xl p-4 border border-blue-200">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <h5 className="font-semibold text-gray-900">Open House Inquiries</h5>
+                                <p className="text-sm text-gray-600">This week: 34 new leads • 12% increase</p>
+                              </div>
+                              <div className="text-right">
+                                <div className="text-2xl font-bold text-blue-600">34</div>
+                                <div className="text-sm text-green-600">+12%</div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="bg-white rounded-xl p-4 border border-blue-200">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <h5 className="font-semibold text-gray-900">Property Valuations</h5>
+                                <p className="text-sm text-gray-600">This month: 18 completed • 8% increase</p>
+                              </div>
+                              <div className="text-right">
+                                <div className="text-2xl font-bold text-blue-600">18</div>
+                                <div className="text-sm text-green-600">+8%</div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  {/* Sarah Martinez - MedSpa Owner */}
+                  {currentPersona === 'sarah' && (
+                    <>
+                      <div className="bg-gradient-to-r from-pink-50 to-rose-50 rounded-2xl p-6 border border-pink-200">
+                        <h4 className="text-xl font-bold text-gray-900 mb-4">💆‍♀️ Wellness Industry Trends</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {[
+                            { trend: 'Anti-Aging Treatments', growth: '+52%', note: 'Botox & fillers demand' },
+                            { trend: 'Skincare Routines', growth: '+38%', note: 'Preventative care focus' },
+                            { trend: 'Wellness Packages', growth: '+29%', note: 'Holistic approach' },
+                            { trend: 'Virtual Consultations', growth: '+45%', note: 'Remote accessibility' },
+                            { trend: 'Men\'s Treatments', growth: '+67%', note: 'Growing male market' },
+                            { trend: 'Recovery Treatments', growth: '+33%', note: 'Post-workout care' }
+                          ].map((item, index) => (
+                            <div key={index} className="bg-white rounded-xl p-4 border border-pink-200 hover:shadow-md transition-shadow">
+                              <div className="flex items-center justify-between mb-2">
+                                <h5 className="font-semibold text-gray-900">{item.trend}</h5>
+                                <span className="text-pink-600 font-bold">{item.growth}</span>
+                              </div>
+                              <p className="text-sm text-gray-600">{item.note}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      
+                      <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-6 border border-purple-200">
+                        <h4 className="text-xl font-bold text-gray-900 mb-4">📈 Treatment Booking Trends</h4>
+                        <div className="space-y-4">
+                          <div className="bg-white rounded-xl p-4 border border-purple-200">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <h5 className="font-semibold text-gray-900">Facial Treatments</h5>
+                                <p className="text-sm text-gray-600">This month: 127 bookings • 18% increase</p>
+                              </div>
+                              <div className="text-right">
+                                <div className="text-2xl font-bold text-purple-600">127</div>
+                                <div className="text-sm text-green-600">+18%</div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="bg-white rounded-xl p-4 border border-purple-200">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <h5 className="font-semibold text-gray-900">Consultation Requests</h5>
+                                <p className="text-sm text-gray-600">This week: 43 new requests • 22% increase</p>
+                              </div>
+                              <div className="text-right">
+                                <div className="text-2xl font-bold text-purple-600">43</div>
+                                <div className="text-sm text-green-600">+22%</div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  {/* Marco Romano - Restaurant Owner */}
+                  {currentPersona === 'marco' && (
+                    <>
+                      <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-2xl p-6 border border-red-200">
+                        <h4 className="text-xl font-bold text-gray-900 mb-4">🍽️ Restaurant Industry Trends</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {[
+                            { trend: 'Delivery Orders', growth: '+34%', note: 'Online ordering surge' },
+                            { trend: 'Authentic Italian', growth: '+48%', note: 'Traditional cuisine demand' },
+                            { trend: 'Weekend Reservations', growth: '+27%', note: 'Dining experience focus' },
+                            { trend: 'Wine Pairings', growth: '+39%', note: 'Elevated dining' },
+                            { trend: 'Private Events', growth: '+55%', note: 'Celebration bookings' },
+                            { trend: 'Seasonal Menus', growth: '+31%', note: 'Fresh ingredients trend' }
+                          ].map((item, index) => (
+                            <div key={index} className="bg-white rounded-xl p-4 border border-red-200 hover:shadow-md transition-shadow">
+                              <div className="flex items-center justify-between mb-2">
+                                <h5 className="font-semibold text-gray-900">{item.trend}</h5>
+                                <span className="text-red-600 font-bold">{item.growth}</span>
+                              </div>
+                              <p className="text-sm text-gray-600">{item.note}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      
+                      <div className="bg-gradient-to-r from-orange-50 to-yellow-50 rounded-2xl p-6 border border-orange-200">
+                        <h4 className="text-xl font-bold text-gray-900 mb-4">📊 Restaurant Performance</h4>
+                        <div className="space-y-4">
+                          <div className="bg-white rounded-xl p-4 border border-orange-200">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <h5 className="font-semibold text-gray-900">Table Reservations</h5>
+                                <p className="text-sm text-gray-600">This week: 234 reservations • 15% increase</p>
+                              </div>
+                              <div className="text-right">
+                                <div className="text-2xl font-bold text-orange-600">234</div>
+                                <div className="text-sm text-green-600">+15%</div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="bg-white rounded-xl p-4 border border-orange-200">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <h5 className="font-semibold text-gray-900">Online Reviews</h5>
+                                <p className="text-sm text-gray-600">This month: 4.8/5 rating • 12 new reviews</p>
+                              </div>
+                              <div className="text-right">
+                                <div className="text-2xl font-bold text-orange-600">4.8</div>
+                                <div className="text-sm text-green-600">+12 reviews</div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  {/* Alex Chen - Fitness Coach */}
+                  {currentPersona === 'alex' && (
+                    <>
+                      <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-2xl p-6 border border-blue-200">
+                        <h4 className="text-xl font-bold text-gray-900 mb-4">💪 Fitness Industry Trends</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {[
+                            { trend: 'Personal Training', growth: '+42%', note: 'One-on-one sessions' },
+                            { trend: 'Group Classes', growth: '+38%', note: 'Community workouts' },
+                            { trend: 'Nutrition Coaching', growth: '+51%', note: 'Holistic approach' },
+                            { trend: 'Online Programs', growth: '+67%', note: 'Virtual training' },
+                            { trend: 'Strength Training', growth: '+29%', note: 'Functional fitness' },
+                            { trend: 'Recovery Sessions', growth: '+45%', note: 'Post-workout care' }
+                          ].map((item, index) => (
+                            <div key={index} className="bg-white rounded-xl p-4 border border-blue-200 hover:shadow-md transition-shadow">
+                              <div className="flex items-center justify-between mb-2">
+                                <h5 className="font-semibold text-gray-900">{item.trend}</h5>
+                                <span className="text-blue-600 font-bold">{item.growth}</span>
+                              </div>
+                              <p className="text-sm text-gray-600">{item.note}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      
+                      <div className="bg-gradient-to-r from-cyan-50 to-teal-50 rounded-2xl p-6 border border-cyan-200">
+                        <h4 className="text-xl font-bold text-gray-900 mb-4">🎯 Client Progress Tracking</h4>
+                        <div className="space-y-4">
+                          <div className="bg-white rounded-xl p-4 border border-cyan-200">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <h5 className="font-semibold text-gray-900">Active Clients</h5>
+                                <p className="text-sm text-gray-600">This month: 78 active • 14% increase</p>
+                              </div>
+                              <div className="text-right">
+                                <div className="text-2xl font-bold text-cyan-600">78</div>
+                                <div className="text-sm text-green-600">+14%</div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="bg-white rounded-xl p-4 border border-cyan-200">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <h5 className="font-semibold text-gray-900">Program Completions</h5>
+                                <p className="text-sm text-gray-600">This quarter: 23 completions • 25% increase</p>
+                              </div>
+                              <div className="text-right">
+                                <div className="text-2xl font-bold text-cyan-600">23</div>
+                                <div className="text-sm text-green-600">+25%</div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  {/* David Wilson - Auto Dealer */}
+                  {currentPersona === 'david' && (
+                    <>
+                      <div className="bg-gradient-to-r from-gray-50 to-slate-50 rounded-2xl p-6 border border-gray-200">
+                        <h4 className="text-xl font-bold text-gray-900 mb-4">🚗 Automotive Market Trends</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {[
+                            { trend: 'Electric Vehicles', growth: '+78%', note: 'EV market expansion' },
+                            { trend: 'Luxury Cars', growth: '+34%', note: 'Premium segment growth' },
+                            { trend: 'SUV Demand', growth: '+42%', note: 'Family vehicle preference' },
+                            { trend: 'Pre-owned Sales', growth: '+28%', note: 'Used car market' },
+                            { trend: 'Online Inquiries', growth: '+56%', note: 'Digital car shopping' },
+                            { trend: 'Financing Options', growth: '+31%', note: 'Flexible payment plans' }
+                          ].map((item, index) => (
+                            <div key={index} className="bg-white rounded-xl p-4 border border-gray-200 hover:shadow-md transition-shadow">
+                              <div className="flex items-center justify-between mb-2">
+                                <h5 className="font-semibold text-gray-900">{item.trend}</h5>
+                                <span className="text-gray-600 font-bold">{item.growth}</span>
+                              </div>
+                              <p className="text-sm text-gray-600">{item.note}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      
+                      <div className="bg-gradient-to-r from-purple-50 to-violet-50 rounded-2xl p-6 border border-purple-200">
+                        <h4 className="text-xl font-bold text-gray-900 mb-4">📈 Sales Performance</h4>
+                        <div className="space-y-4">
+                          <div className="bg-white rounded-xl p-4 border border-purple-200">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <h5 className="font-semibold text-gray-900">Test Drive Bookings</h5>
+                                <p className="text-sm text-gray-600">This month: 47 bookings • 19% increase</p>
+                              </div>
+                              <div className="text-right">
+                                <div className="text-2xl font-bold text-purple-600">47</div>
+                                <div className="text-sm text-green-600">+19%</div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="bg-white rounded-xl p-4 border border-purple-200">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <h5 className="font-semibold text-gray-900">Vehicle Sales</h5>
+                                <p className="text-sm text-gray-600">This quarter: 12 vehicles sold • 33% increase</p>
+                              </div>
+                              <div className="text-right">
+                                <div className="text-2xl font-bold text-purple-600">12</div>
+                                <div className="text-sm text-green-600">+33%</div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Grow Mode - FourSIGHT Analytics */}
+          {activeMode === 'grow' && (
+            <div className="space-y-6">
+              {/* FourSIGHT Header */}
+              <div className="bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 rounded-3xl p-8 text-white relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 backdrop-blur-sm"></div>
+                <div className="relative z-10">
+                  <div className="flex items-center space-x-4 mb-4">
+                    <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                      <BarChart3 className="w-8 h-8 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-3xl font-bold mb-2">FourSIGHT™ Analytics</h3>
+                      <p className="text-blue-100 text-lg">
+                        {currentPersona === 'kemar' 
+                          ? 'Advanced speaking engagement performance analytics' 
+                          : currentPersona === 'karen'
+                          ? 'Comprehensive real estate marketing intelligence'
+                          : currentPersona === 'sarah'
+                          ? 'Medical spa treatment and client analytics'
+                          : currentPersona === 'marco'
+                          ? 'Restaurant performance and customer insights'
+                          : currentPersona === 'alex'
+                          ? 'Fitness business growth and client analytics'
+                          : currentPersona === 'david'
+                          ? 'Automotive sales and inventory analytics'
+                          : 'Advanced marketing performance insights'
+                        }
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {/* Key Metrics Dashboard */}
+                  <div className="grid grid-cols-4 gap-4 mt-6">
+                    <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+                      <div className="text-2xl font-bold">
+                        {currentPersona === 'kemar' ? '847K' :
+                         currentPersona === 'karen' ? '1.2M' :
+                         currentPersona === 'sarah' ? '523K' :
+                         currentPersona === 'marco' ? '892K' :
+                         currentPersona === 'alex' ? '645K' :
+                         currentPersona === 'david' ? '1.1M' : '750K'}
+                      </div>
+                      <div className="text-sm text-blue-100">Total Reach</div>
+                    </div>
+                    <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+                      <div className="text-2xl font-bold">
+                        {currentPersona === 'kemar' ? '12.8%' :
+                         currentPersona === 'karen' ? '8.4%' :
+                         currentPersona === 'sarah' ? '15.2%' :
+                         currentPersona === 'marco' ? '9.7%' :
+                         currentPersona === 'alex' ? '18.3%' :
+                         currentPersona === 'david' ? '6.9%' : '11.2%'}
+                      </div>
+                      <div className="text-sm text-blue-100">Engagement Rate</div>
+                    </div>
+                    <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+                      <div className="text-2xl font-bold">
+                        {currentPersona === 'kemar' ? '342' :
+                         currentPersona === 'karen' ? '89' :
+                         currentPersona === 'sarah' ? '156' :
+                         currentPersona === 'marco' ? '234' :
+                         currentPersona === 'alex' ? '178' :
+                         currentPersona === 'david' ? '67' : '194'}
+                      </div>
+                      <div className="text-sm text-blue-100">
+                        {currentPersona === 'kemar' ? 'Inquiries' :
+                         currentPersona === 'karen' ? 'Leads' :
+                         currentPersona === 'sarah' ? 'Consultations' :
+                         currentPersona === 'marco' ? 'Reservations' :
+                         currentPersona === 'alex' ? 'Sign-ups' :
+                         currentPersona === 'david' ? 'Test Drives' : 'Conversions'}
+                      </div>
+                    </div>
+                    <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+                      <div className="text-2xl font-bold">
+                        {currentPersona === 'kemar' ? '324%' :
+                         currentPersona === 'karen' ? '289%' :
+                         currentPersona === 'sarah' ? '412%' :
+                         currentPersona === 'marco' ? '267%' :
+                         currentPersona === 'alex' ? '356%' :
+                         currentPersona === 'david' ? '198%' : '298%'}
+                      </div>
+                      <div className="text-sm text-blue-100">ROI</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Advanced Interactive Charts */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Performance Trends Chart */}
+                <div className="bg-white rounded-3xl p-6 shadow-lg border border-gray-100">
+                  <h4 className="text-xl font-bold text-gray-900 mb-6">Performance Trends</h4>
+                  <div className="h-64 bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-4 flex items-center justify-center">
+                    <div className="text-center">
+                      <TrendingUp className="w-12 h-12 text-blue-500 mx-auto mb-4" />
+                      <div className="text-lg font-semibold text-gray-800 mb-2">
+                        {currentPersona === 'kemar' ? '+28% Speaking Inquiries' :
+                         currentPersona === 'karen' ? '+34% Property Leads' :
+                         currentPersona === 'sarah' ? '+42% Consultation Bookings' :
+                         currentPersona === 'marco' ? '+26% Reservation Rate' :
+                         currentPersona === 'alex' ? '+38% Member Signups' :
+                         currentPersona === 'david' ? '+19% Sales Conversion' : '+31% Growth'}
+                      </div>
+                      <p className="text-sm text-gray-600">vs. last month</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Audience Insights */}
+                <div className="bg-white rounded-3xl p-6 shadow-lg border border-gray-100">
+                  <h4 className="text-xl font-bold text-gray-900 mb-6">Audience Insights</h4>
+                  <div className="space-y-4">
+                    <div className="bg-gray-50 rounded-xl p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium text-gray-700">
+                          {currentPersona === 'kemar' ? 'Corporate Executives' :
+                           currentPersona === 'karen' ? 'First-time Homebuyers' :
+                           currentPersona === 'sarah' ? 'Women 35-55' :
+                           currentPersona === 'marco' ? 'Food Enthusiasts' :
+                           currentPersona === 'alex' ? 'Fitness Beginners' :
+                           currentPersona === 'david' ? 'Luxury Car Buyers' : 'Primary Audience'}
+                        </span>
+                        <span className="text-sm font-bold text-blue-600">
+                          {currentPersona === 'kemar' ? '42%' :
+                           currentPersona === 'karen' ? '38%' :
+                           currentPersona === 'sarah' ? '45%' :
+                           currentPersona === 'marco' ? '34%' :
+                           currentPersona === 'alex' ? '41%' :
+                           currentPersona === 'david' ? '29%' : '39%'}
+                        </span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div className="bg-blue-500 h-2 rounded-full" style={{width: currentPersona === 'kemar' ? '42%' : currentPersona === 'karen' ? '38%' : currentPersona === 'sarah' ? '45%' : currentPersona === 'marco' ? '34%' : currentPersona === 'alex' ? '41%' : currentPersona === 'david' ? '29%' : '39%'}}></div>
+                      </div>
+                    </div>
+                    <div className="bg-gray-50 rounded-xl p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium text-gray-700">
+                          {currentPersona === 'kemar' ? 'Conference Organizers' :
+                           currentPersona === 'karen' ? 'Property Investors' :
+                           currentPersona === 'sarah' ? 'Men 30-50' :
+                           currentPersona === 'marco' ? 'Local Families' :
+                           currentPersona === 'alex' ? 'Serious Athletes' :
+                           currentPersona === 'david' ? 'Family Car Buyers' : 'Secondary Audience'}
+                        </span>
+                        <span className="text-sm font-bold text-purple-600">
+                          {currentPersona === 'kemar' ? '28%' :
+                           currentPersona === 'karen' ? '31%' :
+                           currentPersona === 'sarah' ? '32%' :
+                           currentPersona === 'marco' ? '29%' :
+                           currentPersona === 'alex' ? '35%' :
+                           currentPersona === 'david' ? '41%' : '32%'}
+                        </span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div className="bg-purple-500 h-2 rounded-full" style={{width: currentPersona === 'kemar' ? '28%' : currentPersona === 'karen' ? '31%' : currentPersona === 'sarah' ? '32%' : currentPersona === 'marco' ? '29%' : currentPersona === 'alex' ? '35%' : currentPersona === 'david' ? '41%' : '32%'}}></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Detailed Analytics Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+                  <div className="flex items-center space-x-3 mb-4">
+                    <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+                      <Target className="w-5 h-5 text-green-600" />
+                    </div>
+                    <div>
+                      <h5 className="font-semibold text-gray-900">Conversion Rate</h5>
+                      <p className="text-2xl font-bold text-green-600">
+                        {currentPersona === 'kemar' ? '24.3%' :
+                         currentPersona === 'karen' ? '18.7%' :
+                         currentPersona === 'sarah' ? '31.2%' :
+                         currentPersona === 'marco' ? '19.8%' :
+                         currentPersona === 'alex' ? '27.9%' :
+                         currentPersona === 'david' ? '12.4%' : '22.4%'}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    {currentPersona === 'kemar' ? 'Speaking inquiry to booking rate' :
+                     currentPersona === 'karen' ? 'Lead to property showing rate' :
+                     currentPersona === 'sarah' ? 'Consultation to treatment rate' :
+                     currentPersona === 'marco' ? 'Inquiry to reservation rate' :
+                     currentPersona === 'alex' ? 'Trial to membership rate' :
+                     currentPersona === 'david' ? 'Inquiry to purchase rate' : 'Overall conversion performance'}
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+                  <div className="flex items-center space-x-3 mb-4">
+                    <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+                      <Users className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <h5 className="font-semibold text-gray-900">Audience Growth</h5>
+                      <p className="text-2xl font-bold text-blue-600">
+                        {currentPersona === 'kemar' ? '+2,847' :
+                         currentPersona === 'karen' ? '+1,923' :
+                         currentPersona === 'sarah' ? '+3,156' :
+                         currentPersona === 'marco' ? '+1,678' :
+                         currentPersona === 'alex' ? '+2,234' :
+                         currentPersona === 'david' ? '+1,445' : '+2,214'}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-sm text-gray-600">New followers this month</div>
+                </div>
+
+                <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+                  <div className="flex items-center space-x-3 mb-4">
+                    <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+                      <TrendingUp className="w-5 h-5 text-purple-600" />
+                    </div>
+                    <div>
+                      <h5 className="font-semibold text-gray-900">Engagement Score</h5>
+                      <p className="text-2xl font-bold text-purple-600">
+                        {currentPersona === 'kemar' ? '94.7' :
+                         currentPersona === 'karen' ? '87.3' :
+                         currentPersona === 'sarah' ? '96.2' :
+                         currentPersona === 'marco' ? '91.8' :
+                         currentPersona === 'alex' ? '93.5' :
+                         currentPersona === 'david' ? '82.9' : '91.1'}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-sm text-gray-600">AI-calculated engagement quality</div>
+                </div>
+              </div>
+              
+              {/* Persona-Specific Agent Marketplace */}
+              <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h4 className="text-xl font-bold text-gray-900">
+                    {currentPersona === 'kemar' ? 'Speaking Business Accelerators' :
+                     currentPersona === 'karen' ? 'Real Estate Power Tools' :
+                     currentPersona === 'sarah' ? 'MedSpa Growth Solutions' :
+                     currentPersona === 'marco' ? 'Restaurant Marketing Suite' :
+                     currentPersona === 'alex' ? 'Fitness Business Boosters' :
+                     currentPersona === 'david' ? 'Automotive Sales Enhancers' : 'Business Growth Tools'}
+                  </h4>
+                  <div className="text-sm text-gray-600">
+                    {currentPersona === 'kemar' ? '8 specialized agents' :
+                     currentPersona === 'karen' ? '7 specialized agents' :
+                     currentPersona === 'sarah' ? '6 specialized agents' :
+                     currentPersona === 'marco' ? '7 specialized agents' :
+                     currentPersona === 'alex' ? '8 specialized agents' :
+                     currentPersona === 'david' ? '7 specialized agents' : '6 specialized agents'}
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {/* Universal AI Tools */}
+                  {[
+                    {
+                      name: 'AI-Powered Color Palette Generator for Instant Branding',
+                      description: 'Generate professional color schemes instantly for any brand or project',
+                      price: '$29/month',
+                      features: ['Brand color analysis', 'Accessibility compliance', 'Export to design tools', 'Color psychology insights'],
+                      popular: false,
+                      category: 'Design',
+                      icon: '🎨'
+                    },
+                    {
+                      name: 'Interactive Content Mood Board Creator',
+                      description: 'Create stunning visual mood boards for content planning and brand storytelling',
+                      price: '$39/month',
+                      features: ['Drag-and-drop interface', 'Brand asset library', 'Collaboration tools', 'Export options'],
+                      popular: true,
+                      category: 'Content',
+                      icon: '📐'
+                    },
+                    {
+                      name: 'Contextual Emoji and GIF Suggestion Engine',
+                      description: 'AI-powered emoji and GIF recommendations that match your content context',
+                      price: '$19/month',
+                      features: ['Context-aware suggestions', 'Trend analysis', 'Platform optimization', 'Custom emoji sets'],
+                      popular: false,
+                      category: 'Content',
+                      icon: '😊'
+                    },
+                    {
+                      name: 'One-Click Social Media Post Templating',
+                      description: 'Generate platform-specific post templates instantly with one click',
+                      price: '$49/month',
+                      features: ['Multi-platform templates', 'Brand consistency', 'Auto-sizing', 'A/B testing'],
+                      popular: false,
+                      category: 'Social Media',
+                      icon: '📱'
+                    },
+                    {
+                      name: 'Real-time Collaboration Annotation Layer',
+                      description: 'Add collaborative notes and feedback directly on content in real-time',
+                      price: '$59/month',
+                      features: ['Real-time collaboration', 'Version control', 'Comment threads', 'Approval workflows'],
+                      popular: false,
+                      category: 'Collaboration',
+                      icon: '💬'
+                    }
+                  ].map((agent, index) => (
+                    <div key={index} className={`bg-gradient-to-br from-white to-gray-50 rounded-2xl p-6 border-2 ${agent.popular ? 'border-purple-300 shadow-lg' : 'border-gray-200'} hover:shadow-xl transition-all duration-300 group`}>
+                      {agent.popular && (
+                        <div className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white px-3 py-1 rounded-full text-sm font-medium mb-4 inline-block">
+                          Most Popular
+                        </div>
+                      )}
+                      <div className="flex items-center space-x-3 mb-4">
+                        <div className="text-2xl">{agent.icon}</div>
+                        <div>
+                          <h4 className="text-lg font-bold text-gray-900">{agent.name}</h4>
+                          <span className="text-xs text-purple-600 bg-purple-100 px-2 py-1 rounded-full">{agent.category}</span>
+                        </div>
+                      </div>
+                      <p className="text-gray-600 mb-4">{agent.description}</p>
+                      <div className="space-y-2 mb-6">
+                        {agent.features.map((feature, idx) => (
+                          <div key={idx} className="flex items-center space-x-2">
+                            <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `var(--color-primary, #8b5cf6)`, color: "white" }}><Check className="w-3 h-3" style={{ color: "white", fill: "white" }} /></div>
+                            <span className="text-sm text-gray-700">{feature}</span>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-2xl font-bold text-gray-900">{agent.price}</span>
+                        <button className={`px-6 py-2 rounded-xl font-semibold transition-all duration-300 ${agent.popular ? 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white hover:from-purple-600 hover:to-indigo-600 shadow-lg' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'} group-hover:scale-105`}>
+                          Install
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* Kemar Hinds - Keynote Speaker */}
+                  {currentPersona === 'kemar' && [
+                    {
+                      name: 'Speaker Lead Generator Pro',
+                      description: 'AI-powered system to find and book speaking engagements',
+                      price: '$89/month',
+                      features: ['Event organizer database', 'Personalized pitch templates', 'Follow-up automation', 'Speaker fee calculator'],
+                      popular: true,
+                      category: 'Lead Generation',
+                      icon: '🎤'
+                    },
+                    {
+                      name: 'Thought Leadership Engine',
+                      description: 'Create compelling content that positions you as an industry expert',
+                      price: '$69/month',
+                      features: ['Topic research AI', 'Content calendars', 'LinkedIn article writer', 'Influence tracking'],
+                      popular: false,
+                      category: 'Content Creation',
+                      icon: '💡'
+                    },
+                    {
+                      name: 'Audience Engagement Maximizer',
+                      description: 'Tools to captivate and convert your speaking audience',
+                      price: '$79/month',
+                      features: ['Interactive poll generator', 'Q&A management', 'Feedback collection', 'Lead capture forms'],
+                      popular: false,
+                      category: 'Engagement',
+                      icon: '👥'
+                    },
+                    {
+                      name: 'Corporate Training Pipeline',
+                      description: 'Convert speaking gigs into high-value training contracts',
+                      price: '$129/month',
+                      features: ['Proposal generator', 'Training module builder', 'ROI calculator', 'Client onboarding'],
+                      popular: false,
+                      category: 'Business Development',
+                      icon: '🏢'
+                    },
+                    {
+                      name: 'Speaking Portfolio Builder',
+                      description: 'Showcase your expertise with professional materials',
+                      price: '$49/month',
+                      features: ['One-sheet designer', 'Video testimonials', 'Demo reel creator', 'Speaker kit builder'],
+                      popular: false,
+                      category: 'Portfolio',
+                      icon: '📁'
+                    },
+                    {
+                      name: 'Event Analytics Dashboard',
+                      description: 'Track and optimize your speaking performance',
+                      price: '$59/month',
+                      features: ['Engagement metrics', 'Feedback analysis', 'Revenue tracking', 'Performance insights'],
+                      popular: false,
+                      category: 'Analytics',
+                      icon: '📊'
+                    }
+                  ].map((agent, index) => (
+                    <div key={index} className={`bg-gradient-to-br from-white to-gray-50 rounded-2xl p-6 border-2 ${agent.popular ? 'border-purple-300 shadow-lg' : 'border-gray-200'} hover:shadow-xl transition-all duration-300 group`}>
+                      {agent.popular && (
+                        <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1 rounded-full text-sm font-medium mb-4 inline-block">
+                          Most Popular
+                        </div>
+                      )}
+                      <div className="flex items-center space-x-3 mb-4">
+                        <div className="text-2xl">{agent.icon}</div>
+                        <div>
+                          <h4 className="text-lg font-bold text-gray-900">{agent.name}</h4>
+                          <span className="text-xs text-purple-600 bg-purple-100 px-2 py-1 rounded-full">{agent.category}</span>
+                        </div>
+                      </div>
+                      <p className="text-gray-600 mb-4">{agent.description}</p>
+                      <div className="space-y-2 mb-6">
+                        {agent.features.map((feature, idx) => (
+                          <div key={idx} className="flex items-center space-x-2">
+                            <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `var(--color-primary, #8b5cf6)`, color: "white" }}><Check className="w-3 h-3" style={{ color: "white", fill: "white" }} /></div>
+                            <span className="text-sm text-gray-700">{feature}</span>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-2xl font-bold text-gray-900">{agent.price}</span>
+                        <button className={`px-6 py-2 rounded-xl font-semibold transition-all duration-300 ${agent.popular ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 shadow-lg' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'} group-hover:scale-105`}>
+                          Install
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* Karen Thompson - Real Estate Agent */}
+                  {currentPersona === 'karen' && [
+                    {
+                      name: 'Property Lead Magnet',
+                      description: 'AI-driven lead generation for real estate professionals',
+                      price: '$79/month',
+                      features: ['Buyer intent analysis', 'Lead scoring system', 'Automated follow-ups', 'Market alerts'],
+                      popular: true,
+                      category: 'Lead Generation',
+                      icon: '🏠'
+                    },
+                    {
+                      name: 'Listing Marketing Automation',
+                      description: 'Create compelling property listings that sell faster',
+                      price: '$89/month',
+                      features: ['Auto-generated descriptions', 'Virtual tour creator', 'Social media posts', 'Email campaigns'],
+                      popular: false,
+                      category: 'Marketing',
+                      icon: '📸'
+                    },
+                    {
+                      name: 'Client Relationship Manager',
+                      description: 'Nurture relationships from lead to closing and beyond',
+                      price: '$69/month',
+                      features: ['CRM integration', 'Milestone tracking', 'Anniversary reminders', 'Referral generator'],
+                      popular: false,
+                      category: 'CRM',
+                      icon: '🤝'
+                    },
+                    {
+                      name: 'Market Intelligence Hub',
+                      description: 'Stay ahead with real-time market data and insights',
+                      price: '$59/month',
+                      features: ['Price trend analysis', 'Competitor tracking', 'Neighborhood insights', 'Investment calculator'],
+                      popular: false,
+                      category: 'Analytics',
+                      icon: '📈'
+                    },
+                    {
+                      name: 'Open House Optimizer',
+                      description: 'Maximize attendance and capture leads at open houses',
+                      price: '$49/month',
+                      features: ['Event promotion', 'Digital sign-in', 'Feedback collection', 'Lead follow-up'],
+                      popular: false,
+                      category: 'Events',
+                      icon: '🚪'
+                    },
+                    {
+                      name: 'First-Time Buyer Assistant',
+                      description: 'Guide new buyers through the purchasing process',
+                      price: '$39/month',
+                      features: ['Educational content', 'Mortgage calculator', 'Checklist creator', 'Process tracker'],
+                      popular: false,
+                      category: 'Education',
+                      icon: '🎓'
+                    }
+                  ].map((agent, index) => (
+                    <div key={index} className={`bg-gradient-to-br from-white to-gray-50 rounded-2xl p-6 border-2 ${agent.popular ? 'border-blue-300 shadow-lg' : 'border-gray-200'} hover:shadow-xl transition-all duration-300 group`}>
+                      {agent.popular && (
+                        <div className="bg-gradient-to-r from-blue-500 to-green-500 text-white px-3 py-1 rounded-full text-sm font-medium mb-4 inline-block">
+                          Most Popular
+                        </div>
+                      )}
+                      <div className="flex items-center space-x-3 mb-4">
+                        <div className="text-2xl">{agent.icon}</div>
+                        <div>
+                          <h4 className="text-lg font-bold text-gray-900">{agent.name}</h4>
+                          <span className="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded-full">{agent.category}</span>
+                        </div>
+                      </div>
+                      <p className="text-gray-600 mb-4">{agent.description}</p>
+                      <div className="space-y-2 mb-6">
+                        {agent.features.map((feature, idx) => (
+                          <div key={idx} className="flex items-center space-x-2">
+                            <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `var(--color-primary, #8b5cf6)`, color: "white" }}><Check className="w-3 h-3" style={{ color: "white", fill: "white" }} /></div>
+                            <span className="text-sm text-gray-700">{feature}</span>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-2xl font-bold text-gray-900">{agent.price}</span>
+                        <button className={`px-6 py-2 rounded-xl font-semibold transition-all duration-300 ${agent.popular ? 'bg-gradient-to-r from-blue-500 to-green-500 text-white hover:from-blue-600 hover:to-green-600 shadow-lg' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'} group-hover:scale-105`}>
+                          Install
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* Sarah Martinez - MedSpa Owner */}
+                  {currentPersona === 'sarah' && [
+                    {
+                      name: 'Beauty Lead Conversion Engine',
+                      description: 'Convert beauty consultations into loyal clients',
+                      price: '$99/month',
+                      features: ['Consultation booking AI', 'Treatment recommendations', 'Package builder', 'Follow-up sequences'],
+                      popular: true,
+                      category: 'Lead Generation',
+                      icon: '💄'
+                    },
+                    {
+                      name: 'Treatment Marketing Suite',
+                      description: 'Promote your services with targeted beauty campaigns',
+                      price: '$79/month',
+                      features: ['Before/after galleries', 'Seasonal promotions', 'Influencer outreach', 'Review generator'],
+                      popular: false,
+                      category: 'Marketing',
+                      icon: '✨'
+                    },
+                    {
+                      name: 'Client Wellness Journey',
+                      description: 'Guide clients through their complete beauty transformation',
+                      price: '$69/month',
+                      features: ['Treatment planning', 'Progress tracking', 'Reminder system', 'Loyalty rewards'],
+                      popular: false,
+                      category: 'Client Care',
+                      icon: '🌟'
+                    },
+                    {
+                      name: 'Skin Analysis Pro',
+                      description: 'AI-powered skin analysis and treatment recommendations',
+                      price: '$89/month',
+                      features: ['Photo analysis', 'Skin scoring', 'Treatment mapping', 'Progress monitoring'],
+                      popular: false,
+                      category: 'Analysis',
+                      icon: '🔍'
+                    },
+                    {
+                      name: 'Appointment Optimization',
+                      description: 'Maximize bookings and minimize no-shows',
+                      price: '$59/month',
+                      features: ['Smart scheduling', 'Reminder automation', 'Waitlist management', 'Capacity planning'],
+                      popular: false,
+                      category: 'Operations',
+                      icon: '📅'
+                    },
+                    {
+                      name: 'Wellness Content Creator',
+                      description: 'Educational content that builds trust and authority',
+                      price: '$49/month',
+                      features: ['Blog post generator', 'Video scripts', 'Social media content', 'Email newsletters'],
+                      popular: false,
+                      category: 'Content',
+                      icon: '📝'
+                    }
+                  ].map((agent, index) => (
+                    <div key={index} className={`bg-gradient-to-br from-white to-gray-50 rounded-2xl p-6 border-2 ${agent.popular ? 'border-pink-300 shadow-lg' : 'border-gray-200'} hover:shadow-xl transition-all duration-300 group`}>
+                      {agent.popular && (
+                        <div className="bg-gradient-to-r from-pink-500 to-purple-500 text-white px-3 py-1 rounded-full text-sm font-medium mb-4 inline-block">
+                          Most Popular
+                        </div>
+                      )}
+                      <div className="flex items-center space-x-3 mb-4">
+                        <div className="text-2xl">{agent.icon}</div>
+                        <div>
+                          <h4 className="text-lg font-bold text-gray-900">{agent.name}</h4>
+                          <span className="text-xs text-pink-600 bg-pink-100 px-2 py-1 rounded-full">{agent.category}</span>
+                        </div>
+                      </div>
+                      <p className="text-gray-600 mb-4">{agent.description}</p>
+                      <div className="space-y-2 mb-6">
+                        {agent.features.map((feature, idx) => (
+                          <div key={idx} className="flex items-center space-x-2">
+                            <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `var(--color-primary, #8b5cf6)`, color: "white" }}><Check className="w-3 h-3" style={{ color: "white", fill: "white" }} /></div>
+                            <span className="text-sm text-gray-700">{feature}</span>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-2xl font-bold text-gray-900">{agent.price}</span>
+                        <button className={`px-6 py-2 rounded-xl font-semibold transition-all duration-300 ${agent.popular ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600 shadow-lg' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'} group-hover:scale-105`}>
+                          Install
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* Marco Romano - Restaurant Owner */}
+                  {currentPersona === 'marco' && [
+                    {
+                      name: 'Restaurant Lead Cultivator',
+                      description: 'Turn diners into loyal customers with smart engagement',
+                      price: '$69/month',
+                      features: ['Reservation optimization', 'Customer preferences', 'Special event promotion', 'Review management'],
+                      popular: true,
+                      category: 'Lead Generation',
+                      icon: '🍽️'
+                    },
+                    {
+                      name: 'Menu Engineering Pro',
+                      description: 'Optimize your menu for maximum profitability',
+                      price: '$89/month',
+                      features: ['Dish analysis', 'Pricing optimization', 'Seasonal menu creator', 'Profit tracking'],
+                      popular: false,
+                      category: 'Operations',
+                      icon: '📋'
+                    },
+                    {
+                      name: 'Food Photography Assistant',
+                      description: 'Make your dishes irresistible on social media',
+                      price: '$49/month',
+                      features: ['Photo enhancement', 'Styling tips', 'Social media templates', 'Menu design'],
+                      popular: false,
+                      category: 'Visual Marketing',
+                      icon: '📸'
+                    },
+                    {
+                      name: 'Event Booking Engine',
+                      description: 'Capture private dining and event opportunities',
+                      price: '$79/month',
+                      features: ['Event packages', 'Booking automation', 'Catering quotes', 'Party planning'],
+                      popular: false,
+                      category: 'Events',
+                      icon: '🎉'
+                    },
+                    {
+                      name: 'Customer Loyalty Builder',
+                      description: 'Create a community of devoted food enthusiasts',
+                      price: '$59/month',
+                      features: ['Loyalty program', 'Birthday specials', 'VIP perks', 'Referral rewards'],
+                      popular: false,
+                      category: 'Retention',
+                      icon: '❤️'
+                    },
+                    {
+                      name: 'Local SEO Dominator',
+                      description: 'Become the top restaurant in local search results',
+                      price: '$39/month',
+                      features: ['Google My Business', 'Local listings', 'Review optimization', 'Map visibility'],
+                      popular: false,
+                      category: 'Local Marketing',
+                      icon: '🗺️'
+                    }
+                  ].map((agent, index) => (
+                    <div key={index} className={`bg-gradient-to-br from-white to-gray-50 rounded-2xl p-6 border-2 ${agent.popular ? 'border-red-300 shadow-lg' : 'border-gray-200'} hover:shadow-xl transition-all duration-300 group`}>
+                      {agent.popular && (
+                        <div className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-3 py-1 rounded-full text-sm font-medium mb-4 inline-block">
+                          Most Popular
+                        </div>
+                      )}
+                      <div className="flex items-center space-x-3 mb-4">
+                        <div className="text-2xl">{agent.icon}</div>
+                        <div>
+                          <h4 className="text-lg font-bold text-gray-900">{agent.name}</h4>
+                          <span className="text-xs text-red-600 bg-red-100 px-2 py-1 rounded-full">{agent.category}</span>
+                        </div>
+                      </div>
+                      <p className="text-gray-600 mb-4">{agent.description}</p>
+                      <div className="space-y-2 mb-6">
+                        {agent.features.map((feature, idx) => (
+                          <div key={idx} className="flex items-center space-x-2">
+                            <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `var(--color-primary, #8b5cf6)`, color: "white" }}><Check className="w-3 h-3" style={{ color: "white", fill: "white" }} /></div>
+                            <span className="text-sm text-gray-700">{feature}</span>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-2xl font-bold text-gray-900">{agent.price}</span>
+                        <button className={`px-6 py-2 rounded-xl font-semibold transition-all duration-300 ${agent.popular ? 'bg-gradient-to-r from-red-500 to-orange-500 text-white hover:from-red-600 hover:to-orange-600 shadow-lg' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'} group-hover:scale-105`}>
+                          Install
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* Alex Chen - Fitness Coach */}
+                  {currentPersona === 'alex' && [
+                    {
+                      name: 'Fitness Lead Transformer',
+                      description: 'Convert fitness inquiries into committed clients',
+                      price: '$89/month',
+                      features: ['Fitness assessment', 'Goal setting wizard', 'Program matching', 'Trial automation'],
+                      popular: true,
+                      category: 'Lead Generation',
+                      icon: '💪'
+                    },
+                    {
+                      name: 'Workout Content Creator',
+                      description: 'Generate engaging fitness content that motivates',
+                      price: '$69/month',
+                      features: ['Exercise demos', 'Workout plans', 'Progress videos', 'Nutrition tips'],
+                      popular: false,
+                      category: 'Content Creation',
+                      icon: '🎬'
+                    },
+                    {
+                      name: 'Client Progress Tracker',
+                      description: 'Monitor and celebrate client transformations',
+                      price: '$79/month',
+                      features: ['Body measurements', 'Photo comparisons', 'Performance metrics', 'Goal achievements'],
+                      popular: false,
+                      category: 'Tracking',
+                      icon: '📊'
+                    },
+                    {
+                      name: 'Nutrition Guidance System',
+                      description: 'Provide personalized nutrition support',
+                      price: '$59/month',
+                      features: ['Meal planning', 'Macro tracking', 'Recipe suggestions', 'Shopping lists'],
+                      popular: false,
+                      category: 'Nutrition',
+                      icon: '🥗'
+                    },
+                    {
+                      name: 'Group Class Optimizer',
+                      description: 'Maximize attendance and engagement in group fitness',
+                      price: '$49/month',
+                      features: ['Class scheduling', 'Waitlist management', 'Attendance tracking', 'Feedback collection'],
+                      popular: false,
+                      category: 'Classes',
+                      icon: '👥'
+                    },
+                    {
+                      name: 'Personal Training Scaler',
+                      description: 'Scale your 1-on-1 training into group programs',
+                      price: '$99/month',
+                      features: ['Program templates', 'Client onboarding', 'Progress monitoring', 'Retention tools'],
+                      popular: false,
+                      category: 'Business Growth',
+                      icon: '🚀'
+                    }
+                  ].map((agent, index) => (
+                    <div key={index} className={`bg-gradient-to-br from-white to-gray-50 rounded-2xl p-6 border-2 ${agent.popular ? 'border-blue-300 shadow-lg' : 'border-gray-200'} hover:shadow-xl transition-all duration-300 group`}>
+                      {agent.popular && (
+                        <div className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-3 py-1 rounded-full text-sm font-medium mb-4 inline-block">
+                          Most Popular
+                        </div>
+                      )}
+                      <div className="flex items-center space-x-3 mb-4">
+                        <div className="text-2xl">{agent.icon}</div>
+                        <div>
+                          <h4 className="text-lg font-bold text-gray-900">{agent.name}</h4>
+                          <span className="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded-full">{agent.category}</span>
+                        </div>
+                      </div>
+                      <p className="text-gray-600 mb-4">{agent.description}</p>
+                      <div className="space-y-2 mb-6">
+                        {agent.features.map((feature, idx) => (
+                          <div key={idx} className="flex items-center space-x-2">
+                            <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `var(--color-primary, #8b5cf6)`, color: "white" }}><Check className="w-3 h-3" style={{ color: "white", fill: "white" }} /></div>
+                            <span className="text-sm text-gray-700">{feature}</span>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-2xl font-bold text-gray-900">{agent.price}</span>
+                        <button className={`px-6 py-2 rounded-xl font-semibold transition-all duration-300 ${agent.popular ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white hover:from-blue-600 hover:to-cyan-600 shadow-lg' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'} group-hover:scale-105`}>
+                          Install
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* David Wilson - Auto Dealer */}
+                  {currentPersona === 'david' && [
+                    {
+                      name: 'Auto Sales Lead Generator',
+                      description: 'Convert car shoppers into qualified buyers',
+                      price: '$99/month',
+                      features: ['Vehicle matching', 'Financing pre-approval', 'Test drive booking', 'Trade-in evaluator'],
+                      popular: true,
+                      category: 'Lead Generation',
+                      icon: '🚗'
+                    },
+                    {
+                      name: 'Inventory Showcase Pro',
+                      description: 'Make your vehicles irresistible to buyers',
+                      price: '$79/month',
+                      features: ['360° vehicle tours', 'Feature highlights', 'Comparison tools', 'Pricing optimization'],
+                      popular: false,
+                      category: 'Inventory',
+                      icon: '📱'
+                    },
+                    {
+                      name: 'Customer Service Excellence',
+                      description: 'Enhance every touchpoint in the buying journey',
+                      price: '$69/month',
+                      features: ['Service reminders', 'Maintenance scheduling', 'Loyalty programs', 'Satisfaction surveys'],
+                      popular: false,
+                      category: 'Customer Service',
+                      icon: '⭐'
+                    },
+                    {
+                      name: 'Financing Simplifier',
+                      description: 'Streamline the financing process for faster closes',
+                      price: '$89/month',
+                      features: ['Credit pre-screening', 'Payment calculators', 'Loan applications', 'Approval tracking'],
+                      popular: false,
+                      category: 'Financing',
+                      icon: '💳'
+                    },
+                    {
+                      name: 'Trade-In Maximizer',
+                      description: 'Increase trade-in values and customer satisfaction',
+                      price: '$59/month',
+                      features: ['Instant appraisals', 'Market value tracking', 'Condition assessment', 'Negotiation tools'],
+                      popular: false,
+                      category: 'Trade-Ins',
+                      icon: '🔄'
+                    },
+                    {
+                      name: 'Service Department Booster',
+                      description: 'Turn service visits into sales opportunities',
+                      price: '$49/month',
+                      features: ['Service upsells', 'Maintenance reminders', 'Warranty tracking', 'Customer retention'],
+                      popular: false,
+                      category: 'Service',
+                      icon: '🔧'
+                    }
+                  ].map((agent, index) => (
+                    <div key={index} className={`bg-gradient-to-br from-white to-gray-50 rounded-2xl p-6 border-2 ${agent.popular ? 'border-purple-300 shadow-lg' : 'border-gray-200'} hover:shadow-xl transition-all duration-300 group`}>
+                      {agent.popular && (
+                        <div className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white px-3 py-1 rounded-full text-sm font-medium mb-4 inline-block">
+                          Most Popular
+                        </div>
+                      )}
+                      <div className="flex items-center space-x-3 mb-4">
+                        <div className="text-2xl">{agent.icon}</div>
+                        <div>
+                          <h4 className="text-lg font-bold text-gray-900">{agent.name}</h4>
+                          <span className="text-xs text-purple-600 bg-purple-100 px-2 py-1 rounded-full">{agent.category}</span>
+                        </div>
+                      </div>
+                      <p className="text-gray-600 mb-4">{agent.description}</p>
+                      <div className="space-y-2 mb-6">
+                        {agent.features.map((feature, idx) => (
+                          <div key={idx} className="flex items-center space-x-2">
+                            <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `var(--color-primary, #8b5cf6)`, color: "white" }}><Check className="w-3 h-3" style={{ color: "white", fill: "white" }} /></div>
+                            <span className="text-sm text-gray-700">{feature}</span>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-2xl font-bold text-gray-900">{agent.price}</span>
+                        <button className={`px-6 py-2 rounded-xl font-semibold transition-all duration-300 ${agent.popular ? 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white hover:from-purple-600 hover:to-indigo-600 shadow-lg' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'} group-hover:scale-105`}>
+                          Install
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+            </>
+          )}
+
+          {/* Learn Mode - GRIO Academy */}
+          {activeMode === 'learn' && (
+            <div className="space-y-6">
+              {/* GRIO Academy Header */}
+              <div className="bg-gradient-to-br from-orange-600 via-amber-600 to-yellow-600 rounded-3xl p-8 text-white relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-orange-500/20 to-yellow-500/20 backdrop-blur-sm"></div>
+                <div className="relative z-10">
+                  <div className="flex items-center space-x-4 mb-4">
+                    <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                      <BookOpen className="w-8 h-8 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-3xl font-bold mb-2">GRIO Academy</h3>
+                      <p className="text-orange-100 text-lg">
+                        {currentPersona === 'kemar' 
+                          ? 'Learn CMO-level marketing strategies for speakers & maximize ViVi platform potential' 
+                          : currentPersona === 'karen'
+                          ? 'Master real estate marketing like a CMO & leverage Mavro Pro for lead generation'
+                          : currentPersona === 'sarah'
+                          ? 'Advanced wellness marketing strategies & MedSpa growth with ViVi AI'
+                          : currentPersona === 'marco'
+                          ? 'Restaurant marketing mastery & food service growth with Mavro Pro tools'
+                          : currentPersona === 'alex'
+                          ? 'Fitness marketing excellence & gym growth strategies with ViVi'
+                          : currentPersona === 'david'
+                          ? 'Automotive marketing strategies & dealership growth with Mavro Pro'
+                          : 'CMO-level marketing education & Mavro Pro platform mastery'
+                        }
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {/* Academy Stats */}
+                  <div className="grid grid-cols-4 gap-4 mt-6">
+                    <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+                      <div className="text-2xl font-bold">150+</div>
+                      <div className="text-sm text-orange-100">Courses</div>
+                    </div>
+                    <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+                      <div className="text-2xl font-bold">25K+</div>
+                      <div className="text-sm text-orange-100">Students</div>
+                    </div>
+                    <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+                      <div className="text-2xl font-bold">4.9★</div>
+                      <div className="text-sm text-orange-100">Rating</div>
+                    </div>
+                    <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+                      <div className="text-2xl font-bold">95%</div>
+                      <div className="text-sm text-orange-100">Success Rate</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Featured Courses */}
+              <div className="bg-white rounded-3xl p-6 shadow-lg border border-gray-100">
+                <h4 className="text-xl font-bold text-gray-900 mb-6">
+                  {currentPersona === 'kemar' ? 'Speaking Industry Marketing + ViVi Mastery' :
+                   currentPersona === 'karen' ? 'Real Estate Marketing + Mavro Pro Mastery' :
+                   currentPersona === 'sarah' ? 'MedSpa Marketing + ViVi AI Mastery' :
+                   currentPersona === 'marco' ? 'Restaurant Marketing + Mavro Pro Mastery' :
+                   currentPersona === 'alex' ? 'Fitness Marketing + ViVi Mastery' :
+                   currentPersona === 'david' ? 'Automotive Marketing + Mavro Pro Mastery' :
+                   'CMO Marketing + Platform Mastery'}
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {(() => {
+                    const coursesByPersona = {
+                      kemar: [
+                        { title: 'CMO Marketing for Speakers + ViVi AI Mastery', duration: '8 weeks', students: '2,847', rating: '4.9', price: '$297', featured: true, description: 'Master CMO-level marketing strategies for speakers and maximize ViVi platform capabilities' },
+                        { title: 'Speaking Industry Lead Generation with Mavro Pro', duration: '6 weeks', students: '1,923', rating: '4.8', price: '$197', featured: false, description: 'Advanced lead generation tactics using Mavro Pro tools for speaking professionals' },
+                        { title: 'ViVi Content Creation & Brand Building', duration: '4 weeks', students: '3,156', rating: '4.9', price: '$147', featured: false, description: 'Leverage ViVi AI for content creation and personal brand development' }
+                      ],
+                      karen: [
+                        { title: 'Real Estate CMO Marketing + Mavro Pro Mastery', duration: '6 weeks', students: '1,823', rating: '4.8', price: '$247', featured: true, description: 'Think like a CMO for real estate marketing and master Mavro Pro platform tools' },
+                        { title: 'Property Marketing with ViVi AI', duration: '4 weeks', students: '967', rating: '4.9', price: '$197', featured: false, description: 'Use ViVi AI for property descriptions, virtual tours, and client communication' },
+                        { title: 'Lead Nurturing Systems with Mavro Pro', duration: '5 weeks', students: '2,145', rating: '4.7', price: '$177', featured: false, description: 'Build automated lead nurturing campaigns using Mavro Pro CRM tools' }
+                      ],
+                      sarah: [
+                        { title: 'MedSpa CMO Marketing + ViVi AI Excellence', duration: '8 weeks', students: '1,456', rating: '4.9', price: '$347', featured: true, description: 'Master CMO-level wellness marketing and leverage ViVi AI for MedSpa growth' },
+                        { title: 'Aesthetic Treatment Marketing with Mavro Pro', duration: '5 weeks', students: '1,123', rating: '4.8', price: '$197', featured: false, description: 'Advanced treatment marketing strategies using Mavro Pro analytics and automation' },
+                        { title: 'Client Journey Optimization with ViVi', duration: '4 weeks', students: '1,867', rating: '4.7', price: '$147', featured: false, description: 'Use ViVi AI to optimize client experiences and retention strategies' }
+                      ],
+                      marco: [
+                        { title: 'Restaurant CMO Marketing + Mavro Pro Mastery', duration: '6 weeks', students: '1,678', rating: '4.8', price: '$247', featured: true, description: 'Think like a CMO for restaurant marketing and master Mavro Pro platform capabilities' },
+                        { title: 'Food Service Branding with ViVi AI', duration: '4 weeks', students: '1,234', rating: '4.9', price: '$197', featured: false, description: 'Leverage ViVi AI for menu descriptions, social content, and brand storytelling' },
+                        { title: 'Customer Experience Design with Mavro Pro', duration: '3 weeks', students: '2,145', rating: '4.7', price: '$127', featured: false, description: 'Design exceptional customer experiences using Mavro Pro analytics and insights' }
+                      ],
+                      alex: [
+                        { title: 'Fitness CMO Marketing + ViVi AI Mastery', duration: '8 weeks', students: '2,234', rating: '4.9', price: '$297', featured: true, description: 'Master CMO-level fitness marketing and leverage ViVi AI for gym growth' },
+                        { title: 'Member Acquisition with Mavro Pro Tools', duration: '6 weeks', students: '1,567', rating: '4.8', price: '$197', featured: false, description: 'Advanced member acquisition strategies using Mavro Pro lead generation tools' },
+                        { title: 'Fitness Content Strategy with ViVi', duration: '10 weeks', students: '1,345', rating: '4.7', price: '$347', featured: false, description: 'Create compelling fitness content and programs using ViVi AI capabilities' }
+                      ],
+                      david: [
+                        { title: 'Automotive CMO Marketing + Mavro Pro Mastery', duration: '6 weeks', students: '1,445', rating: '4.8', price: '$247', featured: true, description: 'Think like a CMO for automotive marketing and master Mavro Pro dealership tools' },
+                        { title: 'Vehicle Sales Optimization with ViVi AI', duration: '4 weeks', students: '867', rating: '4.9', price: '$197', featured: false, description: 'Use ViVi AI for vehicle descriptions, customer matching, and sales automation' },
+                        { title: 'Dealership Growth Strategies with Mavro Pro', duration: '5 weeks', students: '1,234', rating: '4.7', price: '$177', featured: false, description: 'Advanced dealership growth tactics using Mavro Pro analytics and customer insights' }
+                      ]
+                    };
+                    
+                    return coursesByPersona[currentPersona as keyof typeof coursesByPersona] || coursesByPersona.kemar;
+                  })().map((course, index) => (
+                    <div key={index} className="group bg-gradient-to-br from-white to-gray-50 rounded-2xl p-6 border border-gray-200 hover:border-orange-300 hover:shadow-xl transition-all duration-300">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-2 mb-2">
+                            <h5 className="font-bold text-gray-900 group-hover:text-orange-600 transition-colors">{course.title}</h5>
+                            {course.featured && (
+                              <span className="bg-gradient-to-r from-orange-500 to-yellow-500 text-white text-xs px-2 py-1 rounded-full font-medium">
+                                CMO Featured
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-sm text-gray-600 mb-3 line-clamp-2">{course.description}</p>
+                          <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
+                            <span>⏱️ {course.duration}</span>
+                            <span>👥 {course.students}</span>
+                            <span>⭐ {course.rating}</span>
+                          </div>
+                          <div className="text-lg font-bold text-gray-900 mb-4">{course.price}</div>
+                        </div>
+                      </div>
+                      <button className={`w-full py-3 rounded-xl font-semibold transition-all duration-300 ${course.featured ? 'bg-gradient-to-r from-orange-500 to-yellow-500 text-white hover:from-orange-600 hover:to-yellow-600 shadow-lg' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'} group-hover:scale-105`}>
+                        Start Learning
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* CMO Marketing Fundamentals */}
+              <div className="bg-white rounded-3xl p-6 shadow-lg border border-gray-100">
+                <h4 className="text-xl font-bold text-gray-900 mb-6">CMO Marketing Fundamentals</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-6 border border-blue-200">
+                    <div className="flex items-center space-x-3 mb-4">
+                      <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center">
+                        <Target className="w-5 h-5 text-white" />
+                      </div>
+                      <h5 className="font-bold text-gray-900">Strategic Marketing Thinking</h5>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-4">Learn to think like a CMO with strategic marketing frameworks, competitive analysis, and market positioning strategies.</p>
+                    <ul className="text-sm text-gray-600 space-y-2">
+                      <li>• Market Research & Analysis</li>
+                      <li>• Brand Strategy & Positioning</li>
+                      <li>• Competitive Intelligence</li>
+                      <li>• Customer Journey Mapping</li>
+                    </ul>
+                  </div>
+                  
+                  <div className="bg-gradient-to-br from-green-50 to-teal-50 rounded-2xl p-6 border border-green-200">
+                    <div className="flex items-center space-x-3 mb-4">
+                      <div className="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center">
+                        <BarChart3 className="w-5 h-5 text-white" />
+                      </div>
+                      <h5 className="font-bold text-gray-900">Marketing Analytics & ROI</h5>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-4">Master data-driven marketing decisions with advanced analytics, attribution modeling, and performance measurement.</p>
+                    <ul className="text-sm text-gray-600 space-y-2">
+                      <li>• KPI Development & Tracking</li>
+                      <li>• Attribution Modeling</li>
+                      <li>• Marketing Mix Optimization</li>
+                      <li>• Budget Allocation Strategy</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              {/* Mavro Pro/ViVi Platform Mastery */}
+              <div className="bg-white rounded-3xl p-6 shadow-lg border border-gray-100">
+                <h4 className="text-xl font-bold text-gray-900 mb-6">Mavro Pro/ViVi Platform Mastery</h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 border border-purple-200">
+                    <div className="flex items-center space-x-3 mb-4">
+                      <div className="w-10 h-10 bg-purple-500 rounded-xl flex items-center justify-center">
+                        <Sparkles className="w-5 h-5 text-white" />
+                      </div>
+                      <h5 className="font-bold text-gray-900">ViVi AI Optimization</h5>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-4">Advanced ViVi AI techniques for content creation, audience targeting, and campaign optimization.</p>
+                    <ul className="text-sm text-gray-600 space-y-1">
+                      <li>• AI Prompt Engineering</li>
+                      <li>• Content Personalization</li>
+                      <li>• Voice & Tone Training</li>
+                      <li>• Performance Optimization</li>
+                    </ul>
+                  </div>
+                  
+                  <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-2xl p-6 border border-orange-200">
+                    <div className="flex items-center space-x-3 mb-4">
+                      <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center">
+                        <Users className="w-5 h-5 text-white" />
+                      </div>
+                      <h5 className="font-bold text-gray-900">Mavro Pro CRM Mastery</h5>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-4">Complete mastery of Mavro Pro CRM for lead management, customer journey optimization, and sales automation.</p>
+                    <ul className="text-sm text-gray-600 space-y-1">
+                      <li>• Lead Scoring & Nurturing</li>
+                      <li>• Automation Workflows</li>
+                      <li>• Pipeline Management</li>
+                      <li>• Customer Segmentation</li>
+                    </ul>
+                  </div>
+                  
+                  <div className="bg-gradient-to-br from-teal-50 to-cyan-50 rounded-2xl p-6 border border-teal-200">
+                    <div className="flex items-center space-x-3 mb-4">
+                      <div className="w-10 h-10 bg-teal-500 rounded-xl flex items-center justify-center">
+                        <TrendingUp className="w-5 h-5 text-white" />
+                      </div>
+                      <h5 className="font-bold text-gray-900">FourSIGHT Analytics</h5>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-4">Advanced analytics interpretation and strategic decision-making using FourSIGHT data insights.</p>
+                    <ul className="text-sm text-gray-600 space-y-1">
+                      <li>• Advanced Reporting</li>
+                      <li>• Predictive Analytics</li>
+                      <li>• Performance Benchmarking</li>
+                      <li>• Strategic Planning</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              {/* Industry-Specific Marketing Skills */}
+              <div className="bg-white rounded-3xl p-6 shadow-lg border border-gray-100">
+                <h4 className="text-xl font-bold text-gray-900 mb-6">
+                  {currentPersona === 'kemar' ? 'Speaking Industry Marketing Skills' :
+                   currentPersona === 'karen' ? 'Real Estate Marketing Skills' :
+                   currentPersona === 'sarah' ? 'MedSpa Marketing Skills' :
+                   currentPersona === 'marco' ? 'Restaurant Marketing Skills' :
+                   currentPersona === 'alex' ? 'Fitness Marketing Skills' :
+                   currentPersona === 'david' ? 'Automotive Marketing Skills' :
+                   'Industry Marketing Skills'}
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {(() => {
+                    const skillsByPersona = {
+                      kemar: [
+                        { skill: 'Speaker Bureau Relations', icon: '🎤' },
+                        { skill: 'Corporate Event Marketing', icon: '🏢' },
+                        { skill: 'Thought Leadership Content', icon: '💡' },
+                        { skill: 'Speaking Fee Optimization', icon: '💰' }
+                      ],
+                      karen: [
+                        { skill: 'MLS Marketing Integration', icon: '🏠' },
+                        { skill: 'Virtual Tour Creation', icon: '📱' },
+                        { skill: 'Mortgage Partner Networks', icon: '🏦' },
+                        { skill: 'Neighborhood Marketing', icon: '🗺️' }
+                      ],
+                      sarah: [
+                        { skill: 'Medical Compliance Marketing', icon: '⚕️' },
+                        { skill: 'Before/After Showcasing', icon: '✨' },
+                        { skill: 'Wellness Community Building', icon: '🧘' },
+                        { skill: 'Treatment Package Optimization', icon: '💎' }
+                      ],
+                      marco: [
+                        { skill: 'Food Photography & Styling', icon: '📸' },
+                        { skill: 'Menu Psychology & Design', icon: '📋' },
+                        { skill: 'Event & Catering Marketing', icon: '🍽️' },
+                        { skill: 'Local SEO for Restaurants', icon: '🎯' }
+                      ],
+                      alex: [
+                        { skill: 'Fitness Challenge Marketing', icon: '🏋️' },
+                        { skill: 'Transformation Storytelling', icon: '📈' },
+                        { skill: 'Nutritional Content Strategy', icon: '🥗' },
+                        { skill: 'Community Building & Retention', icon: '👥' }
+                      ],
+                      david: [
+                        { skill: 'Vehicle Showcase Marketing', icon: '🚗' },
+                        { skill: 'Financing Campaign Creation', icon: '💳' },
+                        { skill: 'Trade-In Value Optimization', icon: '🔄' },
+                        { skill: 'Seasonal Sales Campaigns', icon: '📅' }
+                      ]
+                    };
+                    
+                    return skillsByPersona[currentPersona as keyof typeof skillsByPersona] || skillsByPersona.kemar;
+                  })().map((item, index) => (
+                    <div key={index} className="bg-gradient-to-br from-gray-50 to-white p-4 rounded-xl border border-gray-200 hover:shadow-md transition-all text-center">
+                      <div className="text-3xl mb-2">{item.icon}</div>
+                      <h6 className="font-semibold text-gray-900 text-sm">{item.skill}</h6>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Other Page Views */}
+          {currentView === 'campaigns' && (
+            <CampaignsPage currentPersona={currentPersona} />
+          )}
+          
+          {currentView === 'reviews' && (
+            <ReviewsPage currentPersona={currentPersona} />
+          )}
+          
+          {currentView === 'crm' && (
+            <CRMPage currentPersona={currentPersona} />
+          )}
+          
+          {currentView === 'foursight' && (
+            <FourSIGHTPage currentPersona={currentPersona} />
+          )}
+          
+          {currentView === 'geosmart' && (
+            <GeoSmartPage currentPersona={currentPersona} />
+          )}
+          
+          {currentView === 'vivistore' && (
+            <ViViStorePage currentPersona={currentPersona} />
+          )}
+          
+          {currentView === 'settings' && (
+            <SettingsPage currentPersona={currentPersona} />
+          )}
+          
+          {currentView === 'compliance' && (
+            <ComplianceCenterPage currentPersona={currentPersona} />
+          )}
+          
+          {currentView === 'clientportal' && (
+            <ClientPortalPage currentPersona={currentPersona} />
+          )}
+          
+          {currentView === 'inventory' && (
+            <InventoryManagerPage currentPersona={currentPersona} />
+          )}
+
+          {/* GeoSmart View */}
+          {currentView === 'geosmart' && (
+            <GeoSmartDemo currentPersona={currentPersona} />
+          )}
+        </main>
+      </div>
+      
+      {/* Advanced UI Components */}
+      <PersonalizedInteractionAnimations
+        isActive={animationTrigger}
+        interactionType={interactionType}
+        currentPersona={currentPersona}
+        onAnimationComplete={() => setAnimationTrigger(false)}
+      />
+      
+      <ContextualMicroInteractions
+        currentPersona={currentPersona}
+        interactionType={interactionType}
+        onInteraction={(type) => setInteractionType(type)}
+      >
+        <div />
+      </ContextualMicroInteractions>
+      
+      <AdaptiveColorThemeSelector
+        currentPersona={currentPersona}
+        onThemeChange={handleThemeChange}
+        isOpen={showThemeSelector}
+        onClose={() => setShowThemeSelector(false)}
+      />
+      
+      <GamifiedUserProgress
+        currentPersona={currentPersona}
+        isVisible={showGamifiedProgress}
+        onClose={() => setShowGamifiedProgress(false)}
+      />
+      
+      <SmartOnboardingTooltips
+        currentPersona={currentPersona}
+        isActive={showOnboardingTooltips}
+        onComplete={() => {
+          setShowOnboardingTooltips(false);
+          localStorage.setItem('mavro-onboarding-completed', 'true');
+        }}
+        onSkip={() => {
+          setShowOnboardingTooltips(false);
+          localStorage.setItem('mavro-onboarding-completed', 'true');
+        }}
+      />
+      
+      <ThemeChangeNotification
+        isVisible={showThemeNotification}
+        onClose={() => setShowThemeNotification(false)}
+        themeName={themeNotificationData.name}
+        themeColor={themeNotificationData.color}
+        currentPersona={currentPersona}
+      />
+      
+      {/* Enhanced Demo Components */}
+      <AutoStartTourGuide
+        isVisible={showAutoTour}
+        onClose={() => setShowAutoTour(false)}
+        onStartTour={handleTourComplete}
+        currentPersona={currentPersona}
+      />
+      
+      <InteractiveHotspots
+        currentView={currentView}
+        currentPersona={currentPersona}
+        isVisible={showHotspots}
+      />
+      
+      <DemoProgressTracker
+        currentView={currentView}
+        currentPersona={currentPersona}
+        isVisible={showProgressTracker}
+        onToggle={() => setShowProgressTracker(!showProgressTracker)}
+      />
+      
+      <LiveDataSimulator
+        currentPersona={currentPersona}
+        isActive={liveDataActive}
+      />
+      
+      <RealTimeNotificationSystem
+        currentPersona={currentPersona}
+        isActive={notificationSystemActive}
+        onNotificationClick={(notification) => {
+          console.log('Notification clicked:', notification);
+          // Add any specific actions for notification clicks
+        }}
+      />
+      
+      <PersonaComparisonMode
+        currentPersona={currentPersona}
+        isVisible={showPersonaComparison}
+        onClose={() => setShowPersonaComparison(false)}
+      />
+      
+      <SuccessAnimation
+        isVisible={showSuccessAnimation}
+        onComplete={() => setShowSuccessAnimation(false)}
+      />
+      
+      <ConfettiAnimation isVisible={showConfetti} />
+      
+      {/* Enhanced ViVi Assistant */}
+      <EnhancedViViAssistant
+        currentPersona={currentPersona}
+        currentView={currentView}
+        isMinimized={viviMinimized}
+        onToggleMinimize={() => setViviMinimized(!viviMinimized)}
+      />
+    </div>
+  );
+}

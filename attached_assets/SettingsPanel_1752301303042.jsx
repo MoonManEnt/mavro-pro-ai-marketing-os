@@ -1,0 +1,1 @@
+// User preferences, brand customization, and integration toggles

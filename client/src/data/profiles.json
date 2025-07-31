@@ -1,0 +1,51 @@
+{
+  "profiles": [],
+  "personaFramework": {
+    "importantDataPoints": [
+      "industry",
+      "targetAudience", 
+      "goals",
+      "challenges",
+      "preferredChannels",
+      "budget",
+      "kpis"
+    ],
+    "campaignMetrics": [
+      "reach",
+      "engagement",
+      "conversions",
+      "roi",
+      "leadGeneration",
+      "brandAwareness",
+      "customerAcquisition"
+    ],
+    "socialMediaPlatforms": [
+      "Instagram",
+      "Facebook", 
+      "LinkedIn",
+      "Twitter",
+      "TikTok",
+      "YouTube",
+      "Pinterest",
+      "Snapchat"
+    ],
+    "contentTypes": [
+      "text",
+      "image",
+      "video",
+      "carousel",
+      "story",
+      "reel",
+      "live"
+    ],
+    "analyticsToTrack": [
+      "impressions",
+      "clicks",
+      "engagementRate",
+      "conversionRate",
+      "costPerLead",
+      "customerLifetimeValue",
+      "returnOnAdSpend"
+    ]
+  }
+}

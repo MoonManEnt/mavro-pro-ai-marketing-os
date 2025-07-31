@@ -1,0 +1,60 @@
+{
+  "leads": [
+    {
+      "id": "lead-1",
+      "persona": "sarah",
+      "campaignId": "campaign-1",
+      "name": "Jennifer Walsh",
+      "email": "j.walsh@email.com",
+      "phone": "(555) 123-4567",
+      "status": "qualified",
+      "source": "Instagram Ad",
+      "value": 1200,
+      "notes": "Interested in Botox and filler consultation",
+      "lastContact": "2024-12-20",
+      "nextFollowUp": "2024-12-22"
+    },
+    {
+      "id": "lead-2",
+      "persona": "sarah",
+      "campaignId": "campaign-1",
+      "name": "Maria Santos",
+      "email": "maria.santos@email.com",
+      "phone": "(555) 234-5678",
+      "status": "new",
+      "source": "Facebook Ad",
+      "value": 800,
+      "notes": "Holiday gift certificate inquiry",
+      "lastContact": "2024-12-21",
+      "nextFollowUp": "2024-12-23"
+    },
+    {
+      "id": "lead-3",
+      "persona": "marco",
+      "campaignId": "campaign-3",
+      "name": "David Kim",
+      "email": "d.kim@email.com",
+      "phone": "(555) 345-6789",
+      "status": "converted",
+      "source": "Facebook Ad",
+      "value": 150,
+      "notes": "Booked table for 4 for Sunday brunch",
+      "lastContact": "2024-12-19",
+      "nextFollowUp": null
+    },
+    {
+      "id": "lead-4",
+      "persona": "alex",
+      "campaignId": "campaign-4",
+      "name": "Ashley Rodriguez",
+      "email": "ashley.r@email.com",
+      "phone": "(555) 456-7890",
+      "status": "qualified",
+      "source": "Instagram Ad",
+      "value": 300,
+      "notes": "Interested in personal training package",
+      "lastContact": "2024-12-20",
+      "nextFollowUp": "2024-12-24"
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+// 🧠 Replit Prompt: Create a fully interactive ViVi Persona Demo for "Influencer | Public Speaker"
+
+1. ⏹️ Create a new persona profile in the Persona Loader system:
+{
+  "personaName": "Influencer | Public Speaker",
+  "displayName": "Jordan Kaye",
+  "demoAvatar": "/assets/personas/jordan_kaye.png",
+  "industry": "Personal Brand | Coaching | Events",
+  "tone": "Confident, Empowering, Conversational",
+  "modulesEnabled": ["PlanMode", "TrackMode", "GrowMode"],
+  "defaultContentTypes": ["Reels", "Threads", "Carousels", "Event Promos", "Live Announcements"],
+  "defaultPlatforms": ["Instagram", "LinkedIn", "TikTok"],
+  "viViBehaviors": {
+    "generate_post_ideas": true,
+    "mimic_personal_voice": true,
+    "trend_detection_enabled": true,
+    "speaking_event_builder": true,
+    "multi_format_remix": true,
+    "engagement_funnels": true,
+    "crm_lead_followups": true,
+    "reminder_nudges": true
+  }
+}
+
+2. 🔁 Add this persona into the PersonaTourGuide engine:
+- Create a tour flow with 8 steps showing off:
+  - ViVi post wizard for event countdowns
+  - 2x Boost explanation hover
+  - Platform selector and aspect preview
+  - CRM lead capture for speaking gigs
+  - Nudges with reminders to repurpose content
+  - TrendTap Lite™ scroller with speaking-related trends
+  - Content Success Analytics with quote posts vs reels
+  - Upsell to ViVi Agent Store for Masterclass Launch Pack
+
+3. 🗓️ Activate “Launch with ViVi” wizard path for:
+- Event Promotion Campaign
+- 3-step sequence:
+  - Keynote teaser
+  - Countdown post
+  - Post-event recap
+
+4. 📊 Add static sample content and CRM interactions:
+- Include 3 pre-generated Reels, 2 carousels, 1 lead magnet post
+- Populate CRM with 4 mock leads tagged from ViVi tracking
+- Include engagement stats in Post History for demo impact
+
+5. 🎛️ Update Boost Panel logic:
+- 1x: Regular post optimization
+- 2x: Add remix suggestion + trending sound
+- 3x: Full campaign bundle with retargeting CTA ideas
+
+6. 🎨 Enable preview window to show post appearance on:
+- Instagram Feed (4:5)
+- IG Stories/Reels (9:16)
+- LinkedIn (landscape + text emphasis)
+
+7. 🛍️ In the ViVi Agent Store, add:
+- “Digital Product Launch Pack”
+- “Masterclass Tour Builder”
+- “Personal Brand Growth Engine”
+
+8. 🔔 Enable reminder system to show:
+- “You missed a scheduled Reel today.”
+- “Want to remix your best-performing quote post?”
+
+9. 📁 Save all additions in `data/personas/influencer.json` and integrate the tour into `TourLoader.jsx` with proper PersonaContext logic.
+
+10. 🧪 Test the entire flow in Demo Mode with sample data using the Influencer persona loaded by default.

@@ -1,0 +1,82 @@
+{
+  "90210": {
+    "reach": 3250,
+    "engagement": 140,
+    "trendVelocity": 0.86,
+    "engagementSpike": 36,
+    "city": "Beverly Hills",
+    "state": "CA",
+    "topTrendingTag": "#luxuryfacial",
+    "topTrendingAudio": "SZA - Saturn"
+  },
+  "78704": {
+    "reach": 1980,
+    "engagement": 75,
+    "trendVelocity": 0.72,
+    "engagementSpike": 18,
+    "city": "Austin",
+    "state": "TX",
+    "topTrendingTag": "#atxmedspa",
+    "topTrendingAudio": "Khalid - Skyline"
+  },
+  "10001": {
+    "reach": 5420,
+    "engagement": 285,
+    "trendVelocity": 1.24,
+    "engagementSpike": 52,
+    "city": "New York",
+    "state": "NY",
+    "topTrendingTag": "#nycwellness",
+    "topTrendingAudio": "Taylor Swift - Lavender Haze"
+  },
+  "33139": {
+    "reach": 2840,
+    "engagement": 165,
+    "trendVelocity": 0.94,
+    "engagementSpike": 28,
+    "city": "Miami Beach",
+    "state": "FL",
+    "topTrendingTag": "#miamibeauty",
+    "topTrendingAudio": "Bad Bunny - Tití Me Preguntó"
+  },
+  "60610": {
+    "reach": 2150,
+    "engagement": 98,
+    "trendVelocity": 0.78,
+    "engagementSpike": 15,
+    "city": "Chicago",
+    "state": "IL",
+    "topTrendingTag": "#chicagoskincare",
+    "topTrendingAudio": "Drake - Rich Flex"
+  },
+  "30309": {
+    "reach": 1680,
+    "engagement": 87,
+    "trendVelocity": 0.82,
+    "engagementSpike": 22,
+    "city": "Atlanta",
+    "state": "GA",
+    "topTrendingTag": "#atlmedspa",
+    "topTrendingAudio": "Future - Wait For U"
+  },
+  "98101": {
+    "reach": 1920,
+    "engagement": 92,
+    "trendVelocity": 0.89,
+    "engagementSpike": 25,
+    "city": "Seattle",
+    "state": "WA",
+    "topTrendingTag": "#seattlewellness",
+    "topTrendingAudio": "Harry Styles - Music For a Sushi Restaurant"
+  },
+  "85001": {
+    "reach": 1450,
+    "engagement": 68,
+    "trendVelocity": 0.65,
+    "engagementSpike": 12,
+    "city": "Phoenix",
+    "state": "AZ",
+    "topTrendingTag": "#phoenixspa",
+    "topTrendingAudio": "Doja Cat - Vegas"
+  }
+}

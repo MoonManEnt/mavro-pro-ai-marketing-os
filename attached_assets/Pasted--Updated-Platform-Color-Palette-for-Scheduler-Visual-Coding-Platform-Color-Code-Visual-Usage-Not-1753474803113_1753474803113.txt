@@ -1,0 +1,57 @@
+🎨 Updated Platform Color Palette (for Scheduler Visual Coding)
+Platform	Color Code	Visual Usage Notes
+Instagram	Purple	Used for posts, stories, reels
+TikTok	Aqua	High-contrast neon-style hue
+Facebook (Meta)	Blue	Primary Meta blue
+X (Twitter)	Black	Minimalist dark tone
+YouTube	Red	Bright YouTube red, very recognizable
+Google Biz	Rainbow Gradient	Use a left-to-right gradient (blue > red > yellow > green) for all Google Business content
+LinkedIn	Navy Blue	Optional for B2B use cases
+Email	Orange or Yellow	(if supported for drip or newsletter workflows)
+🔁 Implementation Details (Across Scheduler Views)
+✅ Week View:
+Post cards inside the grid blocks reflect platform color
+Gradient background (for Google Biz) should:
+Be subtle and smooth
+Have light/faded gradient if already posted
+Have strong vibrant gradient when pending
+For YouTube, apply bold red edge + red tag icon
+✅ Month View:
+Small pill-style icons show platform by color
+Hovering shows:
+Platform name
+Time
+Preview
+Campaign tag
+ViVi uses these colors in all her suggestions/prompts:
+“You’ve got 3 🔴 YouTube videos and 2 🟣 IG posts scheduled today…”
+🧠 ViVi Awareness Sync
+Ensure all ViVi commentary in:
+Nudges
+Mission Logs
+Tactical Forecasts
+uses the updated color mapping system for clarity and alignment.
+🗂 Update Files / Modules
+To support this visually and programmatically:
+🔧 platformProfiles.json (add these entries)
+{
+  "YouTube": {
+    "color": "#FF0000",
+    "label": "YouTube",
+    "icon": "youtube-icon.svg"
+  },
+  "GoogleBusiness": {
+    "colorGradient": ["#4285F4", "#EA4335", "#FBBC05", "#34A853"],
+    "label": "Google Biz",
+    "icon": "googlebiz-gradient-icon.svg"
+  }
+}
+🔧 CSS/Style Guide:
+Define .platform-pending and .platform-complete styles:
+Example: .youtube-pending { background-color: #FF0000; }
+For Google Biz: use linear-gradient for background-image
+✅ Summary
+View	YouTube	Google Biz
+Week View	Red post card with white text/icon	Gradient card with readable white overlay
+Month View	Small red dot or pill	Gradient dot/pill
+ViVi Output	Red tags	Multicolor tag or full word: Google Biz in brand font/colors

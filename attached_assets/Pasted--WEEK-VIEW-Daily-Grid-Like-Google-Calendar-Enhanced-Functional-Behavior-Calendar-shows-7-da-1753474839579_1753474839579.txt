@@ -1,0 +1,68 @@
+📆 WEEK VIEW: Daily Grid, Like Google Calendar (Enhanced)
+✅ Functional Behavior:
+Calendar shows 7-day grid, time-slotted
+All scheduled content (posts, emails, reels, etc.) are visibly embedded within their respective time blocks
+🔍 Interactivity:
+Each scheduled item appears as a colored card (based on platform):
+Instagram = Purple
+TikTok = Aqua
+Facebook = Blue
+X = Black
+Google Biz = Red
+YouTube = Dark Gray
+Hovering over a post:
+Tooltip/modal preview appears
+Platform + Time
+Media thumbnail
+Caption snippet
+Hashtag summary
+Boost level
+Post status (Draft, Scheduled, Published)
+🎯 Status Indicator (ViVi-Synced):
+Dark-toned card = Post is scheduled but hasn’t gone out yet
+Faded/lightened card = Post has already gone live
+This allows users to know—at a glance—what’s ahead and what’s completed.
+🗓 MONTH VIEW: Macro Visual Planner
+✅ Functional Behavior:
+Each day block shows a mini list view of scheduled items
+Instead of full thumbnails, display:
+Platform icon + colored pill
+1–2 word label or emoji tag for format (e.g., “Reel”, “Blog”, “Post”)
+Total count if over 3: “+2 more”
+🧠 Hover-Over Interactivity:
+Hovering over a day opens a preview popup with:
+All post content for that day
+Their respective platforms
+Time of publish
+Boost level or campaign tag
+Post status (scheduled vs. already fired)
+🎨 Color Coding:
+Platform-color tagging per post (as above)
+Dark shade = Scheduled but pending
+Light/faded shade = Completed/published
+For example:
+Day	Scheduled
+Aug 26	🔵 11:00 AM FB Post
+⚫ 1:00 PM X Reel
+🔴 3:00 PM Google Biz
+If all 3 have already been published, they’ll show as light-toned icons.
+If one is still pending, only that one retains the dark, active hue.
+🔄 System-Wide Consistency & Benefits
+🔧 Code-Level Matching:
+Visual Feature	Data Source
+Status (fired or not)	scheduledPosts.json.status + timestamp vs. current time
+Platform color	platformProfiles.json.colorTheme
+Hover content preview	Pulls from PostPreviewRenderer.jsx
+Light/dark visual class	CSS class applied dynamically via post state check (isPublished)
+ViVi commentary	ViViContext.scheduleInsights (e.g., “You’ve doubled up on Reels Wednesday — want to space that?”)
+🧬 Final Scheduler UX Touches
+Feature	Description
+🔁 Syncs Across Tabs	Scheduler state reflects in GTM tab, Campaign Composer, and CRM
+🧠 AI Nudges	ViVi prompts show at top of calendar when gaps or over-saturations are detected
+📥 Drag In Drafts	Drag from “Unscheduled Drafts” tray into the calendar and auto-open post settings
+📌 Pin Mode	User can “pin” a high-priority post so it doesn’t get bumped by AutoSchedule
+✅ TL;DR: Scheduler Final View Logic
+View	Functionality	Color Rules
+Week View	Like Google Calendar — full-size post cards per time block	Dark = pending, Faded = published
+Month View	Icon + tag-based platform highlights with popover preview	Platform color per post, same dark/fade logic
+All Views	Hover = preview, click = edit post, drag = reschedule	ViVi suggests best times dynamically

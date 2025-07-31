@@ -1,0 +1,77 @@
+🎨 Primary Brand Colors:
+Mavro Purple (Main Brand Color)
+HEX: #8B5CF6
+HSL: hsl(262, 83%, 58%)
+Usage: Primary buttons, active states, ViVi AI components, brand accents
+Mavro Gold (Secondary Brand Color)
+HEX: #EAB308
+HSL: hsl(45, 93%, 47%)
+Usage: Secondary highlights, success states, gradient endings
+Mavro Green (Accent Color)
+HEX: #059669
+HSL: hsl(142, 76%, 36%)
+Usage: Success indicators, positive metrics, growth elements
+🏗️ System Colors:
+Neutral Colors
+Mavro Dark: #2D3748 - Primary text and headings
+Mavro Light: #F7FAFC - Light backgrounds and containers
+White: #FFFFFF - Card backgrounds and clean areas
+Gray Text: #64748B - Secondary text and descriptions
+Border & Input Colors
+Light Gray Borders: hsl(240, 5.9%, 90%)
+Focus Rings: hsl(240, 5%, 64.9%)
+🎭 Alpha Variations (Transparency):
+10% Opacity Backgrounds
+Purple: hsl(262, 83%, 58%, 0.1) - Subtle hover states
+Gold: hsl(45, 93%, 47%, 0.1) - Light highlights
+White: hsl(0, 0%, 100%, 0.1) - Glass effects
+20% Opacity Overlays
+Purple: hsl(262, 83%, 58%, 0.2) - Active backgrounds
+White: hsl(0, 0%, 100%, 0.2) - Button overlays
+🌈 Industry-Specific Profile Colors:
+Real Estate: #6366F1 (Indigo)
+Beauty/MedSpa: #EC4899 (Pink)
+Restaurant: #F59E0B (Amber)
+Cleaning: #10B981 (Emerald)
+Barbershop: #8B5A2B (Brown)
+🎨 Gradient Combinations:
+Primary Gradients
+Purple to Gold: Main brand gradient for headers and ViVi components
+Light Purple: from-mavro-primary/10 to-mavro-secondary/10 for subtle backgrounds
+Mavro Light to White: For profile selectors and containers
+📱 Component-Specific Usage:
+ViVi AI Components
+Background: Purple to Gold gradient
+Text: White
+Buttons: White with 20-30% opacity
+Sidebar Navigation
+Background: White
+Active items: Purple with 10% opacity
+Hover: Purple with 5% opacity
+Text: Dark gray, Purple when active
+Notification System
+Red: #EF4444 (Engagement alerts)
+Yellow: #EAB308 (Boost recommendations)
+Green: #059669 (Performance updates)
+Blue: #3B82F6 (Lead notifications)
+Purple: #8B5CF6 (Reminders)
+♿ Accessibility Features:
+Contrast Ratios
+Mavro Purple on White: 4.8:1 (AA compliant)
+Mavro Dark on White: 12.6:1 (AAA compliant)
+White on Mavro Purple: 4.8:1 (AA compliant)
+Color Blind Friendly
+High contrast between primary colors
+Icons accompany all color-coded elements
+Never relies solely on color for meaning
+💻 CSS Implementation:
+All colors are defined as CSS custom properties with consistent utility classes:
+
+/* Brand Colors */
+--mavro-primary: hsl(262, 83%, 58%);
+--mavro-secondary: hsl(45, 93%, 47%);
+--mavro-accent: hsl(142, 76%, 36%);
+/* Utility Classes */
+.text-mavro-primary { color: var(--mavro-primary); }
+.bg-mavro-primary { background-color: var(--mavro-primary); }
+.bg-mavro-primary/10 { background-color: hsl(262, 83%, 58%, 0.1); }

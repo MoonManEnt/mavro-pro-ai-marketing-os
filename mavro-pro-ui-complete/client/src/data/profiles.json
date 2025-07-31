@@ -1,0 +1,61 @@
+{
+  "profiles": [
+    {
+      "id": "sarah",
+      "name": "Sarah Mitchell",
+      "business": "Radiant MedSpa",
+      "industry": "MedSpa",
+      "avatar": "https://images.unsplash.com/photo-1494790108755-2616b612b550?w=150&h=150&fit=crop&crop=face",
+      "description": "Owner of premier medical spa focusing on anti-aging treatments",
+      "goals": ["Increase bookings by 30%", "Build brand awareness", "Attract younger clientele"],
+      "challenges": ["Seasonal booking fluctuations", "Competition from chains", "Client retention"],
+      "targetAudience": "Women 35-65, high disposable income",
+      "preferredChannels": ["Instagram", "Facebook", "Email", "Google Ads"],
+      "budget": "$5,000-$10,000/month",
+      "kpis": {
+        "monthlyRevenue": "$47,300",
+        "newLeads": 156,
+        "conversionRate": "12.4%",
+        "customerLifetimeValue": "$2,340"
+      }
+    },
+    {
+      "id": "marco",
+      "name": "Marco Rodriguez",
+      "business": "Bella Vista Bistro",
+      "industry": "Restaurant",
+      "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
+      "description": "Chef-owner of upscale Italian restaurant with focus on authentic cuisine",
+      "goals": ["Fill weekend reservations", "Increase catering orders", "Build loyalty program"],
+      "challenges": ["Weather-dependent patio", "Staff retention", "Food costs"],
+      "targetAudience": "Couples, families, food enthusiasts 25-55",
+      "preferredChannels": ["Instagram", "Facebook", "Google My Business", "Email"],
+      "budget": "$2,500-$5,000/month",
+      "kpis": {
+        "monthlyRevenue": "$89,500",
+        "newLeads": 234,
+        "conversionRate": "18.7%",
+        "customerLifetimeValue": "$450"
+      }
+    },
+    {
+      "id": "alex",
+      "name": "Alex Chen",
+      "business": "FitForce Gym",
+      "industry": "Fitness",
+      "avatar": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
+      "description": "Personal trainer turned gym owner specializing in functional fitness",
+      "goals": ["Grow membership base", "Launch online coaching", "Increase class attendance"],
+      "challenges": ["Membership retention", "Competition from big chains", "Equipment costs"],
+      "targetAudience": "Health-conscious adults 18-45, all fitness levels",
+      "preferredChannels": ["Instagram", "TikTok", "YouTube", "Email"],
+      "budget": "$3,000-$6,000/month",
+      "kpis": {
+        "monthlyRevenue": "$32,800",
+        "newLeads": 189,
+        "conversionRate": "15.2%",
+        "customerLifetimeValue": "$1,200"
+      }
+    }
+  ]
+}

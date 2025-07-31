@@ -1,0 +1,60 @@
+You are a full-stack developer assistant in a Replit Node+React project for the Mavro Plus demo site (https://marvoplusdemo.replit.app/). Your goal is to implement the following improvements. For each item, write or modify code files, install dependencies, and configure environment variables as needed. Commit each logical change with a descriptive message.
+
+1. **Real API Integrations**  
+   - Install SDKs:  
+     ```
+     npm install facebook-nodejs-business-sdk @xapi/node linkedin-rest-sdk tiktok-api-sdk @hubspot/api-client jsforce
+     ```  
+   - Create `/src/api/connectors/social.js` to centralize OAuth flows and token storage for Meta, X, LinkedIn, TikTok.  
+   - In `Settings.jsx`, add “Connect” buttons for each platform; on click, initiate OAuth and save tokens in `.env`.  
+   - Build `/src/api/connectors/crm.js` to connect with HubSpot and Salesforce; expose `getLeads()`, `createLead()`.
+
+2. **Accessibility & Localization**  
+   - Add ARIA roles, `tabIndex`, and meaningful `alt` text to all interactive components.  
+   - Install and configure i18n:  
+     ```
+     npm install react-i18next i18next
+     ```  
+   - Wrap `<App>` in `<I18nextProvider>`; extract all user-facing strings into `/locales/{en,es}/common.json`.  
+   - Add a language selector in `Settings.jsx`.
+
+3. **White-Label Theming**  
+   - Create `/src/theme.js` exporting CSS variables for colors, fonts, and spacing.  
+   - Refactor all styled components and CSS to use variables (`var(--primary-color)`, etc.).  
+   - In `Settings.jsx`, add controls to upload a logo and select primary/secondary colors; persist choices in localStorage and apply on load.
+
+4. **Scalability & Performance**  
+   - Add a basic load-testing script at `/loadtest/artillery.yml` to simulate 1000 concurrent users.  
+   - Refactor the Node.js server to use the `cluster` module for multi-core utilization.  
+   - Move static assets to a `/public` folder and enable caching headers in the Express config.
+
+5. **Enhanced Analytics & Reporting**  
+   - Install recharts:  
+     ```
+     npm install recharts
+     ```  
+   - Create `/src/components/AnalyticsDashboard.jsx` that fetches real data from your CRM connector, renders customizable charts, and allows CSV exports.  
+   - Add date-range picker and “Export as PDF” button using `jspdf`.
+
+6. **In-App Feedback Loop**  
+   - Create `/src/components/FeedbackModal.jsx` with an NPS survey (0–10), comment box, and “Submit” button.  
+   - Add an API endpoint in `/src/server/routes/feedback.js` to receive and store feedback in a simple JSON or database.  
+   - Trigger the modal after a user completes their first campaign or visits 5 pages.
+
+7. **Security & Compliance**  
+   - Install JWT support:  
+     ```
+     npm install jsonwebtoken bcryptjs
+     ```  
+   - Implement role-based access control in `/src/utils/auth.js` (e.g. Admin, Editor, Viewer).  
+   - Add a GDPR-compliant cookie consent banner component and block non-essential cookies until consent.  
+   - Ensure all external API calls use HTTPS and sanitize inputs to prevent XSS/Injection.
+
+8. **Testing & CI**  
+   - Add unit tests for new connectors and components in `/tests` using Jest and React Testing Library.  
+   - Create a GitHub Actions workflow in `.github/workflows/ci.yml` that runs tests on each push.  
+
+**Instructions:**  
+- Copy & paste this prompt into your Replit AI assistant or terminal.  
+- Work through each section in order, verifying locally before committing.  
+- Push changes to your Replit Git repo and confirm the demo at `/` still works.  

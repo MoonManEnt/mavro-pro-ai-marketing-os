@@ -1,0 +1,58 @@
+{
+  "trends": [
+    {
+      "id": "trend-1",
+      "title": "AI-powered video content up 340%",
+      "icon": "fas fa-fire",
+      "color": "sunset-orange",
+      "category": "Content",
+      "impact": "high",
+      "relevance": ["sarah", "marco", "alex"]
+    },
+    {
+      "id": "trend-2",
+      "title": "Instagram Reels showing 85% higher engagement",
+      "icon": "fas fa-chart-line",
+      "color": "golden-yellow",
+      "category": "Social Media",
+      "impact": "high",
+      "relevance": ["sarah", "marco", "alex"]
+    },
+    {
+      "id": "trend-3",
+      "title": "Email automation ROI increased by 67%",
+      "icon": "fas fa-trending-up",
+      "color": "teal-accent",
+      "category": "Email Marketing",
+      "impact": "medium",
+      "relevance": ["sarah", "marco"]
+    },
+    {
+      "id": "trend-4",
+      "title": "Personalized campaigns converting 23% better",
+      "icon": "fas fa-star",
+      "color": "mint-green",
+      "category": "Personalization",
+      "impact": "high",
+      "relevance": ["sarah", "marco", "alex"]
+    },
+    {
+      "id": "trend-5",
+      "title": "Voice search optimization driving 45% more local traffic",
+      "icon": "fas fa-microphone",
+      "color": "sky-blue",
+      "category": "SEO",
+      "impact": "medium",
+      "relevance": ["marco", "alex"]
+    },
+    {
+      "id": "trend-6",
+      "title": "Interactive polls boosting story engagement by 91%",
+      "icon": "fas fa-poll",
+      "color": "cream-accent",
+      "category": "Social Media",
+      "impact": "medium",
+      "relevance": ["sarah", "marco", "alex"]
+    }
+  ]
+}

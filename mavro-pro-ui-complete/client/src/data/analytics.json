@@ -1,0 +1,70 @@
+{
+  "analytics": [
+    {
+      "id": "analytics-1",
+      "persona": "sarah",
+      "metric": "Monthly Revenue",
+      "value": "$47,300",
+      "period": "monthly",
+      "change": "+23%",
+      "trend": "up",
+      "previousValue": "$38,400",
+      "target": "$50,000"
+    },
+    {
+      "id": "analytics-2",
+      "persona": "sarah",
+      "metric": "New Leads",
+      "value": "156",
+      "period": "monthly",
+      "change": "+18%",
+      "trend": "up",
+      "previousValue": "132",
+      "target": "175"
+    },
+    {
+      "id": "analytics-3",
+      "persona": "sarah",
+      "metric": "Conversion Rate",
+      "value": "12.4%",
+      "period": "monthly",
+      "change": "+8%",
+      "trend": "up",
+      "previousValue": "11.5%",
+      "target": "15%"
+    },
+    {
+      "id": "analytics-4",
+      "persona": "marco",
+      "metric": "Monthly Revenue",
+      "value": "$89,500",
+      "period": "monthly",
+      "change": "+15%",
+      "trend": "up",
+      "previousValue": "$77,800",
+      "target": "$95,000"
+    },
+    {
+      "id": "analytics-5",
+      "persona": "marco",
+      "metric": "New Leads",
+      "value": "234",
+      "period": "monthly",
+      "change": "+12%",
+      "trend": "up",
+      "previousValue": "209",
+      "target": "250"
+    },
+    {
+      "id": "analytics-6",
+      "persona": "alex",
+      "metric": "Monthly Revenue",
+      "value": "$32,800",
+      "period": "monthly",
+      "change": "+28%",
+      "trend": "up",
+      "previousValue": "$25,600",
+      "target": "$40,000"
+    }
+  ]
+}

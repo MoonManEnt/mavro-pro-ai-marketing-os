@@ -1,0 +1,86 @@
+{
+  "tourSteps": [
+    {
+      "id": "welcome",
+      "title": "Welcome to Mavro Pro! 🚀",
+      "content": "Hey there! I'm ViVi, your AI marketing assistant. Ready to explore the most powerful marketing OS ever created? Let's dive in!",
+      "target": ".vivi-assistant",
+      "position": "right",
+      "showNext": true,
+      "showSkip": true
+    },
+    {
+      "id": "modes",
+      "title": "Three Powerful Modes",
+      "content": "Switch between Plan Mode (strategy & content), Track Mode (analytics & performance), and Grow Mode (optimization & scaling). Each mode is tailored to your current marketing needs!",
+      "target": ".mode-selector",
+      "position": "bottom",
+      "showNext": true,
+      "showPrev": true
+    },
+    {
+      "id": "campaigns",
+      "title": "Campaign Command Center",
+      "content": "Monitor all your active campaigns in one place. See real-time performance, ROI, and conversion metrics. The colored dots show campaign status - green for active, yellow for optimizing!",
+      "target": ".campaign-overview",
+      "position": "left",
+      "showNext": true,
+      "showPrev": true
+    },
+    {
+      "id": "magic-composer",
+      "title": "Mavro Magic Composer ✨",
+      "content": "Your AI-powered content creation studio! Generate posts, videos, emails, and more with just a few clicks. ViVi analyzes your brand voice and creates content that converts!",
+      "target": ".magic-composer",
+      "position": "top",
+      "showNext": true,
+      "showPrev": true
+    },
+    {
+      "id": "foursight",
+      "title": "FourSIGHT Analytics",
+      "content": "Get crystal-clear insights into your marketing performance. Track revenue, leads, conversion rates, and more. The arrows show if you're trending up or down!",
+      "target": ".foursight-board",
+      "position": "left",
+      "showNext": true,
+      "showPrev": true
+    },
+    {
+      "id": "boost-system",
+      "title": "Boost Your Campaigns",
+      "content": "Our unique boost system lets you amplify successful campaigns with 1x, 2x, or 3x multipliers. More boost = more reach = more conversions!",
+      "target": ".boost-summary",
+      "position": "left",
+      "showNext": true,
+      "showPrev": true
+    },
+    {
+      "id": "trends",
+      "title": "Stay Ahead of Trends",
+      "content": "The trend ticker shows you what's working right now in your industry. ViVi analyzes millions of data points to surface the most relevant opportunities!",
+      "target": ".trend-ticker",
+      "position": "bottom",
+      "showNext": true,
+      "showPrev": true
+    },
+    {
+      "id": "floating-vivi",
+      "title": "ViVi is Always Here",
+      "content": "Click the floating ViVi button anytime to get help, ask questions, or generate content. I'm like having a marketing expert available 24/7!",
+      "target": ".floating-vivi",
+      "position": "left",
+      "showNext": true,
+      "showPrev": true
+    },
+    {
+      "id": "complete",
+      "title": "You're All Set! 🎉",
+      "content": "That's the tour! You're now ready to dominate your marketing with Mavro Pro. Remember, I'm always here to help you succeed. Let's make some marketing magic happen!",
+      "target": ".vivi-assistant",
+      "position": "right",
+      "showNext": false,
+      "showPrev": true,
+      "showComplete": true
+    }
+  ]
+}

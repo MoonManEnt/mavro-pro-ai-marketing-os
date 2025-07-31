@@ -1,0 +1,44 @@
+{
+  "medspa": {
+    "minEngagementRate": 0.025,
+    "minReachVelocity": 1.1,
+    "maxPostSpacingHours": 6,
+    "failureThreshold": 0.015,
+    "extensionPostCount": 2
+  },
+  "speaker": {
+    "minEngagementRate": 0.035,
+    "minReachVelocity": 1.15,
+    "maxPostSpacingHours": 8,
+    "failureThreshold": 0.02,
+    "extensionPostCount": 1
+  },
+  "realestate": {
+    "minEngagementRate": 0.02,
+    "minReachVelocity": 1.08,
+    "maxPostSpacingHours": 12,
+    "failureThreshold": 0.012,
+    "extensionPostCount": 3
+  },
+  "restaurant": {
+    "minEngagementRate": 0.03,
+    "minReachVelocity": 1.2,
+    "maxPostSpacingHours": 4,
+    "failureThreshold": 0.018,
+    "extensionPostCount": 2
+  },
+  "fitness": {
+    "minEngagementRate": 0.028,
+    "minReachVelocity": 1.12,
+    "maxPostSpacingHours": 6,
+    "failureThreshold": 0.016,
+    "extensionPostCount": 2
+  },
+  "automotive": {
+    "minEngagementRate": 0.022,
+    "minReachVelocity": 1.05,
+    "maxPostSpacingHours": 24,
+    "failureThreshold": 0.014,
+    "extensionPostCount": 1
+  }
+}

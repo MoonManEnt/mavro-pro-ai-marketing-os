@@ -1,0 +1,138 @@
+🧠 Replit Build Prompt: Expert-Level UI/UX Implementation for GeoSmart in Mavro OS (Sprint 21)
+
+👨‍💻 Role: You are acting as a senior UI/UX engineer building the **GeoSmart Intelligence Dashboard** inside the Mavro OS React app. The design must be fully modular, responsive, and follow the current component patterns used throughout Mavro OS (e.g., ViViMissionLogDashboard.jsx, CampaignDetailDrawer.jsx, and Scheduler.jsx).
+
+---
+
+# 🎯 OBJECTIVE:
+
+Design and build a **data-rich, interactive GeoSmart page** that visualizes content and campaign performance by region (ZIP, city, state) and enables ViVi to deliver **real-time nudges**, trend insights, and boost recommendations.
+
+The GeoSmart system is meant to function as an **AI-powered growth radar** for SMBs — helping them see *where* they’re growing and act on it.
+
+---
+
+# 📐 UI/UX DESIGN STRUCTURE
+
+## Page: `GeoSmartDashboard.jsx`
+- Full-width layout with responsive flex columns
+- Should contain:
+  - Left panel: **Region Summary + Filters**
+  - Center panel: **GeoSmartHeatmap.jsx**
+  - Right panel: **ViVi Nudge Stack + Drill Down**
+
+---
+
+## COMPONENTS & FUNCTIONALITY
+
+### 🗺️ `GeoSmartHeatmap.jsx`
+- Powered by Mapbox GL JS or Google Maps API
+- Color-coded heat layer based on reach or engagement intensity:
+  - Red = High engagement
+  - Orange = Moderate
+  - Blue = Low
+- Each ZIP should be clickable
+- On hover: show tooltip with:
+  - ZIP code
+  - City/State
+  - Reach (total)
+  - Engagement rate
+  - Trending tag/audio
+- On click: open `GeoSmartDrillModal.jsx`
+
+### 📊 `GeoSmartPostStatsPanel.jsx`
+- Scrollable table or card list of posts filtered by region
+- Shows:
+  - Post preview (platform icon + snippet)
+  - Format (Reel, Story, Post)
+  - Boost level
+  - Scheduled date
+  - Engagement rate
+- Filter bar:
+  - By campaign
+  - By format
+  - By boost level
+  - By status (Scheduled, Live, Completed)
+
+### 🧠 `GeoSmartViViNudge.jsx`
+- Panel that shows ViVi-generated suggestions
+- Each nudge card includes:
+  - Trigger type: Trend Surge, Engagement Spike, Format Opportunity
+  - Region + ZIP
+  - Confidence score (e.g., “87% chance of improved engagement”)
+  - Suggested action (e.g., “Boost next post in 78704” or “Clone top post for Austin”)
+  - Accept, Dismiss, or Schedule action buttons
+
+### 🔍 `GeoSmartDrillModal.jsx`
+- Full-screen or floating modal
+- Displays full breakdown for a region:
+  - Campaigns active in region
+  - Posts + status
+  - Top performing content
+  - Conversion rate (if CRM available)
+  - TrendTap Pro overlays
+- Ability to export PDF report from modal
+
+### 📈 `GeoTrendTicker.jsx` *(Optional enhancement)*
+- Marquee-style scroll of trending tags/audio by ZIP
+- Data from `TrendTap Pro`
+
+---
+
+# 🔗 INTEGRATION & CONTEXTUAL BEHAVIOR
+
+### Context Hooks
+- Use `ViViContext.getActivePersona()` to filter map/trends
+- Use `ViViPersonaContext.getTone()` to shape language of nudges
+
+### Data Sources
+- `scheduledPosts.json` – For scheduling density and post placement
+- `campaigns.json` – To color-code active vs inactive regions
+- `geoPostPerformance.json` – For reach, CTR, boost data
+- `geoTrendFeed.json` – From TrendTap Pro for per-ZIP trending tag/audio
+- `geoRegionMap.json` – Post → ZIP → city/state mapping
+
+---
+
+# 🧪 UI/UX BEHAVIOR
+
+- **Initial load**:
+  - Heatmap loads with default persona + platform filters applied
+  - Region summary auto-pulls top 3 ZIPs by engagement delta
+
+- **Hover interaction**:
+  - Region glow + tooltip
+  - Data panel updates to show stats for that ZIP
+
+- **Click interaction**:
+  - Opens `GeoSmartDrillModal.jsx`
+
+- **Mobile responsive**:
+  - Switch layout to stacked cards:
+    - Heatmap collapses into image or reduced-width interactive map
+    - Stats panel becomes accordion
+    - Nudges are swipeable left/right
+
+---
+
+# 📦 DESIGN DETAILS
+
+- Use **Tailwind CSS** with Mavro's theme:
+  - `rounded-2xl`, `shadow-md`, `text-gray-800`, `bg-white`, `border-gray-200`
+- Maintain spacing consistency: `p-4`, `gap-4`, `grid-cols-12`, etc.
+- Match platform colors (IG = purple, FB = blue, TikTok = aqua)
+- Use `lucide-react` icons for map markers, buttons, UI flourishes
+
+---
+
+# ✅ FINAL OUTCOME
+
+The GeoSmart page should provide:
+- Live regional content intelligence
+- Seamless ViVi strategy integration
+- Interactive heatmap experience
+- Actionable nudges + smart post recommendations
+- Exportable insights
+
+Once built, this page becomes Mavro’s **GTM war map** — empowering SMBs to dominate their territory with ViVi leading the charge.
+

@@ -1,0 +1,25 @@
+{
+  "regions": {
+    "west_coast": {
+      "trending_hashtags": ["#westcoastvibes", "#californiadreaming", "#pacificcoast"],
+      "trending_audio": ["The Weeknd - Blinding Lights", "Billie Eilish - bad guy", "Olivia Rodrigo - good 4 u"],
+      "growth_rate": 1.15
+    },
+    "east_coast": {
+      "trending_hashtags": ["#eastcoastelite", "#nyclife", "#bostonstrong"],
+      "trending_audio": ["Taylor Swift - Anti-Hero", "Harry Styles - As It Was", "Lizzo - About Damn Time"],
+      "growth_rate": 1.08
+    },
+    "south": {
+      "trending_hashtags": ["#southerncharm", "#texasstrong", "#floridaman"],
+      "trending_audio": ["Bad Bunny - Me Porto Bonito", "Future - I Never Liked You", "Megan Thee Stallion - Pressurelicious"],
+      "growth_rate": 1.22
+    },
+    "midwest": {
+      "trending_hashtags": ["#midwestnice", "#chicagoland", "#heartland"],
+      "trending_audio": ["Drake - Jimmy Cooks", "Beyoncé - Break My Soul", "Jack Harlow - First Class"],
+      "growth_rate": 0.94
+    }
+  },
+  "last_updated": "2025-01-26T17:00:00.000Z"
+}

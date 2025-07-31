@@ -1,0 +1,115 @@
+Page Title: FourSIGHT™ Intelligence Dashboard
+Route: Left Nav → FourSIGHT
+File: components/FourSight/FourSightPanel.jsx
+ViVi Integration: Full KPI intelligence, insight logging, reporting engine
+✅ PURPOSE:
+FourSIGHT™ is the primary business intelligence center of the Mavro platform. This module:
+Visualizes all cross-platform post & engagement metrics
+Tracks trending behavior, drop-offs, and audience engagement
+Powers ViVi’s learning system with event logs and campaign outcomes
+Provides export-ready reports (PDF, CSV, Excel, Google Sheets)
+Is the source of truth for the Strategy Hub, CRM analytics, and GTM planning
+🌐 MONITORED PLATFORMS:
+Instagram
+TikTok
+Google Business Profile (GMB)
+Facebook (Meta)
+X (Twitter)
+LinkedIn
+YouTube
+All metrics must be mapped platform by platform via unified charting logic.
+🧮 CORE KPIs TO RENDER + EXPORT:
+📝 Post Performance Metrics:
+Total Engagements (likes, comments, shares, saves)
+Post Reach vs. Impressions
+CTR on links/CTAs per post
+Platform-specific engagement heatmap
+Top post format by engagement (reel, carousel, story, single image)
+💬 Comments & Reactions:
+Comment Volume (per platform)
+Sentiment Breakdown (positive / neutral / negative)
+Response Time to Comments
+Share Count (post reposts, retweets)
+🧠 Caption & Hashtag Analysis:
+Caption Style Effectiveness (CTA vs. Story vs. Hashtag block)
+Hashtag Performance Index (top 10 per platform)
+Average Words per Caption vs. Engagement
+Trending Hashtag Adoption Timeline
+Platform-specific hashtag reach lift
+📈 Video Performance:
+Video Views: 3s, 10s, 100%
+Watch Completion % per platform
+Drop-off Timestamp Curve
+Top Performing Sound Syncs
+Visual Format vs. Watch Rate
+🕓 Temporal Behavior:
+Engagement by Time of Day
+Day of Week Uplift
+Regional Engagement Heatmaps
+Real-time boost deltas by post frequency
+Weekly vs. Monthly posting rhythm analysis
+🔄 Behavioral Funnels:
+Impressions → Engagement → Conversion (% at each stage)
+Drop-Off points with suggested correction
+Auto-flagged fatigue detection
+Audience churn vs. reactivation metric
+📊 VISUAL COMPONENTS TO IMPLEMENT:
+LineChart.jsx: post trend over time
+BarChart.jsx: platform comparison or hashtag lift
+PieChart.jsx: caption style or demographic slice
+HeatmapChart.jsx: engagement by hour/day
+FunnelChart.jsx: post lifecycle stage drop-off
+All must follow Mavro’s glass UI (rounded-xl, backdrop-blur, white text, hover states).
+🔧 UI COMPONENT REQUIREMENTS:
+Timeframe Filter: (7/14/30/90/180/365 days)
+Download Options:
+PDF via window.print() or jsPDF
+CSV/Excel (via Blob or export util)
+Google Sheets (optional gsheet API integration)
+Email Summary Trigger:
+mailto: with subject, summary, and timestamp
+Calendar Follow-up:
+Open GCal reminder with render?action=TEMPLATE URL logic
+🧠 ViVi Learning System: Required Logging Rules
+Each user interaction must log to:
+POST /api/vivi/log-insight
+{
+  event: 'CTAStyleClicked' | 'ReportExported' | 'ModalOpened' | ...,
+  timestamp: 1689876543210
+}
+Data must persist in localStorage and/or session backend
+ViVi memory queries will use:
+GET /api/vivi/log-insight?event=...
+GET /api/vivi/log-insight?since=timestamp
+All logs used in:
+Strategy Hub visual reporting
+CRM activity logs
+Weekly intelligence briefs
+🧩 Integration Requirements:
+This page must connect live to:
+Destination	Description
+GROW Tab	Feeds visual feedback into post performance module
+TRACK Tab	Logs performance trends into Strategy Hub reporting
+CRM View	Supplies engagement metrics by client touchpoint
+ViVi Engine	Enables auto-strategy suggestions and behavioral trend alerts
+🔁 Reusable Components Triggered from FourSIGHT
+ViViStrategyModal (for insight display)
+ExportPanel
+CalendarReminderLauncher
+CTAStyleModal
+ChartToggleWrapper (Bar ↔ Pie)
+📎 Export Summary (What Replit Must Deliver)
+components/FourSight/FourSightPanel.jsx     ✅ Main container
+components/Charts/BarChart.jsx              ✅ Visual components
+components/Charts/PieChart.jsx              ✅ Format engagement
+components/Export/ExportPanel.jsx           ✅ PDF/CSV/Email logic
+api/vivi/log-insight                        ✅ Memory endpoint
+api/kpi-sample.json                         ✅ Simulated data feed
+api/posts/top-cta-style                     ✅ Modal content source
+assets/vivi-avatar.png                      ✅ For visual continuity
+🧪 Final Prompt Summary
+ViVi must be able to:
+Track every user’s visual and export action
+Render data across timeframes and post formats
+Show behavior-impacting insights by caption, sound, or trend
+Export visually accurate summaries for execs, CRM, or GTM use

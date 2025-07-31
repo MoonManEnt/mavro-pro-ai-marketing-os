@@ -1,0 +1,82 @@
+Marvo Magic Studio™ Wizard Flow
+
+Entry Point
+User clicks Marvo Magic Studio → Wizard opens at Card 1.
+State Management
+Maintain a single wizardState object throughout, with keys:
+{
+  contentUploads: [],      // [{ id, type, url, metadata }]
+  platforms: {},           // { platformName: [postTypes] }
+  captions: {},            // { platformName: captionText }
+  audioSelections: {},     // { platformName: audioFile }
+  hashtags: {},            // { platformName: [tags] }
+  previews: {},            // { platformName: previewData }
+  campaignQueue: [],       // array of completed posts
+  savedWizards: {}         // { wizardId: wizardStateSnapshot }
+}
+Card 1: Content Upload & Platform Configuration
+Purpose: Let users ingest existing creative assets and map them to target channels.
+UI Elements:
+Four “upload builder” cards with icons for each feature set:
+Social Media Post
+Video Script Builder
+Email Campaigns
+Blog Articles
+Upload Zone:
+Drag‑and‑drop or “Browse” for images/videos.
+In‑card playback/control for videos.
+Upon Upload:
+Prompt “Select Platforms” (multi‑select from your supported list, e.g. Instagram, X, LinkedIn, TikTok).
+For each chosen platform, dynamically load its valid post types (e.g. Instagram: Post, Reel, Story).
+Save into wizardState.platforms[platform] = [postType, …].
+Next Button → Card 2
+Card 2: AI‑Powered Caption & Audio/Hashtag Builder
+Purpose: Generate and curate the actual text, sound and trending metadata.
+UI Elements:
+Caption Builder (AI textbox with “Regenerate”).
+Audio Selector (previewable list of platform‑compatible sounds).
+Hashtag Module:
+Trending Tags (powered by TrendTap Lite™ or Pro+).
+Custom Tag Entry.
+Behavior:
+When user confirms caption/audio/hashtags, save into wizardState.captions[platform], audioSelections[platform], hashtags[platform].
+Show a summary panel per platform.
+Next Button → Card 3
+Card 3: Scaled Content Preview
+Purpose: Give users a WYSIWYG preview at the correct aspect ratio and layout.
+UI Elements:
+One preview pane per platform, sized and styled to match the real UI (1:1, 9:16, 16:9, etc.).
+Inside each pane: image/video + caption + hashtags + audio icon.
+Behavior:
+Iterate through wizardState.platforms, rendering each preview based on its saved state objects.
+Allow “Edit” links on each preview to jump back to Card 2 for that platform.
+Next Button → Card 4
+Card 4: Publish, Schedule & Save Options
+Purpose: Finalize publishing or queue the build for later.
+UI Elements (radio or button group):
+Post Now
+Add More to Campaign
+Schedule for Later (date/time picker)
+Save for Later
+Behavior:
+Post Now
+Trigger API call to publish immediately.
+On success: show full‑screen celebratory animation (confetti effect), toast “Your posts are live!”
+Reset wizardState → return to Card 1.
+Add More to Campaign
+Push current batch into wizardState.campaignQueue.
+Show toast “Nice work! This batch is queued under Campaigns.”
+Keep wizardState intact → reset to Card 1 for additional builds.
+Schedule for Later
+Store with scheduled timestamp.
+On save: celebratory toast “Scheduled!” + reset wizard.
+Save for Later
+Prompt confirmation dialog “Save progress and exit?”
+If Yes: snapshot wizardState under a UUID; render a new “Saved Wizards” card beneath wizard with links to resume.
+If Continue Building: close dialog; stay on Card 4.
+Wizard Navigation & Resumption
+
+Breadcrumb or Stepper at top showing 1‒4; user can click back to previous cards without losing state.
+Saved Wizards Panel (collapsed under Card 4 when any saves exist):
+Lists each save by date + type (e.g. “04: Blog + IG Carousel”)
+“Resume” loads that snapshot into wizardState and jumps to the last‑visited card.

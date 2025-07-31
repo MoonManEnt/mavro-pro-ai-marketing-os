@@ -1,0 +1,134 @@
+✅ OVERVIEW: Upgrade Goals
+This structure reflects:
+What Mavro OS currently supports
+How ViVi’s current modules (BoostEngine, TrendTap, PostGenerator, etc.) interact
+What cards can execute actions live
+What parts will dynamically refresh via ViViNudges, system cache, and NodeCache updates
+🧭 GTM Planning Tab (Upgraded for Codebase Reality)
+🧠 Card 1: ViVi Daily Brief (Real-Time System Sync)
+✅ Powered by:
+viviService.getAnalytics()
+ViViContext insights
+CampaignComposer + CRM triggers
+🔧 Features:
+Pulls:
+EOD summary from scheduled posts + CRM activity
+ViViSentimentScanner for emotional tone of comments/reviews
+ViViNudges for morning “What’s Next”
+Lets user:
+✅ Read & archive each update
+✅ See live updates (WebSocket + cache refresh)
+✅ Tap “ViVi Recommendations” to reroute into Mavro Magic Studio
+📊 Integration Behavior:
+Uses NodeCache to store daily metrics and refreshes when actions are triggered (campaigns posted, reviews responded, new leads in CRM)
+📈 Card 2: GTM Progress Meter (Syncs with Scheduler + FourSIGHT)
+✅ Powered by:
+scheduledPosts.json
+CampaignComposer activity log
+ViViBoostEngine() for weighted scoring
+🔧 Features:
+Progress bar from 0–100%
+Increments on:
+Post published
+Scheduled successfully
+Reviews responded to
+CRM leads updated
+Style:
+Bar with milestone dots: 25% (Momentum), 50% (Consistency), 75% (Optimization), 100% (Market Saturation)
+Hover: “+5% from yesterday’s video reel reach increase”
+📊 Integration Behavior:
+BoostPanel hooks auto-boosted posts into momentum score
+FourSIGHT metrics update triggers refresh logic
+🗺 Card 3: Market Timeline View (Interactive Visual Planner)
+✅ Powered by:
+scheduledPosts.json timestamps
+TrendTapFeed.jsx
+ViViContext.marketInsights
+🔧 Features:
+Timeline view of monthly marketing milestones
+Scrollable, with platform icons
+Click into each point to preview post and see scheduled platform
+ViVi shows “Trend windows” overlay: e.g., “IG Reels hot zone → 8/12–8/16”
+📊 Integration Behavior:
+Uses TrendTap Pro™ to score trending moment and align posts by date
+“Add to Plan” button drops content directly into the Scheduler
+🪄 Mavro Magic Studio Tab (Built on Current Wizard Engine)
+🧩 Card 1: Upload & Platform Selection
+✅ Powered by:
+PostGeneratorStudio.jsx
+ViVi’s media parser
+ViViContext.activePersona
+🔧 Features:
+Upload photos/videos → preview enabled
+Shows media previews by platform shape:
+Square: IG
+Story: Reels/FB Stories
+Landscape: X, YouTube
+Dynamic platform selector syncs with:
+platformProfiles.json (for post rules)
+User’s persona context (plumber? real estate? salon?)
+📊 Integration Behavior:
+Smart filtering on post types (ViVi disables long captions for X, enables audio sync for Reels, etc.)
+✍️ Card 2: Caption, Hashtag, Audio Builder
+✅ Powered by:
+ViViCaptionBuilder
+TrendTap Lite™ or TrendTap Pro™
+HashtagPerformanceTracker
+SoundLibraryFetcher
+🔧 Features:
+Persona-Aware Caption Generator: Uses ViVi’s NLP + tone selection
+Trending Audio Chooser: Fetches current trends via sound scraper or preset list
+Hashtag Builder:
+Trending by vertical
+Blend personal + brand
+Uses ViViHashtagBlender()
+📊 Integration Behavior:
+Dynamic tag weighting (ViVi suggests 3 “sticky” tags based on past reach)
+Captions can be re-written in 1 click: “Make it more local,” “Add humor,” “Be inspirational”
+🖼 Card 3: Post Preview Panel
+✅ Powered by:
+PlatformPreviewWindow.jsx
+PostComposerDraftStore
+🔧 Features:
+Shows preview exactly as the platform will post it
+Buttons to toggle platform previews (like a carousel)
+Final look includes:
+Caption
+Audio name
+Tags
+Media (auto-fit into right aspect ratio)
+📊 Integration Behavior:
+Confirms any platform-specific warnings from platformProfiles.json
+ViVi offers insight: “This image will crop poorly on X—replace or resize?”
+🚀 Card 4: Final Step Deployment Wizard
+✅ Powered by:
+scheduledPosts.json
+CampaignComposer
+ViViFeedbackSidebar.jsx
+🔧 Final Step Choices:
+Post Now
+Executes API call instantly (placeholder if no platform token)
+Shows confetti modal → wizard resets
+Add More to Campaign
+New post creation with context memory
+Shows campaign summary after finish
+Adds to Campaigns Tab via backend
+Schedule This Post
+Time & date selector (mobile-ready, sleek)
+Saves to scheduledPosts.json
+ViVi recommends best time: “Try 10:15am based on heatmap”
+Save for Later
+Stores to PostComposerDraftStore
+New card appears below wizard:
+Resume with one click
+Draft label: “Unfinished Reel for IG + TikTok”
+🎉 UX Enhancements Enabled by Current Codebase
+Feature	Codebase Support
+ViVi Confetti Logic	Present via toast + modal overlays
+Audio + Hashtag Builder	TrendTap, SoundLibraryFetcher, HashtagPerformanceTracker
+Post Previews	PlatformPreviewWindow.jsx supports all format views
+ViVi Feedback	Inline Nudge engine + ViViFeedbackSidebar.jsx
+Draft Saving	Drafts stored in context + draft store JSON
+Scheduling	Stored to scheduledPosts.json, surfaced in calendar/scheduler
+Campaign Save	CampaignComposer.jsx and backend /api/createCampaign
+Persona Behavior Sync	All features tap ViViContext.activePersona
