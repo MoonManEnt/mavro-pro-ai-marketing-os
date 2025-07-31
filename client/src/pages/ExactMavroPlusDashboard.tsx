@@ -1691,7 +1691,7 @@ export default function ExactMavroPlusDashboard({ isDemoMode = false, isBetaUser
                             dispatch({ type: 'SET_UI_STATE', payload: { showPersonaDropdown: false } });
                             stopLoading();
                             dispatch({ type: 'SET_DEMO_STATE', payload: { showSuccessAnimation: true } });
-                            setTimeout(() => setShowSuccessAnimation(false), 2000);
+                            setTimeout(() => dispatch({ type: 'SET_DEMO_STATE', payload: { showSuccessAnimation: false } }), 2000);
                           }, 2500);
                         }}
                         className="w-full flex items-center space-x-3 px-2 py-2 text-left hover:bg-gray-50 rounded-lg transition-colors"
