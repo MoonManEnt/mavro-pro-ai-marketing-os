@@ -405,7 +405,7 @@ const GTMPlanningContent: React.FC<{
               </div>
               <div>
                 <h3 className="text-xl font-black text-gray-900 tracking-tight">ViVi Daily Brief</h3>
-                <p className="text-sm text-gray-600 font-medium">Real-Time System Sync • viviService.getAnalytics()</p>
+                <p className="text-sm text-gray-600 font-medium">AI-Powered Daily Insights & Reports</p>
               </div>
             </div>
             <div className="flex items-center space-x-3">
@@ -526,13 +526,13 @@ const GTMPlanningContent: React.FC<{
               </div>
               <div>
                 <h3 className="text-xl font-black text-gray-900 tracking-tight">Market Plan Progress</h3>
-                <p className="text-sm text-gray-600 font-medium">Scheduler + FourSIGHT • ViViBoostEngine()</p>
+                <p className="text-sm text-gray-600 font-medium">Campaign Performance & Analytics Dashboard</p>
               </div>
             </div>
             <div className="flex items-center space-x-2">
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
               <div className="text-sm text-green-700 font-bold bg-gradient-to-r from-green-100 to-emerald-100 px-4 py-2 rounded-2xl border border-green-200/50 shadow-inner">
-                scheduledPosts.json • Live Sync
+Live Sync Active
               </div>
             </div>
           </div>
