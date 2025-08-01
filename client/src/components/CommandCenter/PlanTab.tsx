@@ -612,7 +612,7 @@ const GTMPlanningContent: React.FC<{
           </div>
           <div>
             <h3 className="text-xl font-black text-gray-900 tracking-tight">Market Timeline View</h3>
-            <p className="text-sm text-gray-600 font-medium">scheduledPosts.json • TrendTapFeed.jsx • ViViContext.marketInsights</p>
+            <p className="text-sm text-gray-600 font-medium">Interactive Visual Content Planner</p>
           </div>
         </div>
 
