@@ -11,13 +11,13 @@ import GeoSmartDashboard from './GeoSmartDashboard';
 import { FaInstagram, FaLinkedin, FaTiktok, FaYoutube, FaSnapchat, FaFacebook } from 'react-icons/fa';
 import { SiX } from 'react-icons/si';
 import CampaignsPage from './CampaignsPage';
-import ReviewsPage from './ReviewsPage';
+import ReviewsPage from './ReviewsPageEnhanced';
 import CRMPage from './CRMPage';
 import FourSIGHTPage from './FourSIGHTPage';
 import ReportsPage from './ReportsPage';
 import FourSightPanel from '../components/FourSight/FourSightPanel';
 import SettingsPage from './SettingsPage';
-import ComplianceCenterPage from './ComplianceCenterPage';
+import ComplianceCenterPage from './ComplianceCenterPageEnhanced';
 
 import InventoryManagerPage from './InventoryManagerPage';
 import ViViStorePage from './ViViStorePage';
