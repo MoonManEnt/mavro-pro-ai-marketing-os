@@ -1,9 +1,15 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Router, Route, Switch, Redirect } from 'wouter';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
+import { SettingsProvider } from './contexts/SettingsContext';
+import { ViViProvider } from './contexts/ViViContext';
 import { AuthPage } from './pages/AuthPage';
 import { Dashboard } from './pages/Dashboard';
+import { FloatingViVi } from './components/FloatingViVi';
+import { NotificationCenter } from './components/NotificationCenter';
+import { LoadingTransition } from './components/LoadingTransition';
 import { Toaster } from './components/ui/toaster';
 import './App.css';
 
@@ -13,52 +19,57 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   const { user, loading } = useAuth();
   
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
-      </div>
-    );
+    return <LoadingTransition />;
   }
   
-  return user ? <>{children}</> : <Navigate to="/auth" replace />;
+  return user ? <>{children}</> : <Redirect to="/auth" />;
 };
 
 const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading } = useAuth();
   
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
-      </div>
-    );
+    return <LoadingTransition />;
   }
   
-  return user ? <Navigate to="/dashboard" replace /> : <>{children}</>;
+  return user ? <Redirect to="/dashboard" /> : <>{children}</>;
 };
 
 function AppRoutes() {
+  const { user } = useAuth();
+  
   return (
     <Router>
-      <Routes>
-        <Route 
-          path="/auth" 
-          element={
+      <div className="min-h-screen bg-gradient-to-br from-violet-50 via-white to-indigo-50">
+        <Switch>
+          <Route path="/auth">
             <PublicRoute>
               <AuthPage />
             </PublicRoute>
-          } 
-        />
-        <Route 
-          path="/dashboard" 
-          element={
+          </Route>
+          
+          <Route path="/dashboard">
             <ProtectedRoute>
               <Dashboard />
             </ProtectedRoute>
-          } 
-        />
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-      </Routes>
+          </Route>
+          
+          <Route path="/">
+            <Redirect to="/dashboard" />
+          </Route>
+        </Switch>
+        
+        {user && (
+          <>
+            <FloatingViVi />
+            <div className="fixed top-4 right-4 z-40">
+              <NotificationCenter />
+            </div>
+          </>
+        )}
+        
+        <Toaster />
+      </div>
     </Router>
   );
 }
@@ -66,10 +77,15 @@ function AppRoutes() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <AppRoutes />
-        <Toaster />
-      </AuthProvider>
+      <ThemeProvider>
+        <SettingsProvider>
+          <AuthProvider>
+            <ViViProvider>
+              <AppRoutes />
+            </ViViProvider>
+          </AuthProvider>
+        </SettingsProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }
