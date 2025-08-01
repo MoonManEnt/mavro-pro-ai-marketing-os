@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Shield, AlertTriangle, CheckCircle, FileText, Clock, Users, Scale, Eye, Download, Upload, Search, Filter, AlertCircle, Lock, BookOpen, ExternalLink, Zap, Target, BarChart3, Calendar, Award, Building, Globe, FileCheck, AlertOctagon, Sparkles, MoreHorizontal } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
-
 interface ComplianceRule {
   id: string;
   title: string;
@@ -48,8 +46,9 @@ interface ComplianceCenterPageProps {
 }
 
 const ComplianceCenterPageEnhanced: React.FC<ComplianceCenterPageProps> = ({ currentPersona }) => {
-  const { isAuthenticated, isDemoMode } = useAuth();
-  const actualBetaUser = isAuthenticated && !isDemoMode;
+  // Simple demo mode detection without auth context
+  const isDemoMode = localStorage.getItem('demoMode') === 'true';
+  const actualBetaUser = !isDemoMode;
   
   const [activeTab, setActiveTab] = useState<'overview' | 'rules' | 'documents' | 'audits' | 'alerts'>('overview');
   const [complianceRules, setComplianceRules] = useState<ComplianceRule[]>([]);

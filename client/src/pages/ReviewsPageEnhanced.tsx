@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Star, TrendingUp, MessageSquare, AlertCircle, CheckCircle, Clock, Filter, Search, Reply, Flag, Heart, Share2, MoreHorizontal, ThumbsUp, ThumbsDown, Sparkles, Target, Calendar, Users, BarChart3, Award, MapPin, Zap } from 'lucide-react';
 import { SiGoogle, SiFacebook, SiYelp, SiInstagram, SiLinkedin, SiX } from 'react-icons/si';
-import { useAuth } from '@/hooks/useAuth';
-
 interface Review {
   id: string;
   customerName: string;
@@ -27,8 +25,9 @@ interface ReviewsPageProps {
 }
 
 const ReviewsPageEnhanced: React.FC<ReviewsPageProps> = ({ currentPersona }) => {
-  const { isAuthenticated, isDemoMode } = useAuth();
-  const actualBetaUser = isAuthenticated && !isDemoMode;
+  // Simple demo mode detection without auth context
+  const isDemoMode = localStorage.getItem('demoMode') === 'true';
+  const actualBetaUser = !isDemoMode;
   
   const [reviews, setReviews] = useState<Review[]>([]);
   const [activeTab, setActiveTab] = useState<'overview' | 'all' | 'positive' | 'negative' | 'neutral' | 'analytics'>('overview');
