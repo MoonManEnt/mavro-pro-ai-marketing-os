@@ -669,11 +669,11 @@ const GTMPlanningContent: React.FC<{
             ))}
           </div>
           
-          {/* Action Button - Single Centered */}
-          <div className="flex justify-center mt-8 pt-6 border-t border-purple-100">
+          {/* Action Button - Single Centered with Clear Spacing */}
+          <div className="w-full flex justify-center mt-12 pt-8 border-t border-purple-100/60">
             <button 
               onClick={() => setActiveSubTab('scheduler')}
-              className="px-8 py-4 bg-gradient-to-r from-purple-500 via-purple-600 to-pink-500 text-white font-black rounded-2xl hover:from-purple-600 hover:via-purple-700 hover:to-pink-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 border border-purple-400/50 flex items-center justify-center space-x-2"
+              className="relative z-10 px-8 py-4 bg-gradient-to-r from-purple-500 via-purple-600 to-pink-500 text-white font-black rounded-2xl hover:from-purple-600 hover:via-purple-700 hover:to-pink-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 border border-purple-400/50 flex items-center justify-center space-x-2"
             >
               <Calendar className="w-5 h-5" />
               <span>Add to Plan → Scheduler</span>
