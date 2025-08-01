@@ -669,13 +669,20 @@ const GTMPlanningContent: React.FC<{
             ))}
           </div>
           
-          {/* Add to Plan Button */}
-          <div className="mt-6 flex justify-center">
+          {/* Action Buttons - Centered and Organized */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-8 pt-6 border-t border-purple-100">
             <button 
               onClick={() => setActiveSubTab('scheduler')}
-              className="px-8 py-4 bg-gradient-to-r from-purple-500 via-purple-600 to-pink-500 text-white font-black rounded-2xl hover:from-purple-600 hover:via-purple-700 hover:to-pink-600 transition-all duration-400 shadow-lg hover:shadow-xl transform hover:scale-105 border border-purple-400/50"
+              className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-purple-500 via-purple-600 to-pink-500 text-white font-black rounded-2xl hover:from-purple-600 hover:via-purple-700 hover:to-pink-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 border border-purple-400/50 flex items-center justify-center space-x-2"
             >
-              📅 Add to Plan → Scheduler
+              <Calendar className="w-5 h-5" />
+              <span>Add to Plan → Scheduler</span>
+            </button>
+            <button 
+              className="w-full sm:w-auto px-6 py-4 bg-white text-purple-700 font-bold rounded-2xl border-2 border-purple-200 hover:border-purple-300 hover:bg-purple-50 transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center space-x-2"
+            >
+              <TrendingUp className="w-5 h-5" />
+              <span>View Analytics</span>
             </button>
           </div>
         </div>
