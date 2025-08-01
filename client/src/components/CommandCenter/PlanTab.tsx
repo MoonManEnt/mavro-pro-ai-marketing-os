@@ -616,9 +616,9 @@ const GTMPlanningContent: React.FC<{
           </div>
         </div>
 
-        {/* Interactive Timeline */}
+        {/* Interactive Timeline - Expanded Full Width Layout */}
         <div className="relative">
-          <div className="flex overflow-x-auto pb-4 space-x-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 mb-8">
             {[
               { date: '8/12', platform: 'instagram', type: 'reel', title: 'Morning Motivation', trend: 'Hot Zone Start', color: 'from-pink-500 to-red-500' },
               { date: '8/13', platform: 'linkedin', type: 'carousel', title: 'Industry Insights', trend: 'Professional Peak', color: 'from-blue-500 to-indigo-500' },
@@ -626,35 +626,40 @@ const GTMPlanningContent: React.FC<{
               { date: '8/15', platform: 'youtube', type: 'long-form', title: 'Deep Dive Content', trend: 'Educational Focus', color: 'from-red-500 to-orange-500' },
               { date: '8/16', platform: 'instagram', type: 'story', title: 'Quick Update', trend: 'Hot Zone End', color: 'from-green-500 to-emerald-500' }
             ].map((item, i) => (
-              <div key={i} className="flex-shrink-0 w-48">
-                <div className="relative">
-                  {/* Timeline Line */}
-                  <div className={`absolute left-1/2 transform -translate-x-1/2 w-0.5 h-24 bg-gradient-to-b ${item.color}`}></div>
+              <div key={i} className="flex flex-col h-full">
+                <div className="relative flex-1">
+                  {/* Timeline Connection Line */}
+                  {i < 4 && (
+                    <div className="hidden lg:block absolute top-6 left-full w-6 h-0.5 bg-gradient-to-r from-gray-300 to-gray-400 z-0"></div>
+                  )}
                   
-                  {/* Date Marker */}
-                  <div className={`relative mx-auto w-12 h-12 bg-gradient-to-br ${item.color} rounded-2xl flex items-center justify-center text-white font-black text-sm shadow-lg mb-4`}>
+                  {/* Date Marker - Larger */}
+                  <div className={`relative mx-auto w-16 h-16 bg-gradient-to-br ${item.color} rounded-3xl flex items-center justify-center text-white font-black text-lg shadow-xl mb-6 z-10 hover:scale-110 transition-all duration-300`}>
                     {item.date}
                   </div>
                   
-                  {/* Content Card */}
-                  <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-gray-200/50 hover:bg-white hover:shadow-xl transition-all duration-300 cursor-pointer group">
-                    <div className="flex items-center space-x-2 mb-2">
-                      {item.platform === 'instagram' && <SiInstagram className="w-4 h-4 text-pink-500" />}
-                      {item.platform === 'linkedin' && <SiLinkedin className="w-4 h-4 text-blue-600" />}
-                      {item.platform === 'tiktok' && <SiTiktok className="w-4 h-4 text-black" />}
-                      {item.platform === 'youtube' && <SiYoutube className="w-4 h-4 text-red-600" />}
-                      <span className="text-xs font-bold text-gray-700 capitalize">{item.type}</span>
+                  {/* Content Card - Expanded */}
+                  <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-gray-200/50 hover:bg-white hover:shadow-2xl transition-all duration-300 cursor-pointer group hover:scale-[1.02] h-full flex flex-col">
+                    <div className="flex items-center justify-center space-x-3 mb-4">
+                      {item.platform === 'instagram' && <SiInstagram className="w-6 h-6 text-pink-500" />}
+                      {item.platform === 'linkedin' && <SiLinkedin className="w-6 h-6 text-blue-600" />}
+                      {item.platform === 'tiktok' && <SiTiktok className="w-6 h-6 text-black" />}
+                      {item.platform === 'youtube' && <SiYoutube className="w-6 h-6 text-red-600" />}
+                      <span className="text-sm font-bold text-gray-700 capitalize bg-gray-100 px-3 py-1 rounded-full">{item.type}</span>
                     </div>
-                    <h4 className="text-sm font-bold text-gray-900 mb-2">{item.title}</h4>
-                    <div className="text-xs text-purple-600 bg-purple-50 px-2 py-1 rounded-lg">
+                    
+                    <h4 className="text-lg font-black text-gray-900 mb-3 text-center leading-tight">{item.title}</h4>
+                    
+                    <div className="text-sm text-purple-700 bg-gradient-to-r from-purple-50 to-pink-50 px-4 py-2 rounded-2xl text-center font-medium border border-purple-100 mb-4 flex-1 flex items-center justify-center">
                       {item.trend}
                     </div>
+                    
                     <button 
                       onClick={() => {
                         setPreviewPost(item);
                         setShowPreviewModal(true);
                       }}
-                      className="mt-3 w-full py-2 bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 text-xs font-bold rounded-lg hover:from-purple-200 hover:to-pink-200 transition-all duration-300 group-hover:shadow-md"
+                      className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm font-black rounded-2xl hover:from-purple-600 hover:to-pink-600 transition-all duration-300 group-hover:shadow-lg hover:scale-105 border border-purple-400/50"
                     >
                       Preview Post
                     </button>
