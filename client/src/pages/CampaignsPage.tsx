@@ -477,7 +477,10 @@ const CampaignsPage: React.FC<CampaignsPageProps> = ({ currentPersona = 'demo' }
                     <p className="text-gray-600 text-sm font-medium leading-relaxed mb-8">
                       Create your first marketing campaign to start reaching your audience and growing your business with ViVi AI.
                     </p>
-                    <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-[1.02]">
+                    <Button 
+                      onClick={() => setViewMode('builder')}
+                      className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-[1.02]"
+                    >
                       <Plus className="w-4 h-4 mr-2" />
                       Create Your First Campaign
                     </Button>
