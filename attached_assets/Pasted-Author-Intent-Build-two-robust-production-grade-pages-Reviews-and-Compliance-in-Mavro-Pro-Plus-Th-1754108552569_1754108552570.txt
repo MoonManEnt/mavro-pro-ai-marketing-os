@@ -1,0 +1,172 @@
+Author Intent: Build two robust, production-grade pages—Reviews and Compliance—in Mavro Pro/Plus. These modules must demonstrate advanced UI/UX design, platform compliance logic, and multi-channel content intelligence via the ViVi AI engine. Pages must integrate seamlessly with the ViVi codebase, using modular data handling, scalable API architecture, and persona-aware automation.
+🧩 PART 1: Reviews Page — Centralized Comment & Review Intelligence Hub
+🔨 GOAL:
+Build a multi-platform review and comment interface with ViVi-integrated smart response logic. It must dynamically ingest, parse, associate, and allow actionable engagement on cross-platform feedback tied to campaign/content performance.
+🎨 UI/UX LAYOUT:
+Build tabbed view with the following structure:
+All
+Google Business
+Facebook/Instagram
+TikTok
+YouTube
+Other (Yelp, TrustPilot, etc.)
+Each tab renders:
+{
+  reviewerName,
+  starRating,
+  platformIcon,
+  reviewText,
+  linkedPostPreview,
+  ViViSuggestedResponse,
+  [Edit] [Approve & Send] [Delete/Ignore]
+}
+Filters:
+Platform
+Star rating
+Timeframe
+Linked campaign
+Sentiment (color-coded badges)
+Include:
+Toggle: List View / Grid View
+Smart Suggestions Sidebar (live rotating queue of ViVi responses)
+Export Review Analytics
+Dynamic Response Heatmap by Region
+⚙️ FUNCTIONAL REQUIREMENTS:
+📡 API Integrations:
+Use connectors for:
+Google Business Reviews (via GMB API)
+Meta Graph API (IG/FB comments)
+TikTok for Developers (Comment Webhooks)
+YouTube Data API (CommentThreads)
+Poll or Webhook new data into:
+ReviewsDB:
+{
+  id: string;
+  platform: string;
+  reviewText: string;
+  rating?: number;
+  userId: string;
+  postId: string;
+  timestamp: Date;
+  sentimentScore: number;
+  suggestedResponse: string;
+  status: "pending" | "approved" | "posted";
+}
+🤖 ViVi Integration:
+Invoke the following ViVi modules:
+ReviewResponseEngine(reviewText, platform, personaProfile)
+Generates tone-aligned response
+Optionally auto-schedules posting (if auto-pilot is ON)
+PersonaStyleAdapter(userPersona, responseDraft)
+Customizes tone (professional, witty, formal, casual)
+ReviewToContentLinker(reviewText, timestamp)
+Maps review to matching post via metadata or campaign fingerprint
+ReviewSentimentEngine(text)
+Scores comment positivity/negativity
+🔁 SYSTEM LOGIC:
+Reviews/comments ingested every 15 mins or on webhook trigger.
+If postId not mapped, infer via timestamp proximity.
+If sentiment ≤ -0.7 or keywords include ["refund", "late", "scam"], escalate to AdminAlertQueue.
+If auto-approval enabled → ViVi posts reply instantly.
+If manual → Admin reviews ViVi response and clicks “Send”.
+🧩 PART 2: Compliance Page — Real-Time Trust & Risk Intelligence Engine
+🔨 GOAL:
+Create a dedicated compliance module that tracks API health, persona-regulatory status, post-level violations, and platform terms-of-service adherence. Must be fully AI-monitored and auto-updating in real time.
+🎨 UI/UX LAYOUT:
+Top Banner:
+Compliance Status Score: Green (90–100), Yellow (60–89), Red (<60)
+Risk Type Breakdown (Platform TOS, HIPAA, API, Persona Violation)
+Tab Structure:
+Overview
+OAuth/API Health
+Platform TOS
+Persona Risk Map (HIPAA, SOX2, ISO, etc.)
+Each tab shows:
+{
+  issueType,
+  triggerSource,
+  riskLevel,
+  flaggedPostPreview,
+  ViViResolutionSuggestion,
+  [Fix With ViVi] [Ignore] [More Info]
+}
+Include:
+Platform OAuth Token Monitor
+Persona Compliance Score Matrix
+Weekly ViVi Compliance Digest Toggle
+Auto-Generated Legal Disclaimer Generator
+⚙️ FUNCTIONAL REQUIREMENTS:
+📡 API Integrations:
+OAuth + Scope Monitor:
+Google, Meta, TikTok, YouTube (token refresh, scope match)
+Integrate with UserConnector DB:
+{
+  platform: string;
+  accessToken: string;
+  refreshToken: string;
+  scopes: string[];
+  expiresAt: Date;
+}
+Compliance Heuristics Database:
+TOS and regulatory standards per persona
+Example: financial advisors = SEC/FINRA checks
+Healthcare = HIPAA scan
+Public Figures = defamation/dox compliance
+🤖 ViVi Modules:
+PostComplianceScanner(postContent, personaFlags)
+Uses regex + NLP + platform rules to detect risk
+OAuthHealthChecker(userConnector)
+Flags invalid/expired tokens, suggests reauth
+PersonaRegulationMap(personaType)
+Determines regulation list: e.g., “lawyer” triggers FTC, SEC
+ComplianceScoreCalculator(flags: Issue[]) → 0–100
+🔁 SYSTEM LOGIC:
+All outbound content scanned pre-post via PostComplianceScanner
+Persona matched to dynamic rule set:
+personaType: "healthcare"
+→ flags: ["HIPAA", "PHI", "image_blur", "tone_sensitivity"]
+Auto-flagged content enters ComplianceQueue
+Admin can override, edit, or fix via ViVi UI
+OAuth check interval: every 12 hours (unless critical)
+All changes logged in AuditTrailLog
+🧠 BACKEND INFRASTRUCTURE:
+Schema Models:
+// PostComplianceFlag
+{
+  postId: string;
+  userId: string;
+  platform: string;
+  issueType: string;
+  severity: "low" | "moderate" | "high";
+  flaggedAt: Date;
+  resolved: boolean;
+  resolution: string;
+}
+// OAuthTokenLog
+{
+  userId: string;
+  platform: string;
+  tokenHealth: "valid" | "expired" | "revoked";
+  scopeMatch: boolean;
+  lastChecked: Date;
+}
+📡 SYSTEM BEHAVIOR CHECKPOINTS:
+Module	Trigger	ViVi Engine Involved
+Review Ingestion	Webhook/API Poll	ReviewResponseEngine
+Content Review Mapping	Post Match Logic	ReviewToContentLinker
+Sentiment Escalation	Score ≤ -0.7	ReviewSentimentEngine
+Compliance Risk Trigger	Post Publish	PostComplianceScanner
+OAuth Refresh Needed	Token Expired	OAuthHealthChecker
+Persona Risk Evaluation	New User Persona	PersonaRegulationMap
+Compliance Digest Email	Weekly CRON	ComplianceScoreCalculator
+🔒 SECURITY & AUDIT RECOMMENDATIONS:
+Log all automated responses + user edits in AuditResponseTrail
+Store snapshots of flagged content + platform TOS at time of post
+All compliance actions exportable (PDF, JSON)
+🧪 OPTIONAL TEST SUITES:
+Mock review ingest pipeline (multi-platform)
+Auto-post testing using mock tokens (GMB only in dev)
+Persona toggle stress test (e.g., switch from MedSpa → Financial Advisor)
+Token expiration and recovery scenarios
+✅ OUTPUT:
+These two modules should be fully modular, wired to ViVi’s existing codebase via context or hooks, and exportable for both testing and production deployments.
