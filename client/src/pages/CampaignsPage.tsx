@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, Filter, TrendingUp, Users, Target, BarChart3, Play, Pause, Settings, Brain, Sparkles, CalendarIcon, Clock, Hash, MapPin, Zap, CheckCircle, AlertCircle } from 'lucide-react';
+import { Plus, Search, Filter, TrendingUp, Users, Target, BarChart3, Play, Pause, Settings, Brain, Sparkles, CalendarIcon, Clock, Hash, MapPin, Zap, CheckCircle, AlertCircle, Wand2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -11,6 +11,7 @@ import CampaignDetailDrawer from '@/components/Campaigns/CampaignDetailDrawer';
 import ViViABTestingPanel from '@/components/Campaigns/ViViABTestingPanel';
 import ViViCampaignInsights from '@/components/Campaigns/ViViCampaignInsights';
 import CampaignExtensionNudge from '@/components/Campaigns/CampaignExtensionNudge';
+import MavroMagicStudio from '@/components/MavroMagicStudio';
 
 interface Campaign {
   campaignId: string;
@@ -70,6 +71,8 @@ const CampaignsPage: React.FC<CampaignsPageProps> = ({ currentPersona = 'demo' }
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [campaignContent, setCampaignContent] = useState('');
   const [scheduleMode, setScheduleMode] = useState<'auto' | 'manual'>('auto');
+  const [showMagicStudio, setShowMagicStudio] = useState(false);
+  const [campaignMedia, setCampaignMedia] = useState<any[]>([]);
 
   useEffect(() => {
     loadCampaigns();
@@ -524,7 +527,7 @@ const CampaignsPage: React.FC<CampaignsPageProps> = ({ currentPersona = 'demo' }
           </div>
         )}
 
-        {viewMode === 'builder' && (
+        {viewMode === 'builder' && !showMagicStudio && (
           <CampaignBuilderModule 
             campaignId={campaignId}
             step={builderStep}
@@ -537,11 +540,25 @@ const CampaignsPage: React.FC<CampaignsPageProps> = ({ currentPersona = 'demo' }
             setContent={setCampaignContent}
             scheduleMode={scheduleMode}
             setScheduleMode={setScheduleMode}
+            onOpenMagicStudio={() => setShowMagicStudio(true)}
             onBackToGrid={() => setViewMode('grid')}
             onLaunchCampaign={(campaign) => {
               setCampaigns(prev => [...prev, campaign]);
               setViewMode('grid');
             }}
+          />
+        )}
+
+        {showMagicStudio && (
+          <MavroMagicStudio
+            onSaveCampaign={(content) => {
+              console.log('Campaign content saved:', content);
+              setCampaignMedia(content.mediaFiles);
+              setCampaignContent(content.caption);
+              setSelectedPlatforms(content.platforms);
+              setShowMagicStudio(false);
+            }}
+            onClose={() => setShowMagicStudio(false)}
           />
         )}
       </div>
@@ -571,6 +588,7 @@ interface CampaignBuilderProps {
   setContent: (content: string) => void;
   scheduleMode: 'auto' | 'manual';
   setScheduleMode: (mode: 'auto' | 'manual') => void;
+  onOpenMagicStudio: () => void;
   onBackToGrid: () => void;
   onLaunchCampaign: (campaign: Campaign) => void;
 }
@@ -587,6 +605,7 @@ const CampaignBuilderModule: React.FC<CampaignBuilderProps> = ({
   setContent,
   scheduleMode,
   setScheduleMode,
+  onOpenMagicStudio,
   onBackToGrid,
   onLaunchCampaign
 }) => {
@@ -616,9 +635,9 @@ const CampaignBuilderModule: React.FC<CampaignBuilderProps> = ({
   ];
 
   const togglePlatform = (platformId: string) => {
-    setSelectedPlatforms(prev => 
+    setSelectedPlatforms((prev: string[]) => 
       prev.includes(platformId) 
-        ? prev.filter(id => id !== platformId)
+        ? prev.filter((id: string) => id !== platformId)
         : [...prev, platformId]
     );
   };
@@ -762,30 +781,63 @@ ${viviSuggestions.hashtags.join(' ')} #TransformWithUs`;
         {/* Step 3: Compose Content */}
         <Card className={`md:col-span-2 transition-all duration-200 ${step >= 3 ? 'ring-2 ring-purple-200 shadow-lg' : ''}`}>
           <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${step >= 3 ? 'bg-purple-500 text-white' : 'bg-gray-200 text-gray-600'}`}>
-                3
+            <CardTitle className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${step >= 3 ? 'bg-purple-500 text-white' : 'bg-gray-200 text-gray-600'}`}>
+                  3
+                </div>
+                <span>Compose Content</span>
               </div>
-              <span>Compose Content</span>
+              <Button 
+                onClick={onOpenMagicStudio}
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-[1.02]"
+              >
+                <Wand2 className="w-4 h-4 mr-2" />
+                Magic Studio™
+              </Button>
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <textarea
-              rows={6}
-              placeholder="Let ViVi help you or paste your draft here..."
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              className="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
-            />
-            <div className="flex justify-end mt-4">
-              <Button 
-                variant="outline" 
-                onClick={generateWithViVi}
-                className="border-purple-300 text-purple-700 hover:bg-purple-50"
-              >
-                <Sparkles className="w-4 h-4 mr-2" />
-                Generate with ViVi
-              </Button>
+            <div className="space-y-4">
+              {/* Magic Studio Promotion Banner */}
+              <div className="bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-200 rounded-xl p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                      <Wand2 className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-purple-800">Mavro Magic Studio™</h4>
+                      <p className="text-sm text-purple-600">Upload real photos & videos, see platform-specific mockups</p>
+                    </div>
+                  </div>
+                  <Button 
+                    variant="outline"
+                    onClick={onOpenMagicStudio}
+                    className="border-purple-300 text-purple-700 hover:bg-purple-100"
+                  >
+                    Launch Studio →
+                  </Button>
+                </div>
+              </div>
+
+              <textarea
+                rows={6}
+                placeholder="Let ViVi help you or paste your draft here..."
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                className="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+              />
+              <div className="flex justify-end space-x-3">
+                <Button 
+                  variant="outline" 
+                  onClick={generateWithViVi}
+                  className="border-purple-300 text-purple-700 hover:bg-purple-50"
+                >
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Generate with ViVi
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>

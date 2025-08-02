@@ -20,6 +20,10 @@ import { authenticateToken, optionalAuth } from "./auth/middleware";
 import { authenticateToken as newAuthMiddleware, optionalAuth as newOptionalAuth } from "./middleware/authMiddleware";
 import { userController } from "./controllers/userController";
 import { campaignController } from "./controllers/campaignController";
+import {
+  ObjectStorageService,
+  ObjectNotFoundError,
+} from "./objectStorage";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Add session middleware
@@ -196,6 +200,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/social-media/insights", socialMediaRoutes.getInsights);
   app.post("/api/social-media/post", socialMediaRoutes.postContent);
   app.post("/api/social-media/verify", socialMediaRoutes.verifyConnection);
+
+  // Object Storage routes for Mavro Magic Studio
+  app.get("/public-objects/:filePath(*)", async (req, res) => {
+    const filePath = req.params.filePath;
+    const objectStorageService = new ObjectStorageService();
+    try {
+      const file = await objectStorageService.searchPublicObject(filePath);
+      if (!file) {
+        return res.status(404).json({ error: "File not found" });
+      }
+      objectStorageService.downloadObject(file, res);
+    } catch (error) {
+      console.error("Error searching for public object:", error);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.post("/api/objects/upload", async (req, res) => {
+    const objectStorageService = new ObjectStorageService();
+    try {
+      const uploadURL = await objectStorageService.getObjectEntityUploadURL();
+      res.json({ uploadURL });
+    } catch (error) {
+      console.error("Error generating upload URL:", error);
+      res.status(500).json({ error: "Failed to generate upload URL" });
+    }
+  });
+
+  app.put("/api/objects/campaign-media", async (req, res) => {
+    if (!req.body.mediaURL) {
+      return res.status(400).json({ error: "mediaURL is required" });
+    }
+
+    try {
+      const objectStorageService = new ObjectStorageService();
+      const objectPath = objectStorageService.normalizeObjectEntityPath(
+        req.body.mediaURL,
+      );
+
+      // Store campaign media reference in database if needed
+      // For now, just return the normalized path
+      res.status(200).json({
+        objectPath: objectPath,
+        mediaURL: req.body.mediaURL
+      });
+    } catch (error) {
+      console.error("Error setting campaign media:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
 
   const httpServer = createServer(app);
   return httpServer;
