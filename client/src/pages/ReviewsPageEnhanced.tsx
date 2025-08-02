@@ -177,14 +177,14 @@ const ReviewsPageEnhanced: React.FC<ReviewsPageProps> = ({ currentPersona }) => 
 
   // Platform-specific tabs
   const platformTabs = [
-    { id: 'overview', label: 'Overview', icon: BarChart3 },
-    { id: 'all', label: 'All Reviews', icon: MessageSquare },
-    { id: 'google', label: 'Google Business', icon: SiGoogle },
-    { id: 'facebook', label: 'Facebook', icon: SiFacebook },
-    { id: 'instagram', label: 'Instagram', icon: SiInstagram },
-    { id: 'tiktok', label: 'TikTok', icon: SiTiktok },
-    { id: 'youtube', label: 'YouTube', icon: SiYoutube },
-    { id: 'other', label: 'Other', icon: MoreHorizontal }
+    { id: 'overview', label: 'Overview', icon: BarChart3, isPlatform: false },
+    { id: 'all', label: 'All Reviews', icon: MessageSquare, isPlatform: false },
+    { id: 'google', label: 'Google Business', platform: 'google', isPlatform: true },
+    { id: 'facebook', label: 'Facebook', platform: 'facebook', isPlatform: true },
+    { id: 'instagram', label: 'Instagram', platform: 'instagram', isPlatform: true },
+    { id: 'tiktok', label: 'TikTok', platform: 'tiktok', isPlatform: true },
+    { id: 'youtube', label: 'YouTube', platform: 'youtube', isPlatform: true },
+    { id: 'other', label: 'Other', icon: MoreHorizontal, isPlatform: false }
   ];
 
   return (
@@ -300,11 +300,10 @@ const ReviewsPageEnhanced: React.FC<ReviewsPageProps> = ({ currentPersona }) => 
               <div className="bg-white rounded-3xl shadow-xl border border-gray-200/50 p-2">
                 <div className="flex flex-wrap gap-2">
                   {platformTabs.map((tab) => {
-                    const Icon = tab.icon;
                     const isActive = activeTab === tab.id;
                     const count = tab.id === 'all' ? reviewStats.total : 
                                  tab.id === 'overview' ? reviewStats.total :
-                                 reviews.filter(r => r.platform === tab.id).length;
+                                 safeReviews.filter(r => r.platform === tab.id).length;
                     
                     return (
                       <motion.button
@@ -318,7 +317,11 @@ const ReviewsPageEnhanced: React.FC<ReviewsPageProps> = ({ currentPersona }) => 
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                       >
-                        <Icon className="w-4 h-4" />
+                        {tab.isPlatform ? (
+                          <PlatformIcon platform={tab.platform} className="w-4 h-4" />
+                        ) : (
+                          <tab.icon className="w-4 h-4" />
+                        )}
                         {tab.label}
                         {count > 0 && (
                           <span className={`text-xs px-2 py-1 rounded-full font-bold ${
