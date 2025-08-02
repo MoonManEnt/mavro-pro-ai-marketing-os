@@ -35,14 +35,20 @@ const GrioAcademyPage = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [activeTab, setActiveTab] = useState('journey');
 
-  // Available personas for selection
+  // Available personas for selection (based on actual content in database)
   const personas = [
     'MedSpa Owner',
     'Real Estate Agent', 
     'Local Business Owner',
     'Content Creator',
     'Coach',
-    'Consultant'
+    'Consultant',
+    'Healthcare Provider',
+    'Business Owner',
+    'Marketing Manager',
+    'Entrepreneur',
+    'Beauty Professional',
+    'Property Manager'
   ];
 
   const {
@@ -240,7 +246,7 @@ const GrioAcademyPage = () => {
               'Choose Your Learning Path'
             }
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {personas.map((persona) => (
               <motion.button
                 key={persona}
