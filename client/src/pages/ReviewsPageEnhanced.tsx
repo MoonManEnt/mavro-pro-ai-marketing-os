@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Star, TrendingUp, MessageSquare, AlertCircle, CheckCircle, Clock, Filter, Search, Reply, Flag, Heart, Share2, MoreHorizontal, ThumbsUp, ThumbsDown, Sparkles, Target, Calendar, Users, BarChart3, Award, MapPin, Zap, Send, Edit, Trash2, Eye, RefreshCw, Download, Grid3X3, List, Settings, Bot } from 'lucide-react';
-import { SiGoogle, SiFacebook, SiYelp, SiInstagram, SiLinkedin, SiX, SiTiktok, SiYoutube } from 'react-icons/si';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useReviewResponses } from '../hooks/useReviewResponses';
+import { PlatformIcon, getPlatformColor } from '../components/ui/PlatformIcon';
 
 interface Review {
   id: string;
@@ -74,17 +74,7 @@ const ReviewsPageEnhanced: React.FC<ReviewsPageProps> = ({ currentPersona }) => 
     loadReviews();
   }, [currentPersona, actualBetaUser, refreshReviews]);
 
-  // Platform icons mapping
-  const platformIcons = {
-    google: SiGoogle,
-    facebook: SiFacebook,
-    instagram: SiInstagram,
-    tiktok: SiTiktok,
-    youtube: SiYoutube,
-    yelp: SiYelp,
-    linkedin: SiLinkedin,
-    x: SiX
-  };
+  // Platform icons now handled by PlatformIcon component
 
   // Enhanced review response handler with ViVi integration
   const handleSendResponse = async (review: Review) => {
@@ -147,10 +137,8 @@ const ReviewsPageEnhanced: React.FC<ReviewsPageProps> = ({ currentPersona }) => 
     ));
   };
 
-  const getPlatformIcon = (platform: string) => {
-    const Icon = platformIcons[platform as keyof typeof platformIcons];
-    return Icon ? <Icon className="w-4 h-4 text-gray-600" /> : null;
-  };
+  // Helper function to safely check if reviews is an array
+  const safeReviews = Array.isArray(reviews) ? reviews : [];
 
   const getSentimentColor = (sentiment: string) => {
     switch (sentiment) {
@@ -170,7 +158,7 @@ const ReviewsPageEnhanced: React.FC<ReviewsPageProps> = ({ currentPersona }) => 
   };
 
   // Filter reviews based on active tab
-  const filteredReviews = reviews.filter(review => {
+  const filteredReviews = safeReviews.filter(review => {
     if (activeTab === 'all' || activeTab === 'overview') return true;
     if (activeTab === 'other') return !['google', 'facebook', 'instagram', 'tiktok', 'youtube'].includes(review.platform);
     return review.platform === activeTab;
@@ -178,13 +166,13 @@ const ReviewsPageEnhanced: React.FC<ReviewsPageProps> = ({ currentPersona }) => 
 
   // Calculate stats
   const reviewStats = {
-    total: reviews.length,
-    positive: reviews.filter(r => r.sentiment === 'positive').length,
-    negative: reviews.filter(r => r.sentiment === 'negative').length,
-    neutral: reviews.filter(r => r.sentiment === 'neutral').length,
-    averageRating: reviews.reduce((acc, r) => acc + r.rating, 0) / Math.max(reviews.length, 1),
-    responseRate: (reviews.filter(r => r.response).length / Math.max(reviews.length, 1)) * 100,
-    pendingResponses: reviews.filter(r => r.responseStatus === 'pending').length
+    total: safeReviews.length,
+    positive: safeReviews.filter(r => r.sentiment === 'positive').length,
+    negative: safeReviews.filter(r => r.sentiment === 'negative').length,
+    neutral: safeReviews.filter(r => r.sentiment === 'neutral').length,
+    averageRating: safeReviews.reduce((acc, r) => acc + (r.rating || 0), 0) / Math.max(safeReviews.length, 1),
+    responseRate: (safeReviews.filter(r => r.response).length / Math.max(safeReviews.length, 1)) * 100,
+    pendingResponses: safeReviews.filter(r => r.responseStatus === 'pending').length
   };
 
   // Platform-specific tabs
@@ -367,7 +355,7 @@ const ReviewsPageEnhanced: React.FC<ReviewsPageProps> = ({ currentPersona }) => 
                       </div>
                       <div className="p-8">
                         <div className="space-y-6">
-                          {reviews.slice(0, 5).map((review) => (
+                          {safeReviews.slice(0, 5).map((review) => (
                             <motion.div 
                               key={review.id}
                               className="p-6 bg-gradient-to-br from-gray-50 via-white to-purple-50/20 rounded-2xl border border-gray-200/50 hover:shadow-lg transition-all duration-300"
@@ -384,7 +372,7 @@ const ReviewsPageEnhanced: React.FC<ReviewsPageProps> = ({ currentPersona }) => 
                                     <div className="flex items-center space-x-2">
                                       <div className="flex">{renderStars(review.rating)}</div>
                                       <span className="text-sm text-gray-600">{review.date}</span>
-                                      {getPlatformIcon(review.platform)}
+                                      <PlatformIcon platform={review.platform} className="w-4 h-4" />
                                     </div>
                                   </div>
                                 </div>
@@ -518,7 +506,7 @@ const ReviewsPageEnhanced: React.FC<ReviewsPageProps> = ({ currentPersona }) => 
                                     <div className="flex items-center space-x-2">
                                       <div className="flex">{renderStars(review.rating)}</div>
                                       <span className="text-sm text-gray-600">{review.date}</span>
-                                      {getPlatformIcon(review.platform)}
+                                      <PlatformIcon platform={review.platform} className="w-4 h-4" />
                                     </div>
                                   </div>
                                 </div>
@@ -628,7 +616,7 @@ const ReviewsPageEnhanced: React.FC<ReviewsPageProps> = ({ currentPersona }) => 
                       transition={{ delay: index * 0.1 }}
                     >
                       <div className="flex items-center gap-2 mb-2">
-                        {getPlatformIcon(review.platform)}
+                        <PlatformIcon platform={review.platform} className="w-4 h-4" />
                         <span className="text-sm font-medium text-gray-900">{review.customerName}</span>
                         <div className="flex">{renderStars(review.rating)}</div>
                       </div>

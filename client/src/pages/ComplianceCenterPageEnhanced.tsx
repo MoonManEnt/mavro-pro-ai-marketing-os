@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Shield, AlertTriangle, CheckCircle, FileText, Clock, Users, Scale, Eye, Download, Upload, Search, Filter, AlertCircle, Lock, BookOpen, ExternalLink, Zap, Target, BarChart3, Calendar, Award, Building, Globe, FileCheck, AlertOctagon, Sparkles, MoreHorizontal, Settings, RefreshCw, TrendingUp, Activity } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { SiGoogle, SiFacebook, SiInstagram, SiLinkedin, SiTiktok, SiYoutube, SiX } from 'react-icons/si';
+import { PlatformIcon } from '../components/ui/PlatformIcon';
 import { useComplianceScanner } from '../hooks/useComplianceScanner';
 
 interface ComplianceRule {
@@ -52,7 +52,7 @@ interface OAuthStatus {
   expiresAt?: string;
   lastChecked: string;
   scopes: string[];
-  icon: any;
+  icon: string;
 }
 
 interface ComplianceCenterPageProps {
@@ -87,7 +87,6 @@ const ComplianceCenterPageEnhanced: React.FC<ComplianceCenterPageProps> = ({ cur
   useEffect(() => {
     // For beta users, show empty state; for demo users, generate persona-specific data
     if (actualBetaUser) {
-      setComplianceRules([]);
       setDocuments([]);
       setAudits([]);
       setOauthStatus([]);
@@ -222,7 +221,7 @@ const ComplianceCenterPageEnhanced: React.FC<ComplianceCenterPageProps> = ({ cur
           expiresAt: '2024-09-15',
           lastChecked: '2024-08-01',
           scopes: ['business.manage', 'reviews.read'],
-          icon: SiGoogle
+          icon: 'google'
         },
         {
           platform: 'Facebook',
@@ -230,7 +229,7 @@ const ComplianceCenterPageEnhanced: React.FC<ComplianceCenterPageProps> = ({ cur
           expiresAt: '2024-08-10',
           lastChecked: '2024-08-01',
           scopes: ['pages_manage_posts', 'pages_read_engagement'],
-          icon: SiFacebook
+          icon: 'facebook'
         },
         {
           platform: 'LinkedIn',
@@ -238,7 +237,7 @@ const ComplianceCenterPageEnhanced: React.FC<ComplianceCenterPageProps> = ({ cur
           expiresAt: '2024-10-01',
           lastChecked: '2024-08-01',
           scopes: ['w_member_social', 'r_liteprofile'],
-          icon: SiLinkedin
+          icon: 'linkedin'
         },
         {
           platform: 'Instagram',
@@ -246,7 +245,7 @@ const ComplianceCenterPageEnhanced: React.FC<ComplianceCenterPageProps> = ({ cur
           expiresAt: '2024-07-25',
           lastChecked: '2024-08-01',
           scopes: ['instagram_basic', 'instagram_content_publish'],
-          icon: SiInstagram
+          icon: 'instagram'
         }
       ];
 
@@ -626,7 +625,6 @@ const ComplianceCenterPageEnhanced: React.FC<ComplianceCenterPageProps> = ({ cur
                     <div className="p-8">
                       <div className="space-y-4">
                         {oauthStatus.map((oauth, index) => {
-                          const Icon = oauth.icon;
                           return (
                             <motion.div
                               key={oauth.platform}
@@ -637,7 +635,9 @@ const ComplianceCenterPageEnhanced: React.FC<ComplianceCenterPageProps> = ({ cur
                             >
                               <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
-                                  <Icon className="w-6 h-6 text-gray-600" />
+                                  <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-sm border border-gray-100">
+                                    <PlatformIcon platform={oauth.icon} className="w-5 h-5" />
+                                  </div>
                                   <div>
                                     <h3 className="font-bold text-gray-900">{oauth.platform}</h3>
                                     <p className="text-sm text-gray-600">
@@ -803,7 +803,6 @@ const ComplianceCenterPageEnhanced: React.FC<ComplianceCenterPageProps> = ({ cur
                 <div className="p-8">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {oauthStatus.map((oauth, index) => {
-                      const Icon = oauth.icon;
                       return (
                         <motion.div
                           key={oauth.platform}
@@ -814,7 +813,9 @@ const ComplianceCenterPageEnhanced: React.FC<ComplianceCenterPageProps> = ({ cur
                         >
                           <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center gap-3">
-                              <Icon className="w-8 h-8 text-gray-600" />
+                              <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-md border border-gray-100">
+                                <PlatformIcon platform={oauth.icon} className="w-6 h-6" />
+                              </div>
                               <div>
                                 <h3 className="text-lg font-bold text-gray-900">{oauth.platform}</h3>
                                 <p className="text-sm text-gray-600">Last checked: {oauth.lastChecked}</p>
