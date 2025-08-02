@@ -76,8 +76,10 @@ const GrioAcademyPage = () => {
     try {
       const result = await completeModule(moduleId, 15); // Mock 15 minutes spent
       toast({
-        title: "Module Completed! 🎉",
-        description: `You earned ${result.data.xpGained || 100} XP!`,
+        title: "Module Completed! 🎉✨",
+        description: `Amazing work! You earned ${result.data.xpGained || 100} XP!`,
+        variant: "success",
+        className: "border-green-200 bg-white/95 backdrop-blur-sm shadow-xl",
       });
     } catch (error) {
       toast({
@@ -92,8 +94,10 @@ const GrioAcademyPage = () => {
     try {
       await updateProgress(moduleId, 'in_progress', 10);
       toast({
-        title: "Module Started",
-        description: "Your progress has been saved.",
+        title: "Module Started! 🎉",
+        description: "Your progress has been saved. Let's learn!",
+        variant: "success",
+        className: "border-green-200 bg-white/95 backdrop-blur-sm shadow-xl",
       });
     } catch (error) {
       console.error('Error starting module:', error);
