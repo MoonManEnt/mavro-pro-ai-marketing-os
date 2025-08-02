@@ -8,10 +8,14 @@ async function throwIfResNotOk(res: Response) {
 }
 
 export async function apiRequest(
-  method: string,
   url: string,
-  data?: unknown | undefined,
-): Promise<Response> {
+  options?: {
+    method?: string;
+    body?: unknown;
+  }
+): Promise<any> {
+  const method = options?.method || 'GET';
+  const data = options?.body;
   // Add auth token to headers if available
   const authToken = localStorage.getItem('authToken');
   const headers: Record<string, string> = data ? { "Content-Type": "application/json" } : {};
@@ -48,7 +52,12 @@ export async function apiRequest(
   }
 
   await throwIfResNotOk(res);
-  return res;
+  
+  // Return JSON response for successful requests
+  if (res.status !== 204) {
+    return await res.json();
+  }
+  return null;
 }
 
 type UnauthorizedBehavior = "returnNull" | "throw";

@@ -166,7 +166,7 @@ export class ProductionStorage {
       .delete(sessions)
       .where(eq(sessions.sessionToken, sessionToken));
     
-    return result.rowCount > 0;
+    return result.rowCount ? result.rowCount > 0 : false;
   }
 
   // Workspace operations
@@ -256,7 +256,7 @@ export class ProductionStorage {
       .delete(campaigns)
       .where(eq(campaigns.id, id));
     
-    return result.rowCount > 0;
+    return result.rowCount ? result.rowCount > 0 : false;
   }
 
   // Lead operations
@@ -321,12 +321,12 @@ export class ProductionStorage {
   }
 
   async createAnalytics(analyticsData: InsertAnalytics): Promise<Analytics> {
-    const [analytics] = await db
+    const [analyticsRecord] = await db
       .insert(analytics)
       .values(analyticsData)
       .returning();
     
-    return analytics;
+    return analyticsRecord;
   }
 
   // Content operations
@@ -469,16 +469,17 @@ export class ProductionStorage {
     }
     
     if (conditions.length > 0) {
-      query = query.where(and(...conditions));
+      query = query.where(and(...conditions)) as any;
     }
     
     const modules = await query.orderBy(asc(grioModules.sortOrder));
     
     // Filter by persona on application level since it's stored as JSONB array
     if (filters?.persona) {
-      return modules.filter(module => 
-        module.targetPersonas.includes(filters.persona) || module.targetPersonas.length === 0
-      );
+      return modules.filter(module => {
+        const personas = module.targetPersonas as string[];
+        return personas.includes(filters.persona!) || personas.length === 0;
+      });
     }
     
     return modules;
@@ -617,9 +618,9 @@ export class ProductionStorage {
       throw new Error('User stats not found');
     }
     
-    const newTotalXp = currentStats.totalXp + (updates.xpGained || 0);
-    const newModulesCompleted = currentStats.modulesCompleted + (updates.moduleCompleted ? 1 : 0);
-    const newTotalTimeSpent = currentStats.totalTimeSpent + (updates.timeSpent || 0);
+    const newTotalXp = (currentStats.totalXp || 0) + (updates.xpGained || 0);
+    const newModulesCompleted = (currentStats.modulesCompleted || 0) + (updates.moduleCompleted ? 1 : 0);
+    const newTotalTimeSpent = (currentStats.totalTimeSpent || 0) + (updates.timeSpent || 0);
     
     // Calculate new rank based on XP
     let newRank = 'Bronze';
@@ -629,8 +630,8 @@ export class ProductionStorage {
     else if (newTotalXp >= 1000) newRank = 'Silver';
     
     // Update streak if module completed
-    let newCurrentStreak = currentStats.currentStreak;
-    let newLongestStreak = currentStats.longestStreak;
+    let newCurrentStreak = currentStats.currentStreak || 0;
+    let newLongestStreak = currentStats.longestStreak || 0;
     if (updates.moduleCompleted) {
       newCurrentStreak += 1;
       newLongestStreak = Math.max(newLongestStreak, newCurrentStreak);
@@ -674,7 +675,7 @@ export class ProductionStorage {
       conditions.push(eq(grioLeaderboard.region, filters.region));
     }
     
-    query = query.where(and(...conditions));
+    query = query.where(and(...conditions)) as any;
     
     return await query
       .orderBy(asc(grioLeaderboard.position))

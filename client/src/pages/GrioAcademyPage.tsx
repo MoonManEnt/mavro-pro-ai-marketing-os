@@ -30,8 +30,8 @@ import { useToast } from '@/hooks/use-toast';
 const GrioAcademyPage = () => {
   const { toast } = useToast();
   const [selectedPersona, setSelectedPersona] = useState<string>('');
-  const [levelFilter, setLevelFilter] = useState<string>('');
-  const [categoryFilter, setCategoryFilter] = useState<string>('');
+  const [levelFilter, setLevelFilter] = useState<string>('all');
+  const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [activeTab, setActiveTab] = useState('journey');
 
@@ -48,7 +48,11 @@ const GrioAcademyPage = () => {
     isLoading,
     isCompleting,
     getRankFromXP
-  } = useGrioModules(selectedPersona, levelFilter, categoryFilter);
+  } = useGrioModules(
+    selectedPersona, 
+    levelFilter === 'all' ? undefined : levelFilter, 
+    categoryFilter === 'all' ? undefined : categoryFilter
+  );
 
   // Mock persona for demo (in real app, this would come from context)
   useEffect(() => {
@@ -323,7 +327,7 @@ const GrioAcademyPage = () => {
                     <SelectValue placeholder="All Levels" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Levels</SelectItem>
+                    <SelectItem value="all">All Levels</SelectItem>
                     <SelectItem value="Beginner">Beginner</SelectItem>
                     <SelectItem value="Intermediate">Intermediate</SelectItem>
                     <SelectItem value="Advanced">Advanced</SelectItem>
@@ -335,7 +339,7 @@ const GrioAcademyPage = () => {
                     <SelectValue placeholder="All Categories" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Categories</SelectItem>
+                    <SelectItem value="all">All Categories</SelectItem>
                     <SelectItem value="Video Marketing">Video Marketing</SelectItem>
                     <SelectItem value="Content Creation">Content Creation</SelectItem>
                     <SelectItem value="AI Tools">AI Tools</SelectItem>
