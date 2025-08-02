@@ -295,22 +295,119 @@ export default function ExactMavroPlusDashboard({ isDemoMode = false, isBetaUser
     };
   }, [showNotifications]);
   
+  // User profile photo state
+  const [userProfilePhoto, setUserProfilePhoto] = useState<string | null>(
+    localStorage.getItem('userProfilePhoto') || null
+  );
+
+  // Save profile photo to localStorage when it changes
+  useEffect(() => {
+    if (userProfilePhoto) {
+      localStorage.setItem('userProfilePhoto', userProfilePhoto);
+    }
+  }, [userProfilePhoto]);
+
+  // Listen for profile photo updates from Settings page
+  useEffect(() => {
+    const handleProfilePhotoUpdate = (event: CustomEvent) => {
+      const newPhoto = event.detail.photo;
+      setUserProfilePhoto(newPhoto);
+      
+      // Update existing notifications with new photo
+      setNotifications(prevNotifications => 
+        prevNotifications.map(notification => ({
+          ...notification,
+          userPhoto: newPhoto || '/api/placeholder/32/32'
+        }))
+      );
+    };
+
+    window.addEventListener('profilePhotoUpdated', handleProfilePhotoUpdate as EventListener);
+    
+    return () => {
+      window.removeEventListener('profilePhotoUpdated', handleProfilePhotoUpdate as EventListener);
+    };
+  }, []);
+
   // Conditional data initialization based on user type
   const getInitialNotifications = () => {
     if (actualDemoMode) {
-      // Rich demo data for full demo experience
+      // Rich demo data with profile photos for full demo experience
       return [
-        { id: 1, title: 'New campaign performance', message: 'Your keynote promotion campaign is performing 23% above average', time: '2 min ago', read: false, type: 'success' },
-        { id: 2, title: 'Content suggestion ready', message: 'ViVi has generated 5 new content ideas for your speaking events', time: '1 hour ago', read: false, type: 'info' },
-        { id: 3, title: 'Analytics update', message: 'Weekly performance report is now available', time: '2 hours ago', read: true, type: 'info' },
-        { id: 4, title: 'Trending topic alert', message: 'Leadership development is trending in your industry', time: '3 hours ago', read: false, type: 'trend' },
-        { id: 5, title: 'Engagement milestone', message: 'You\'ve reached 10K followers on LinkedIn!', time: '1 day ago', read: true, type: 'success' }
+        { 
+          id: 1, 
+          title: 'New campaign performance', 
+          message: 'Your keynote promotion campaign is performing 23% above average', 
+          time: '2 min ago', 
+          read: false, 
+          type: 'success',
+          userPhoto: userProfilePhoto || '/api/placeholder/32/32',
+          userName: 'Kemar Griffin'
+        },
+        { 
+          id: 2, 
+          title: 'Content suggestion ready', 
+          message: 'ViVi has generated 5 new content ideas for your speaking events', 
+          time: '1 hour ago', 
+          read: false, 
+          type: 'info',
+          userPhoto: userProfilePhoto || '/api/placeholder/32/32',
+          userName: 'ViVi AI'
+        },
+        { 
+          id: 3, 
+          title: 'Analytics update', 
+          message: 'Weekly performance report is now available', 
+          time: '2 hours ago', 
+          read: true, 
+          type: 'info',
+          userPhoto: userProfilePhoto || '/api/placeholder/32/32',
+          userName: 'Analytics Team'
+        },
+        { 
+          id: 4, 
+          title: 'Trending topic alert', 
+          message: 'Leadership development is trending in your industry', 
+          time: '3 hours ago', 
+          read: false, 
+          type: 'trend',
+          userPhoto: userProfilePhoto || '/api/placeholder/32/32',
+          userName: 'Trend Analysis'
+        },
+        { 
+          id: 5, 
+          title: 'Engagement milestone', 
+          message: 'You\'ve reached 10K followers on LinkedIn!', 
+          time: '1 day ago', 
+          read: true, 
+          type: 'success',
+          userPhoto: userProfilePhoto || '/api/placeholder/32/32',
+          userName: 'LinkedIn'
+        }
       ];
     } else if (actualBetaUser) {
-      // Minimal starter data for new beta users
+      // Minimal starter data for new beta users with photos
       return [
-        { id: 1, title: 'Welcome to Mavro Pro!', message: 'Your workspace is ready. Start by creating your first campaign.', time: 'Just now', read: false, type: 'info' },
-        { id: 2, title: 'Getting Started', message: 'Check out our Quick Start guide to maximize your results.', time: '1 min ago', read: false, type: 'info' }
+        { 
+          id: 1, 
+          title: 'Welcome to Mavro Pro!', 
+          message: 'Your workspace is ready. Start by creating your first campaign.', 
+          time: 'Just now', 
+          read: false, 
+          type: 'info',
+          userPhoto: userProfilePhoto || '/api/placeholder/32/32',
+          userName: 'Mavro Team'
+        },
+        { 
+          id: 2, 
+          title: 'Getting Started', 
+          message: 'Check out our Quick Start guide to maximize your results.', 
+          time: '1 min ago', 
+          read: false, 
+          type: 'info',
+          userPhoto: userProfilePhoto || '/api/placeholder/32/32',
+          userName: 'Support Team'
+        }
       ];
     }
     return [];
@@ -1802,14 +1899,42 @@ export default function ExactMavroPlusDashboard({ isDemoMode = false, isBetaUser
                               }`}
                             >
                               <div className="flex items-start space-x-3">
-                                <div className={`w-2 h-2 rounded-full mt-2 ${
-                                  notification.type === 'success' ? 'bg-green-500' :
-                                  notification.type === 'trend' ? 'bg-yellow-500' : 'bg-blue-500'
-                                }`}></div>
+                                {/* User Profile Photo */}
+                                <div className="flex-shrink-0">
+                                  {notification.userPhoto ? (
+                                    <img 
+                                      src={notification.userPhoto} 
+                                      alt={notification.userName || 'User'}
+                                      className="w-8 h-8 rounded-full object-cover border border-gray-200"
+                                      onError={(e) => {
+                                        const target = e.target as HTMLImageElement;
+                                        target.style.display = 'none';
+                                        target.nextElementSibling?.classList.remove('hidden');
+                                      }}
+                                    />
+                                  ) : null}
+                                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold text-white ${
+                                    notification.type === 'success' ? 'bg-green-500' :
+                                    notification.type === 'trend' ? 'bg-yellow-500' : 'bg-blue-500'
+                                  } ${notification.userPhoto ? 'hidden' : ''}`}>
+                                    {notification.userName ? notification.userName.split(' ').map(n => n[0]).join('').slice(0, 2) : 'N'}
+                                  </div>
+                                </div>
                                 <div className="flex-1">
-                                  <h4 className="font-medium text-gray-900 text-sm">{notification.title}</h4>
+                                  <div className="flex items-center space-x-2">
+                                    <h4 className="font-medium text-gray-900 text-sm">{notification.title}</h4>
+                                    <div className={`w-2 h-2 rounded-full ${
+                                      notification.type === 'success' ? 'bg-green-500' :
+                                      notification.type === 'trend' ? 'bg-yellow-500' : 'bg-blue-500'
+                                    }`}></div>
+                                  </div>
                                   <p className="text-gray-600 text-xs mt-1">{notification.message}</p>
-                                  <span className="text-gray-400 text-xs mt-2 block">{notification.time}</span>
+                                  <div className="flex items-center justify-between mt-2">
+                                    <span className="text-gray-400 text-xs">{notification.time}</span>
+                                    {notification.userName && (
+                                      <span className="text-gray-500 text-xs font-medium">{notification.userName}</span>
+                                    )}
+                                  </div>
                                 </div>
                               </div>
                             </div>

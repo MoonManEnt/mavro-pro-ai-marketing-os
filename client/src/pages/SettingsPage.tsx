@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   Settings, User, Bell, Palette, Zap, Shield, Download, CreditCard, 
   HelpCircle, LogOut, Moon, Sun, Monitor, Globe, Mic, Brain, Target,
   Eye, Lock, Key, Smartphone, Mail, Database, Gauge, RotateCcw,
-  CheckCircle, AlertTriangle, Info, Save, RefreshCw
+  CheckCircle, AlertTriangle, Info, Save, RefreshCw, Camera, Upload
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
@@ -22,6 +22,14 @@ import { AppearanceSettingsCard } from '@/components/settings/AppearanceSettings
 import { FeatureTogglesCard } from '@/components/settings/FeatureTogglesCard';
 
 const SettingsPage = () => {
+  // File input ref for profile photo upload
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  // Profile photo state
+  const [profilePhoto, setProfilePhoto] = useState<string | null>(
+    localStorage.getItem('userProfilePhoto') || null
+  );
+
   // Settings State Management
   const [settings, setSettings] = useState({
     // Account & Profile
@@ -97,6 +105,49 @@ const SettingsPage = () => {
 
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+
+  // Handle profile photo upload
+  const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Check file size (limit to 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('File size must be less than 5MB');
+        return;
+      }
+
+      // Check file type
+      if (!file.type.startsWith('image/')) {
+        alert('Please select an image file');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target?.result as string;
+        setProfilePhoto(result);
+        localStorage.setItem('userProfilePhoto', result);
+        setHasUnsavedChanges(true);
+        
+        // Dispatch custom event to update notifications
+        window.dispatchEvent(new CustomEvent('profilePhotoUpdated', { 
+          detail: { photo: result } 
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeProfilePhoto = () => {
+    setProfilePhoto(null);
+    localStorage.removeItem('userProfilePhoto');
+    setHasUnsavedChanges(true);
+    
+    // Dispatch custom event to update notifications
+    window.dispatchEvent(new CustomEvent('profilePhotoUpdated', { 
+      detail: { photo: null } 
+    }));
+  };
 
   // Handle setting updates
   const updateSetting = (category: string, key: string, value: any) => {
@@ -248,7 +299,66 @@ const SettingsPage = () => {
 
           {/* Profile Settings */}
           <TabsContent value="profile">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Profile Photo Section */}
+              <Card className="rounded-2xl border-2 border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300">
+                <CardHeader className="pb-4">
+                  <CardTitle className="flex items-center space-x-3">
+                    <Camera className="w-5 h-5 text-purple-600" />
+                    <span className="font-black">Profile Photo</span>
+                  </CardTitle>
+                  <CardDescription>Upload your profile photo for notifications and displays</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="flex flex-col items-center space-y-4">
+                    {/* Current Photo Display */}
+                    <div className="relative group">
+                      {profilePhoto ? (
+                        <img 
+                          src={profilePhoto} 
+                          alt="Profile"
+                          className="w-24 h-24 rounded-full object-cover border-4 border-gray-200 shadow-lg"
+                        />
+                      ) : (
+                        <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center border-4 border-gray-200 shadow-lg">
+                          <User className="w-12 h-12 text-white" />
+                        </div>
+                      )}
+                      {profilePhoto && (
+                        <button
+                          onClick={removeProfilePhoto}
+                          className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                          title="Remove photo"
+                        >
+                          ×
+                        </button>
+                      )}
+                    </div>
+                    
+                    {/* Upload Controls */}
+                    <div className="flex flex-col space-y-3 w-full">
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handlePhotoUpload}
+                        className="hidden"
+                      />
+                      <Button
+                        onClick={() => fileInputRef.current?.click()}
+                        className="w-full bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-xl hover:from-purple-600 hover:to-indigo-700 transition-all duration-300"
+                      >
+                        <Upload className="w-4 h-4 mr-2" />
+                        {profilePhoto ? 'Change Photo' : 'Upload Photo'}
+                      </Button>
+                      <p className="text-xs text-gray-500 text-center">
+                        JPG, PNG or GIF. Max size 5MB.
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
               <Card className="rounded-2xl border-2 border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300">
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center space-x-3">
