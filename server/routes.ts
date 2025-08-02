@@ -13,6 +13,8 @@ import campaignRoutes from "./routes/campaigns.js";
 import analyticsRoutes from "./routes/analytics";
 import contentRoutes from "./routes/content";
 import socialRoutes from "./routes/social";
+import reviewsRoutes from "./routes/reviews.js";
+import complianceRoutes from "./routes/compliance.js";
 import { authenticateToken, optionalAuth } from "./auth/middleware";
 import { authenticateToken as newAuthMiddleware, optionalAuth as newOptionalAuth } from "./middleware/authMiddleware";
 import { userController } from "./controllers/userController";
@@ -52,6 +54,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Social Media routes (protected)
   app.use("/api/social", socialRoutes);
+
+  // Reviews Management routes
+  app.use("/api/reviews", reviewsRoutes);
+
+  // Compliance Management routes
+  app.use("/api/compliance", complianceRoutes);
 
   // Beta Testing Feedback routes
   app.post("/api/feedback", submitFeedbackHandler);

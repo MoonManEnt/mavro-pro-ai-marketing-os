@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Shield, AlertTriangle, CheckCircle, FileText, Clock, Users, Scale, Eye, Download, Upload, Search, Filter, AlertCircle, Lock, BookOpen, ExternalLink, Zap, Target, BarChart3, Calendar, Award, Building, Globe, FileCheck, AlertOctagon, Sparkles, MoreHorizontal, Settings, RefreshCw, TrendingUp, Activity } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SiGoogle, SiFacebook, SiInstagram, SiLinkedin, SiTiktok, SiYoutube, SiX } from 'react-icons/si';
+import { useComplianceScanner } from '../hooks/useComplianceScanner';
 
 interface ComplianceRule {
   id: string;
@@ -59,21 +60,29 @@ interface ComplianceCenterPageProps {
 }
 
 const ComplianceCenterPageEnhanced: React.FC<ComplianceCenterPageProps> = ({ currentPersona }) => {
+  // Use the provided hook for compliance data management
+  const { 
+    complianceFlags, 
+    complianceScore, 
+    resolveFlag, 
+    scanCompliance,
+    setComplianceFlags 
+  } = useComplianceScanner();
+  
   // Simple demo mode detection without auth context
   const isDemoMode = localStorage.getItem('demoMode') === 'true';
   const actualBetaUser = !isDemoMode;
   
   const [activeTab, setActiveTab] = useState<'overview' | 'rules' | 'oauth' | 'documents' | 'audits' | 'alerts'>('overview');
-  const [complianceRules, setComplianceRules] = useState<ComplianceRule[]>([]);
   const [documents, setDocuments] = useState<ComplianceDocument[]>([]);
   const [audits, setAudits] = useState<ComplianceAudit[]>([]);
   const [oauthStatus, setOauthStatus] = useState<OAuthStatus[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState<string>('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');
-  const [complianceScore, setComplianceScore] = useState(85);
   const [showViViResolver, setShowViViResolver] = useState(false);
   const [selectedIssue, setSelectedIssue] = useState<ComplianceRule | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     // For beta users, show empty state; for demo users, generate persona-specific data
@@ -241,7 +250,7 @@ const ComplianceCenterPageEnhanced: React.FC<ComplianceCenterPageProps> = ({ cur
         }
       ];
 
-      setComplianceRules(baseRules[currentPersona] || baseRules.kemar);
+      // Hook manages the compliance data automatically
       setDocuments(baseDocuments[currentPersona] || baseDocuments.kemar);
       setAudits(baseAudits[currentPersona] || baseAudits.kemar);
       setOauthStatus(baseOAuth);
@@ -249,24 +258,6 @@ const ComplianceCenterPageEnhanced: React.FC<ComplianceCenterPageProps> = ({ cur
 
     generateComplianceData();
   }, [currentPersona, actualBetaUser]);
-
-  // Calculate compliance score based on rules
-  useEffect(() => {
-    const totalRules = complianceRules.length;
-    if (totalRules === 0) {
-      setComplianceScore(100);
-      return;
-    }
-
-    const compliantRules = complianceRules.filter(rule => rule.status === 'compliant').length;
-    const warningRules = complianceRules.filter(rule => rule.status === 'warning').length;
-    const violationRules = complianceRules.filter(rule => rule.status === 'violation').length;
-
-    const score = Math.round(
-      (compliantRules * 100 + warningRules * 60 + violationRules * 0) / totalRules
-    );
-    setComplianceScore(score);
-  }, [complianceRules]);
 
   // Animation variants
   const tabVariants = {
@@ -398,6 +389,41 @@ const ComplianceCenterPageEnhanced: React.FC<ComplianceCenterPageProps> = ({ cur
     setShowViViResolver(true);
   };
 
+  // Handle resolve compliance flag
+  const handleResolveFlag = async (flagId: string) => {
+    setIsLoading(true);
+    try {
+      const result = await resolveFlag(flagId);
+      if (result.success) {
+        console.log('Compliance flag resolved successfully');
+        setShowViViResolver(false);
+      } else {
+        console.error('Failed to resolve flag:', result.error);
+      }
+    } catch (error) {
+      console.error('Error resolving flag:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handle compliance scan
+  const handleScanCompliance = async () => {
+    setIsLoading(true);
+    try {
+      const result = await scanCompliance();
+      if (result.success) {
+        console.log('Compliance scan completed successfully');
+      } else {
+        console.error('Failed to run compliance scan:', result.error);
+      }
+    } catch (error) {
+      console.error('Error running compliance scan:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Tab definitions
   const complianceTabs = [
     { id: 'overview', label: 'Overview', icon: BarChart3 },
@@ -460,21 +486,21 @@ const ComplianceCenterPageEnhanced: React.FC<ComplianceCenterPageProps> = ({ cur
               className="bg-white rounded-2xl p-4 shadow-lg border border-gray-100"
               whileHover={{ scale: 1.05, y: -2 }}
             >
-              <div className="text-2xl font-black text-green-600">{complianceRules.filter(r => r.status === 'compliant').length}</div>
+              <div className="text-2xl font-black text-green-600">{complianceFlags.filter(r => r.resolved).length}</div>
               <div className="text-sm text-gray-600">Compliant</div>
             </motion.div>
             <motion.div 
               className="bg-white rounded-2xl p-4 shadow-lg border border-gray-100"
               whileHover={{ scale: 1.05, y: -2 }}
             >
-              <div className="text-2xl font-black text-yellow-600">{complianceRules.filter(r => r.status === 'warning').length}</div>
+              <div className="text-2xl font-black text-yellow-600">{complianceFlags.filter(r => !r.resolved && r.severity === 'Medium').length}</div>
               <div className="text-sm text-gray-600">Warnings</div>
             </motion.div>
             <motion.div 
               className="bg-white rounded-2xl p-4 shadow-lg border border-gray-100"
               whileHover={{ scale: 1.05, y: -2 }}
             >
-              <div className="text-2xl font-black text-red-600">{complianceRules.filter(r => r.status === 'violation').length}</div>
+              <div className="text-2xl font-black text-red-600">{complianceFlags.filter(r => !r.resolved && r.severity === 'High').length}</div>
               <div className="text-sm text-gray-600">Violations</div>
             </motion.div>
             <motion.div 
@@ -545,7 +571,7 @@ const ComplianceCenterPageEnhanced: React.FC<ComplianceCenterPageProps> = ({ cur
                     </div>
                     <div className="p-8">
                       <div className="space-y-4">
-                        {complianceRules.slice(0, 3).map((rule, index) => {
+                        {complianceFlags.slice(0, 3).map((rule, index) => {
                           const Icon = getCategoryIcon(rule.category);
                           return (
                             <motion.div
@@ -561,13 +587,13 @@ const ComplianceCenterPageEnhanced: React.FC<ComplianceCenterPageProps> = ({ cur
                                     <Icon className="w-5 h-5 text-white" />
                                   </div>
                                   <div>
-                                    <h3 className="font-bold text-gray-900">{rule.title}</h3>
+                                    <h3 className="font-bold text-gray-900">{rule.issueType}</h3>
                                     <p className="text-sm text-gray-600">{rule.regulatoryBody}</p>
                                   </div>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  <span className={`px-2 py-1 text-xs font-bold rounded-full ${getStatusColor(rule.status)}`}>
-                                    {rule.status}
+                                  <span className={`px-2 py-1 text-xs font-bold rounded-full ${rule.resolved ? 'text-green-700 bg-green-100' : rule.severity === 'High' ? 'text-red-700 bg-red-100' : 'text-yellow-700 bg-yellow-100'}`}>
+                                    {rule.resolved ? 'Resolved' : rule.severity}
                                   </span>
                                   <span className={`px-2 py-1 text-xs font-bold rounded-full ${getPriorityColor(rule.priority)}`}>
                                     {rule.priority}
@@ -575,7 +601,7 @@ const ComplianceCenterPageEnhanced: React.FC<ComplianceCenterPageProps> = ({ cur
                                 </div>
                               </div>
                               <p className="text-sm text-gray-700 mb-3">{rule.description}</p>
-                              {rule.status !== 'compliant' && rule.viviResolution && (
+                              {!rule.resolved && rule.viviResolution && (
                                 <div className="p-3 bg-purple-50 rounded-xl border border-purple-200/50">
                                   <div className="flex items-center gap-2 mb-1">
                                     <Sparkles className="w-4 h-4 text-purple-600" />
@@ -651,14 +677,16 @@ const ComplianceCenterPageEnhanced: React.FC<ComplianceCenterPageProps> = ({ cur
                   <div className="flex items-center justify-between">
                     <div>
                       <h2 className="text-2xl font-black text-gray-900 tracking-tight">Compliance Rules</h2>
-                      <p className="text-gray-600 font-medium">{complianceRules.length} rules configured</p>
+                      <p className="text-gray-600 font-medium">{complianceFlags.length} rules configured</p>
                     </div>
                     <motion.button
-                      className="flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-2xl font-medium hover:bg-blue-200 transition-all"
+                      onClick={handleScanCompliance}
+                      disabled={isLoading}
+                      className="flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-2xl font-medium hover:bg-blue-200 transition-all disabled:opacity-50"
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                     >
-                      <RefreshCw className="w-4 h-4" />
+                      <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
                       Scan All Rules
                     </motion.button>
                   </div>
@@ -666,7 +694,7 @@ const ComplianceCenterPageEnhanced: React.FC<ComplianceCenterPageProps> = ({ cur
                 
                 <div className="p-8">
                   <div className="space-y-6">
-                    {complianceRules.map((rule, index) => {
+                    {complianceFlags.map((rule, index) => {
                       const Icon = getCategoryIcon(rule.category);
                       return (
                         <motion.div
@@ -684,13 +712,13 @@ const ComplianceCenterPageEnhanced: React.FC<ComplianceCenterPageProps> = ({ cur
                                 <Icon className="w-6 h-6 text-white" />
                               </div>
                               <div>
-                                <h3 className="text-lg font-bold text-gray-900">{rule.title}</h3>
+                                <h3 className="text-lg font-bold text-gray-900">{rule.issueType}</h3>
                                 <p className="text-gray-600">{rule.regulatoryBody}</p>
                               </div>
                             </div>
                             <div className="flex items-center gap-2">
-                              <span className={`px-3 py-1 text-xs font-bold rounded-full ${getStatusColor(rule.status)}`}>
-                                {rule.status}
+                              <span className={`px-3 py-1 text-xs font-bold rounded-full ${rule.resolved ? 'text-green-700 bg-green-100' : rule.severity === 'High' ? 'text-red-700 bg-red-100' : 'text-yellow-700 bg-yellow-100'}`}>
+                                {rule.resolved ? 'Resolved' : rule.severity}
                               </span>
                               <span className={`px-3 py-1 text-xs font-bold rounded-full ${getPriorityColor(rule.priority)}`}>
                                 {rule.priority}
@@ -721,7 +749,7 @@ const ComplianceCenterPageEnhanced: React.FC<ComplianceCenterPageProps> = ({ cur
                           </div>
 
                           {/* ViVi Resolution */}
-                          {rule.viviResolution && (
+                          {!rule.resolved && rule.viviResolution && (
                             <div className="p-4 bg-purple-50 rounded-xl border border-purple-200/50 mb-4">
                               <div className="flex items-center gap-2 mb-2">
                                 <Sparkles className="w-4 h-4 text-purple-600" />
@@ -737,7 +765,7 @@ const ComplianceCenterPageEnhanced: React.FC<ComplianceCenterPageProps> = ({ cur
                             initial={{ opacity: 0 }}
                             whileHover={{ opacity: 1 }}
                           >
-                            {rule.status !== 'compliant' && (
+                            {!rule.resolved && (
                               <motion.button
                                 onClick={() => handleFixWithViVi(rule)}
                                 className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-blue-600 text-white rounded-xl font-medium shadow-lg hover:shadow-xl transition-all"
@@ -897,13 +925,11 @@ const ComplianceCenterPageEnhanced: React.FC<ComplianceCenterPageProps> = ({ cur
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         onClick={() => {
-                          // Implement ViVi resolution logic
-                          setShowViViResolver(false);
-                          // Update rule status to compliant
-                          setComplianceRules(prev => prev.map(r => 
-                            r.id === selectedIssue.id ? { ...r, status: 'compliant', riskLevel: 10 } : r
-                          ));
+                          if (selectedIssue) {
+                            handleResolveFlag(selectedIssue.id);
+                          }
                         }}
+                        disabled={isLoading}
                       >
                         Apply ViVi Resolution
                       </motion.button>

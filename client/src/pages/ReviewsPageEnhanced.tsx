@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Star, TrendingUp, MessageSquare, AlertCircle, CheckCircle, Clock, Filter, Search, Reply, Flag, Heart, Share2, MoreHorizontal, ThumbsUp, ThumbsDown, Sparkles, Target, Calendar, Users, BarChart3, Award, MapPin, Zap, Send, Edit, Trash2, Eye, RefreshCw, Download, Grid3X3, List, Settings, Bot } from 'lucide-react';
 import { SiGoogle, SiFacebook, SiYelp, SiInstagram, SiLinkedin, SiX, SiTiktok, SiYoutube } from 'react-icons/si';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useReviewResponses } from '../hooks/useReviewResponses';
 
 interface Review {
   id: string;
@@ -30,11 +31,20 @@ interface ReviewsPageProps {
 }
 
 const ReviewsPageEnhanced: React.FC<ReviewsPageProps> = ({ currentPersona }) => {
+  // Use the provided hook for data management
+  const { 
+    reviews, 
+    sendResponse, 
+    generateViViResponse, 
+    refreshReviews, 
+    personaStyle,
+    setReviews 
+  } = useReviewResponses();
+  
   // Simple demo mode detection without auth context
   const isDemoMode = localStorage.getItem('demoMode') === 'true';
   const actualBetaUser = !isDemoMode;
   
-  const [reviews, setReviews] = useState<Review[]>([]);
   const [activeTab, setActiveTab] = useState<'overview' | 'all' | 'google' | 'facebook' | 'instagram' | 'tiktok' | 'youtube' | 'other'>('overview');
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
   const [autoResponseEnabled, setAutoResponseEnabled] = useState(false);
@@ -45,82 +55,24 @@ const ReviewsPageEnhanced: React.FC<ReviewsPageProps> = ({ currentPersona }) => 
   const [filterPlatform, setFilterPlatform] = useState<string>('all');
   const [sortBy, setSortBy] = useState<'date' | 'rating' | 'helpful'>('date');
   const [showViViSidebar, setShowViViSidebar] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
+  // Load initial data
   useEffect(() => {
-    // For beta users, show empty state; for demo users, generate persona-specific reviews
-    if (actualBetaUser) {
-      setReviews([]);
-      return;
-    }
-    
-    const generateReviews = () => {
-      const baseReviews: Record<string, Review[]> = {
-        kemar: [
-          {
-            id: 'rev-001',
-            customerName: 'Jennifer Martinez',
-            customerInitials: 'JM',
-            rating: 5,
-            date: '2024-08-01',
-            platform: 'google',
-            content: 'Kemar\'s keynote at our leadership summit was absolutely transformational! His insights on authentic leadership resonated with our entire executive team.',
-            sentiment: 'positive',
-            category: 'Speaking Engagement',
-            helpful: 15,
-            persona: 'kemar',
-            verified: true,
-            location: 'New York, NY',
-            reviewType: 'service',
-            linkedPost: 'Leadership Summit 2024',
-            viviSuggestion: 'Thank you Jennifer! It was an honor to speak at your summit. The energy from your team was incredible and I\'m thrilled the leadership insights resonated. Looking forward to seeing the positive changes you implement!',
-            responseStatus: 'pending'
-          },
-          {
-            id: 'rev-002',
-            customerName: 'Michael Chen',
-            customerInitials: 'MC',
-            rating: 5,
-            date: '2024-07-28',
-            platform: 'linkedin',
-            content: 'Working with Kemar has been game-changing for our company culture. His approach to leadership development is both practical and inspiring.',
-            sentiment: 'positive',
-            category: 'Consulting',
-            helpful: 8,
-            persona: 'kemar',
-            verified: true,
-            reviewType: 'service',
-            linkedPost: 'Corporate Culture Transformation',
-            viviSuggestion: 'Michael, thank you for trusting me with your team\'s development! Seeing your company culture evolve has been incredibly rewarding. The practical tools we implemented are clearly making a difference.',
-            responseStatus: 'posted',
-            response: 'Michael, thank you for trusting me with your team\'s development! Seeing your company culture evolve has been incredibly rewarding.',
-            responseDate: '2024-07-28'
-          },
-          {
-            id: 'rev-003',
-            customerName: 'Sarah Williams',
-            customerInitials: 'SW',
-            rating: 4,
-            date: '2024-07-25',
-            platform: 'facebook',
-            content: 'Great session on entrepreneurial mindset. Would love to see more content on work-life balance for business owners.',
-            sentiment: 'positive',
-            category: 'Workshop',
-            helpful: 6,
-            persona: 'kemar',
-            verified: true,
-            reviewType: 'experience',
-            linkedPost: 'Entrepreneurial Mindset Workshop',
-            viviSuggestion: 'Sarah, I\'m so glad the entrepreneurial mindset session resonated with you! Work-life balance for business owners is such a crucial topic - I\'ll definitely be creating more content around this. Thank you for the feedback!',
-            responseStatus: 'pending'
-          }
-        ]
-      };
-
-      setReviews(baseReviews[currentPersona] || baseReviews.kemar);
+    const loadReviews = async () => {
+      if (actualBetaUser) {
+        // For beta users, fetch from API
+        try {
+          await refreshReviews();
+        } catch (error) {
+          console.error('Failed to load reviews:', error);
+        }
+      }
+      // Demo users already have data from the hook
     };
 
-    generateReviews();
-  }, [currentPersona, actualBetaUser]);
+    loadReviews();
+  }, [currentPersona, actualBetaUser, refreshReviews]);
 
   // Platform icons mapping
   const platformIcons = {
@@ -136,25 +88,37 @@ const ReviewsPageEnhanced: React.FC<ReviewsPageProps> = ({ currentPersona }) => 
 
   // Enhanced review response handler with ViVi integration
   const handleSendResponse = async (review: Review) => {
+    setIsLoading(true);
     try {
       setSelectedReview(review);
-      // Simulate ViVi generating response
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const result = await sendResponse(review.id);
       
-      // Simulate toast notification
-      console.log(`ViVi posted your response to ${review.platform}!`);
-      
-      // Update review status
-      setReviews(prev => prev.map(r => 
-        r.id === review.id ? { 
-          ...r, 
-          response: review.viviSuggestion || responseText, 
-          responseDate: new Date().toISOString(),
-          responseStatus: 'posted'
-        } : r
-      ));
+      if (result.success) {
+        console.log(`ViVi posted your response to ${review.platform}!`);
+      } else {
+        console.error('Failed to send response:', result.error);
+      }
     } catch (error) {
       console.error('Failed to send response. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handle refresh reviews
+  const handleRefreshReviews = async () => {
+    setIsLoading(true);
+    try {
+      const result = await refreshReviews();
+      if (result.success) {
+        console.log('Reviews refreshed successfully');
+      } else {
+        console.error('Failed to refresh reviews:', result.error);
+      }
+    } catch (error) {
+      console.error('Error refreshing reviews:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
