@@ -294,6 +294,26 @@ export default function ExactMavroPlusDashboard({ isDemoMode = false, isBetaUser
 
 
 
+  // Define detailed persona data with first names
+  const getPersonaData = (persona: string) => {
+    const personaMap: { [key: string]: { firstName: string; fullName: string; industry: string; title: string } } = {
+      'kemar': { firstName: 'Kemar', fullName: 'Kemar Hinds', industry: 'Speaking & Leadership', title: 'Executive Speaker' },
+      'karen': { firstName: 'Karen', fullName: 'Karen Rodriguez', industry: 'Real Estate', title: 'Real Estate Agent' },
+      'sarah': { firstName: 'Sarah', fullName: 'Sarah Chen', industry: 'MedSpa & Wellness', title: 'MedSpa Owner' },
+      'marco': { firstName: 'Marco', fullName: 'Marco Antonelli', industry: 'Food & Beverage', title: 'Restaurant Owner' },
+      'alex': { firstName: 'Alex', fullName: 'Alex Johnson', industry: 'Fitness & Wellness', title: 'Fitness Coach' },
+      'david': { firstName: 'David', fullName: 'David Thompson', industry: 'Automotive', title: 'Auto Dealer' },
+      'elena': { firstName: 'Elena', fullName: 'Elena Martinez', industry: 'Beauty & Fashion', title: 'Beauty Salon Owner' },
+      'mike': { firstName: 'Mike', fullName: 'Mike Sullivan', industry: 'Legal Services', title: 'Attorney' },
+      'lisa': { firstName: 'Lisa', fullName: 'Lisa Wang', industry: 'Healthcare', title: 'Healthcare Consultant' },
+      'james': { firstName: 'James', fullName: 'James Mitchell', industry: 'Education', title: 'Educational Consultant' },
+      'maria': { firstName: 'Maria', fullName: 'Maria Gonzalez', industry: 'Non-Profit', title: 'Non-Profit Director' },
+      'robert': { firstName: 'Robert', fullName: 'Robert Kim', industry: 'Technology', title: 'Tech Consultant' }
+    };
+    
+    return personaMap[persona] || personaMap['kemar']; // Default to Kemar if persona not found
+  };
+
   // Conditional data initialization based on user type
   const getInitialNotifications = () => {
     if (actualDemoMode) {
@@ -1806,13 +1826,7 @@ export default function ExactMavroPlusDashboard({ isDemoMode = false, isBetaUser
                   
                   <p className="text-gray-600 text-sm font-medium leading-relaxed max-w-2xl">
                     {currentView === 'dashboard' ? 
-                      `Welcome back, ${!isDemoMode && userPersona ? userPersona.name : 
-                                      currentPersona === 'kemar' ? 'Kemar' :
-                                      currentPersona === 'karen' ? 'Karen' :
-                                      currentPersona === 'sarah' ? 'Sarah' :
-                                      currentPersona === 'marco' ? 'Marco' :
-                                      currentPersona === 'alex' ? 'Alex' :
-                                      currentPersona === 'david' ? 'David' : 'Kemar'}! Here's your marketing overview.` :
+                      `Welcome back, ${!isDemoMode && userPersona ? userPersona.name : getPersonaData(currentPersona).firstName}! Here's your marketing at a highlevel.` :
                      currentView === 'campaigns' ? 'Manage your marketing campaigns and track performance across platforms' :
                      currentView === 'reviews' ? 'Monitor and respond to customer reviews across all platforms' :
                      currentView === 'crm' ? 'Manage your customer relationships and contacts efficiently' :
