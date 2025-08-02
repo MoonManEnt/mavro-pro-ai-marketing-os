@@ -279,6 +279,21 @@ export default function ExactMavroPlusDashboard({ isDemoMode = false, isBetaUser
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   const [currentView, setCurrentView] = useState<'dashboard' | 'campaigns' | 'reviews' | 'crm' | 'foursight' | 'settings' | 'geosmart' | 'compliance' | 'clientportal' | 'inventory' | 'vivistore' | 'magicstudio' | 'aistudio' | 'betafeedback' | 'academy'>('dashboard');
   const [showNotifications, setShowNotifications] = useState(false);
+
+  // Close notification dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      if (showNotifications && !target.closest('.notification-dropdown') && !target.closest('button[title="Notifications"]')) {
+        setShowNotifications(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showNotifications]);
   
   // Conditional data initialization based on user type
   const getInitialNotifications = () => {
@@ -1751,6 +1766,77 @@ export default function ExactMavroPlusDashboard({ isDemoMode = false, isBetaUser
               
               {/* Right Side - User Info and Actions */}
               <div className="flex items-center space-x-4">
+                {/* Notification Bell */}
+                <div className="relative">
+                  <button
+                    onClick={() => setShowNotifications(!showNotifications)}
+                    className="group relative flex items-center justify-center w-10 h-10 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 shadow-sm hover:shadow-md"
+                    title="Notifications"
+                  >
+                    <Bell className="w-5 h-5 text-gray-600 group-hover:text-gray-900 transition-colors" />
+                    {notifications.some(n => !n.read) && (
+                      <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full flex items-center justify-center">
+                        <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
+                      </div>
+                    )}
+                  </button>
+                  
+                  {/* Notification Dropdown */}
+                  {showNotifications && (
+                    <div className="notification-dropdown absolute right-0 top-12 w-80 bg-white border border-gray-200 rounded-xl shadow-xl z-50">
+                      <div className="p-4 border-b border-gray-100">
+                        <div className="flex items-center justify-between">
+                          <h3 className="font-semibold text-gray-900">Notifications</h3>
+                          <span className="text-xs text-gray-500">
+                            {notifications.filter(n => !n.read).length} unread
+                          </span>
+                        </div>
+                      </div>
+                      <div className="max-h-96 overflow-y-auto">
+                        {notifications.length > 0 ? (
+                          notifications.map(notification => (
+                            <div 
+                              key={notification.id}
+                              className={`p-4 border-b border-gray-50 hover:bg-gray-50 transition-colors ${
+                                !notification.read ? 'bg-blue-50/50' : ''
+                              }`}
+                            >
+                              <div className="flex items-start space-x-3">
+                                <div className={`w-2 h-2 rounded-full mt-2 ${
+                                  notification.type === 'success' ? 'bg-green-500' :
+                                  notification.type === 'trend' ? 'bg-yellow-500' : 'bg-blue-500'
+                                }`}></div>
+                                <div className="flex-1">
+                                  <h4 className="font-medium text-gray-900 text-sm">{notification.title}</h4>
+                                  <p className="text-gray-600 text-xs mt-1">{notification.message}</p>
+                                  <span className="text-gray-400 text-xs mt-2 block">{notification.time}</span>
+                                </div>
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="p-4 text-center text-gray-500">
+                            <Bell className="w-8 h-8 mx-auto mb-2 text-gray-300" />
+                            <p className="text-sm">No notifications yet</p>
+                          </div>
+                        )}
+                      </div>
+                      {notifications.length > 0 && (
+                        <div className="p-3 border-t border-gray-100">
+                          <button 
+                            onClick={() => {
+                              setNotifications(notifications.map(n => ({ ...n, read: true })));
+                            }}
+                            className="w-full text-center text-sm text-blue-600 hover:text-blue-700 font-medium"
+                          >
+                            Mark all as read
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
                 {/* Status Badge */}
                 <div className="flex items-center space-x-2 px-4 py-2.5 bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200 rounded-xl shadow-sm">
                   <div className="w-2 h-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full"></div>
