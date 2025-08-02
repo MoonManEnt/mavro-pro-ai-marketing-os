@@ -610,7 +610,7 @@ const ReviewsPageEnhanced: React.FC<ReviewsPageProps> = ({ currentPersona }) => 
                 </div>
 
                 <div className="p-6 space-y-4">
-                  {reviews.filter(r => r.responseStatus === 'pending').slice(0, 3).map((review, index) => (
+                  {safeReviews.filter(r => r.responseStatus === 'pending').slice(0, 3).map((review, index) => (
                     <motion.div
                       key={review.id}
                       className="p-4 bg-gradient-to-br from-purple-50 to-blue-50 rounded-2xl border border-purple-200/50"
@@ -649,7 +649,7 @@ const ReviewsPageEnhanced: React.FC<ReviewsPageProps> = ({ currentPersona }) => 
                     </motion.div>
                   ))}
 
-                  {reviews.filter(r => r.responseStatus === 'pending').length === 0 && (
+                  {safeReviews.filter(r => r.responseStatus === 'pending').length === 0 && (
                     <div className="text-center py-8">
                       <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-3" />
                       <p className="text-sm text-gray-600">All responses sent!</p>
