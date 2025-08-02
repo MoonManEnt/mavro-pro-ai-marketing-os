@@ -1,0 +1,62 @@
+🔄 Micro-Animation System for Reviews Page
+1. Tab Slide-In / Fade Transition
+Purpose: Smooth switching between review platforms
+Animation: Slide-in from left/right with 150ms fade-in overlay
+Trigger: On tab change
+Framework: framer-motion or CSSTransition group
+<motion.div
+  key={activeTab}
+  initial={{ opacity: 0, x: 40 }}
+  animate={{ opacity: 1, x: 0 }}
+  exit={{ opacity: 0, x: -40 }}
+  transition={{ duration: 0.25 }}
+>
+  {/* Tab content */}
+</motion.div>
+2. Review Card Hover
+Effect: Elevation + shadow + action buttons fade-in
+Purpose: Prompt user interactivity
+Style:
+.review-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+}
+.review-card .actions {
+  opacity: 1;
+  transition: opacity 0.2s ease-in;
+}
+3. Auto-Sent Toast Notification
+Use: When ViVi auto-posts a reply or logs it to the queue
+Style: Bottom right toast that slides in
+Delay: 3s auto-dismiss
+toast.success("ViVi posted your response to Google!", { position: "bottom-right" })
+4. Dynamic Persona Tonality Preview
+Feature: Hover to preview tone in ViVi’s voice
+Effect: Tooltip bubble or mini speech-bubble animation
+⚖️ Compliance Page Animation & Feedback Logic
+1. Real-Time Risk Meter Dial
+Design: Circular meter (0–100)
+Animation: Dial sweep using react-spring or framer-motion
+Triggers: Every compliance update or flag change
+useSpring({ complianceScore, config: { tension: 220, friction: 120 } });
+2. Issue Flag Flash-In
+Effect: Red pulse glow on high-risk items
+Purpose: Grab user attention
+Duration: 2.5s pulse on flag load
+3. OAuth Token Status Light
+Component: Dot next to each integration
+Colors: Green = Valid, Yellow = Near Expiry, Red = Expired
+Animation: Pulse if action needed (e.g., re-auth)
+4. Resolution Workflow
+Interaction: “Fix with ViVi” triggers modal fly-in with animation
+Modal Behavior: Sliding panel from right, with ViVi’s proposed fix plan shown in collapsible cards
+5. Hover-Expand Legal Guide
+Behavior: Hover over “HIPAA” or “SOX2” badge opens short info card
+Use Case: Educates user on what the violation means
+✅ Animation Libraries Recommended
+Library	Use Case
+framer-motion	All dynamic transitions
+react-spring	Score meters, dials, compliance meter sweep
+react-toastify	Toast alerts and confirmations
+react-tooltip	Hover previews and tooltips
+@radix-ui/react-tooltip	More stylized tooltips with native feel
