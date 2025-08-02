@@ -5,6 +5,7 @@ Mavro Pro is a full-stack AI-powered marketing operating system designed to comb
 
 ## User Preferences
 Preferred communication style: Simple, everyday language.
+Platform branding: Use only official social media platform logos (no generic icons).
 
 ## System Architecture
 
@@ -35,7 +36,8 @@ Preferred communication style: Simple, everyday language.
 - **Scheduler**: Google Calendar-style scheduler for post planning with platform-specific color coding and advanced filtering.
 - **Persona System**: Dynamic persona management with industry-specific content, analytics, and AI agents.
 - **Loading Transition System**: Professional 6-second loading screen with animation sequence and personalized messages.
-- **Reviews Management**: UI for managing and displaying customer reviews.
+- **Reviews Management**: Complete Reviews Intelligence Hub with official platform branding (Google, Facebook, Instagram, TikTok, YouTube, LinkedIn, X, Yelp) using authentic social media logos from react-icons library.
+- **Compliance Intelligence Center**: Full compliance monitoring system with OAuth health monitoring and platform-specific integrations using official brand logos.
 - **ViVi Store**: An app-store-like marketplace for AI-powered marketing tools and "Agent Packs."
 - **GROW Tab (KPI Command Center)**: Real-time KPI dashboard with strategy optimization and deployment.
 - **Navigation System**: Multi-page navigation, customizable menu with drag-and-drop, and dual dashboard system for demo vs. authenticated users.
