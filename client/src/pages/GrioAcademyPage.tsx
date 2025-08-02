@@ -35,6 +35,16 @@ const GrioAcademyPage = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [activeTab, setActiveTab] = useState('journey');
 
+  // Available personas for selection
+  const personas = [
+    'MedSpa Owner',
+    'Real Estate Agent', 
+    'Local Business Owner',
+    'Content Creator',
+    'Coach',
+    'Consultant'
+  ];
+
   const {
     modules,
     userStats,
@@ -54,12 +64,7 @@ const GrioAcademyPage = () => {
     categoryFilter === 'all' ? undefined : categoryFilter
   );
 
-  // Mock persona for demo (in real app, this would come from context)
-  useEffect(() => {
-    if (!selectedPersona) {
-      setSelectedPersona('MedSpa Owner');
-    }
-  }, [selectedPersona]);
+  // Demo mode - no default persona, user must select
 
   const handleCompleteModule = async (moduleId: string) => {
     try {
@@ -155,9 +160,18 @@ const GrioAcademyPage = () => {
               🎓
             </motion.div>
             <h1 className="text-4xl font-black tracking-tight bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-              Grio Academy
+              {selectedPersona ? `Welcome back, ${selectedPersona}` : 'Welcome to Grio Academy'}
             </h1>
           </div>
+          {selectedPersona && (
+            <div className="text-center mb-4">
+              <p className="text-lg text-gray-500">
+                Personalized learning path for <span className="font-semibold text-purple-600">
+                  {selectedPersona}
+                </span>
+              </p>
+            </div>
+          )}
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Master marketing skills with AI-powered personalized learning paths designed for your industry
           </p>
@@ -214,6 +228,37 @@ const GrioAcademyPage = () => {
           </div>
         </motion.div>
 
+        {/* Persona Selection */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 mb-8 border border-white/50"
+        >
+          <h2 className="text-xl font-bold mb-4 text-center">
+            {selectedPersona ? 
+              `Currently learning as: ${selectedPersona}` : 
+              'Choose Your Learning Path'
+            }
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+            {personas.map((persona) => (
+              <motion.button
+                key={persona}
+                onClick={() => setSelectedPersona(selectedPersona === persona ? '' : persona)}
+                className={`p-3 rounded-xl text-sm font-medium transition-all duration-200 ${
+                  selectedPersona === persona
+                    ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg scale-105'
+                    : 'bg-white/60 hover:bg-white/80 text-gray-700 border border-gray-200'
+                }`}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                {persona}
+              </motion.button>
+            ))}
+          </div>
+        </motion.div>
+
         {/* Main Content */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-3 bg-white/50 backdrop-blur-sm rounded-2xl p-1">
@@ -241,21 +286,32 @@ const GrioAcademyPage = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <User className="w-5 h-5" />
-                    Welcome back, {selectedPersona}!
+                    {selectedPersona ? `Continue Learning, ${selectedPersona}` : 'Select Your Learning Path'}
                   </CardTitle>
                   <CardDescription>
-                    Continue your personalized learning path
+                    {selectedPersona ? 'Your personalized modules await' : 'Choose a persona above to see your customized modules'}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid gap-4">
-                    {modules
-                      .filter(module => 
-                        !module.completed && 
-                        (module.targetPersonas.includes(selectedPersona) || module.targetPersonas.length === 0)
-                      )
-                      .slice(0, 3)
-                      .map((module, index) => (
+                  {!selectedPersona ? (
+                    <div className="text-center py-8">
+                      <User className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                      <h3 className="text-lg font-semibold text-gray-600 mb-2">
+                        Choose Your Learning Path
+                      </h3>
+                      <p className="text-gray-500">
+                        Select a persona above to see your personalized learning modules
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="grid gap-4">
+                      {modules
+                        .filter(module => 
+                          !module.completed && 
+                          (module.targetPersonas.includes(selectedPersona) || module.targetPersonas.length === 0)
+                        )
+                        .slice(0, 3)
+                        .map((module, index) => (
                         <motion.div
                           key={module.id}
                           initial={{ opacity: 0, x: -20 }}
@@ -306,8 +362,9 @@ const GrioAcademyPage = () => {
                             </div>
                           </div>
                         </motion.div>
-                      ))}
-                  </div>
+                        ))}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </motion.div>
