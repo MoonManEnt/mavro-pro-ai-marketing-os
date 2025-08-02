@@ -20,7 +20,15 @@ import {
   type ViviInteraction,
   type InsertViviInteraction,
   type Trend, 
-  type InsertTrend 
+  type InsertTrend,
+  type GrioModule,
+  type InsertGrioModule,
+  type GrioUserProgress,
+  type InsertGrioUserProgress,
+  type GrioUserStats,
+  type InsertGrioUserStats,
+  type GrioLeaderboard,
+  type InsertGrioLeaderboard
 } from "@shared/schema";
 import { ProductionStorage } from "./storage/productionStorage";
 
@@ -88,6 +96,55 @@ export interface IStorage {
   getTrendsByIndustry(industry: string): Promise<Trend[]>;
   createTrend(trend: InsertTrend): Promise<Trend>;
   updateTrend(id: string, trend: Partial<Trend>): Promise<Trend | undefined>;
+  
+  // Grio Academy operations
+  getGrioModules(filters?: {
+    persona?: string;
+    level?: string;
+    category?: string;
+    isActive?: boolean;
+  }): Promise<GrioModule[]>;
+  getGrioModule(id: string): Promise<GrioModule | undefined>;
+  createGrioModule(module: InsertGrioModule): Promise<GrioModule>;
+  updateGrioModule(id: string, module: Partial<GrioModule>): Promise<GrioModule | undefined>;
+  
+  getUserProgress(userId: string): Promise<GrioUserProgress[]>;
+  getModuleProgress(userId: string, moduleId: string): Promise<GrioUserProgress | undefined>;
+  updateModuleProgress(progress: {
+    userId: string;
+    moduleId: string;
+    status?: string;
+    progressPercent?: number;
+    timeSpent?: number;
+    feedbackRating?: number;
+    feedbackText?: string;
+    completedAt?: Date;
+  }): Promise<GrioUserProgress>;
+  
+  getUserStats(userId: string): Promise<GrioUserStats | undefined>;
+  updateUserStats(userId: string, updates: {
+    xpGained?: number;
+    moduleCompleted?: boolean;
+    timeSpent?: number;
+  }): Promise<GrioUserStats>;
+  
+  getLeaderboard(filters?: {
+    period?: string;
+    industry?: string;
+    region?: string;
+    limit?: number;
+  }): Promise<GrioLeaderboard[]>;
+  getUserRanking(userId: string, filters?: {
+    period?: string;
+    industry?: string;
+  }): Promise<{ position: number; totalUsers: number }>;
+  
+  getModuleRecommendations(params: {
+    userId: string;
+    persona?: string;
+    completedModules: string[];
+    userLevel: string;
+  }): Promise<GrioModule[]>;
 }
 
 // Production storage implementation  

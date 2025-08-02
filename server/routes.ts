@@ -15,6 +15,7 @@ import contentRoutes from "./routes/content";
 import socialRoutes from "./routes/social";
 import reviewsRoutes from "./routes/reviews.js";
 import complianceRoutes from "./routes/compliance.js";
+import grioRoutes from "./routes/grio.js";
 import { authenticateToken, optionalAuth } from "./auth/middleware";
 import { authenticateToken as newAuthMiddleware, optionalAuth as newOptionalAuth } from "./middleware/authMiddleware";
 import { userController } from "./controllers/userController";
@@ -60,6 +61,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Compliance Management routes
   app.use("/api/compliance", complianceRoutes);
+
+  // Grio Academy routes
+  app.use("/api/grio", grioRoutes);
 
   // Beta Testing Feedback routes
   app.post("/api/feedback", submitFeedbackHandler);

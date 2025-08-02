@@ -1,0 +1,89 @@
+Below is the full UI/UX design blueprint — modular, responsive, gamified, and fully ViVi-empowered — built to plug directly into the existing Mavro OS aesthetic and architectural ZIPs we've created.
+
+🧭 UI/UX Overview: Grio Academy
+Section	Purpose	Component
+🎓 My Learning Journey	Personalized LMS view per persona	GrioAcademyPage.jsx
+🗂️ Browse All Modules	Filterable library of courses	ModuleLibraryPanel.jsx
+🏆 Leaderboard & Badges	Rank against other users	GrioLeaderboardPanel.jsx
+✍️ Admin Authoring Tool	Create/edit LMS content	ModuleAuthoringTool.jsx
+🧠 ViVi Suggestions	Smart next-module nudges	ViViLearningAssistant.jsx
+🎨 Visual Layout (Page: GrioAcademy)
+┌──────────────────────────── Grio Academy ─────────────────────────────┐
+│  🎓 Welcome Back, [Reginald]! Here's your learning path.             │
+│  Rank: Silver | XP: 1200 | Modules Completed: 5                      │
+├──────────────────────────────────────────────────────────────────────┤
+│  🧭 My Learning Journey        🗂️ Browse Modules      🏆 Leaderboard   │
+│                                                                      │
+│  [📹 Module Card]   [💡 Module Card]   [🤖 Module Card]               │
+│  “Create Better Reels” “Lighting 101” “Build AI Agents for Leads”    │
+│  Level: Beginner      Level: Intermediate   Level: Advanced          │
+│  XP: 100             Status: In Progress     Status: Locked 🔒       │
+├──────────────────────────────────────────────────────────────────────┤
+│  💬 ViVi Suggests:                                                   │
+│   “Based on your persona (MedSpa Owner), this week’s top pick:       │
+│   🔥 'How to Use AI to Write Captions that Convert’”                │
+└──────────────────────────────────────────────────────────────────────┘
+🧩 Component-Level Design
+1. GrioAcademyPage.jsx
+Hero: XP progress bar (animated), Persona tag chip, Rank badge
+Tabs: My Journey, All Modules, Leaderboard
+Micro animations:
+Cards slide in with scale/fade
+XP progress bar animates on module complete
+Confetti animation on rank-up
+2. ModuleCard.jsx
+Each learning unit is shown as a card with the following:
+Thumbnail image or looping gif
+Title, Level, Category
+Status: Not Started / In Progress / Completed / Locked
+CTA Button:
+Start Module
+Continue
+Review
+Animation:
+Pulse glow when recommended by ViVi
+Slide-in with delay cascade
+3. GrioLeaderboardPanel.jsx
+View: List or Grid toggle
+Filter:
+Local | Regional | Vertical-specific
+Display:
+Username, Avatar, Rank badge, XP count
+Animation:
+Rank climb pulse
+Hover to preview user’s completed modules
+4. ViViLearningAssistant.jsx
+Slide-out drawer (or floating bubble)
+Shows:
+“Next Best Module”
+“Why This Module Matters”
+Module completion history
+Animation:
+ViVi speaks (text-to-speech preview?)
+Bubble pulses when user logs in
+5. ModuleAuthoringTool.jsx (Admin-only)
+Accordion input panels:
+General Info (title, desc, category)
+Persona Targeting (persona tag, industry)
+Video Uploader (link + transcript option)
+Preview on right panel
+Submit = success confetti and toast
+✨ UI Polish & Micro Animation Layer
+Element	Animation	Tool
+Module Complete	Badge pop, XP meter sweep, toast	framer-motion, react-toastify
+Rank Up	Confetti burst + "You've Ranked Up!" modal	canvas-confetti, modal
+Hover on Leaderboard	Elevate card + show top module	motion.div
+ViVi Nudges	Typing effect, glow bubble	TypewriterJS, pulse
+Progress Timeline	Horizontal module roadmap	react-stepper-horizontal
+🧠 Integration Logic (Powered by ViVi)
+const persona = usePersonaContext(); // "Cleaning Company", "Real Estate Agent", etc.
+const recommendations = getViViModuleSuggestions(persona, history, performance);
+ViVi Suggestion Flow:
+Triggers on:
+User login
+Module complete
+Persona change
+Looks at:
+Modules not started
+Completed modules + feedback score
+Popular modules by business vertical

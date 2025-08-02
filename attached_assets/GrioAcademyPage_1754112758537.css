@@ -1,0 +1,23 @@
+
+.grio-academy {
+  padding: 2rem;
+}
+.module-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+.grio-module-card {
+  background: #f4f4f9;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+  transition: box-shadow 0.3s ease;
+}
+.grio-module-card:hover {
+  box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+}
+.complete-badge {
+  color: green;
+  font-weight: bold;
+}

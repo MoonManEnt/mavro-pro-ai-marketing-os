@@ -18,6 +18,7 @@ import ReportsPage from './ReportsPage';
 import FourSightPanel from '../components/FourSight/FourSightPanel';
 import SettingsPage from './SettingsPage';
 import ComplianceCenterPage from './ComplianceCenterPageEnhanced';
+import GrioAcademyPage from './GrioAcademyPage';
 
 import InventoryManagerPage from './InventoryManagerPage';
 import ViViStorePage from './ViViStorePage';
@@ -276,7 +277,7 @@ export default function ExactMavroPlusDashboard({ isDemoMode = false, isBetaUser
   const [currentStep, setCurrentStep] = useState(1);
   const [showTourGuide, setShowTourGuide] = useState(false);
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
-  const [currentView, setCurrentView] = useState<'dashboard' | 'campaigns' | 'reviews' | 'crm' | 'foursight' | 'settings' | 'geosmart' | 'compliance' | 'clientportal' | 'inventory' | 'vivistore' | 'magicstudio' | 'aistudio' | 'betafeedback'>('dashboard');
+  const [currentView, setCurrentView] = useState<'dashboard' | 'campaigns' | 'reviews' | 'crm' | 'foursight' | 'settings' | 'geosmart' | 'compliance' | 'clientportal' | 'inventory' | 'vivistore' | 'magicstudio' | 'aistudio' | 'betafeedback' | 'academy'>('dashboard');
   const [showNotifications, setShowNotifications] = useState(false);
   
   // Conditional data initialization based on user type
@@ -1997,6 +1998,15 @@ export default function ExactMavroPlusDashboard({ isDemoMode = false, isBetaUser
               </div>
             </div>
           )}
+
+          {/* Learn Mode Content */}
+          {activeMode === 'learn' && (
+            <div className="rounded-3xl bg-white shadow-2xl border border-gray-100 overflow-hidden">
+              <div className="p-8">
+                <GrioAcademyPage />
+              </div>
+            </div>
+          )}
             </>
           )}
 
@@ -2012,6 +2022,7 @@ export default function ExactMavroPlusDashboard({ isDemoMode = false, isBetaUser
         {currentView === 'settings' && <SettingsPage currentPersona={currentPersona} />}
         {currentView === 'aistudio' && <MavroAIStudio />}
         {currentView === 'betafeedback' && <BetaFeedbackPage />}
+        {currentView === 'academy' && <GrioAcademyPage />}
 
         </main>
 

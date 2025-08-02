@@ -11,6 +11,10 @@ import {
   socialAccounts, 
   viviInteractions, 
   trends,
+  grioModules,
+  grioUserProgress,
+  grioUserStats,
+  grioLeaderboard,
   type User,
   type InsertUser,
   type OAuthAccount,
@@ -32,7 +36,15 @@ import {
   type ViviInteraction,
   type InsertViviInteraction,
   type Trend,
-  type InsertTrend
+  type InsertTrend,
+  type GrioModule,
+  type InsertGrioModule,
+  type GrioUserProgress,
+  type InsertGrioUserProgress,
+  type GrioUserStats,
+  type InsertGrioUserStats,
+  type GrioLeaderboard,
+  type InsertGrioLeaderboard
 } from '@shared/schema';
 import { eq, and, desc, asc } from 'drizzle-orm';
 import bcrypt from 'bcryptjs';
@@ -434,5 +446,314 @@ export class ProductionStorage {
       .returning();
     
     return updatedTrend;
+  }
+
+  // Grio Academy operations
+  async getGrioModules(filters?: {
+    persona?: string;
+    level?: string;
+    category?: string;
+    isActive?: boolean;
+  }): Promise<GrioModule[]> {
+    let query = db.select().from(grioModules);
+    
+    const conditions = [];
+    if (filters?.isActive !== undefined) {
+      conditions.push(eq(grioModules.isActive, filters.isActive));
+    }
+    if (filters?.level) {
+      conditions.push(eq(grioModules.level, filters.level));
+    }
+    if (filters?.category) {
+      conditions.push(eq(grioModules.category, filters.category));
+    }
+    
+    if (conditions.length > 0) {
+      query = query.where(and(...conditions));
+    }
+    
+    const modules = await query.orderBy(asc(grioModules.sortOrder));
+    
+    // Filter by persona on application level since it's stored as JSONB array
+    if (filters?.persona) {
+      return modules.filter(module => 
+        module.targetPersonas.includes(filters.persona) || module.targetPersonas.length === 0
+      );
+    }
+    
+    return modules;
+  }
+
+  async getGrioModule(id: string): Promise<GrioModule | undefined> {
+    const [module] = await db.select().from(grioModules).where(eq(grioModules.id, id));
+    return module;
+  }
+
+  async createGrioModule(moduleData: InsertGrioModule): Promise<GrioModule> {
+    const [module] = await db
+      .insert(grioModules)
+      .values(moduleData)
+      .returning();
+    
+    return module;
+  }
+
+  async updateGrioModule(id: string, updates: Partial<GrioModule>): Promise<GrioModule | undefined> {
+    const [updatedModule] = await db
+      .update(grioModules)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(grioModules.id, id))
+      .returning();
+    
+    return updatedModule;
+  }
+
+  async getUserProgress(userId: string): Promise<GrioUserProgress[]> {
+    return await db
+      .select()
+      .from(grioUserProgress)
+      .where(eq(grioUserProgress.userId, userId))
+      .orderBy(desc(grioUserProgress.updatedAt));
+  }
+
+  async getModuleProgress(userId: string, moduleId: string): Promise<GrioUserProgress | undefined> {
+    const [progress] = await db
+      .select()
+      .from(grioUserProgress)
+      .where(and(
+        eq(grioUserProgress.userId, userId),
+        eq(grioUserProgress.moduleId, moduleId)
+      ));
+    
+    return progress;
+  }
+
+  async updateModuleProgress(progressData: {
+    userId: string;
+    moduleId: string;
+    status?: string;
+    progressPercent?: number;
+    timeSpent?: number;
+    feedbackRating?: number;
+    feedbackText?: string;
+    completedAt?: Date;
+  }): Promise<GrioUserProgress> {
+    // Check if progress record exists
+    const existing = await this.getModuleProgress(progressData.userId, progressData.moduleId);
+    
+    if (existing) {
+      // Update existing record
+      const [updated] = await db
+        .update(grioUserProgress)
+        .set({
+          ...progressData,
+          updatedAt: new Date(),
+          lastAccessedAt: new Date()
+        })
+        .where(and(
+          eq(grioUserProgress.userId, progressData.userId),
+          eq(grioUserProgress.moduleId, progressData.moduleId)
+        ))
+        .returning();
+      
+      return updated;
+    } else {
+      // Create new progress record
+      const [created] = await db
+        .insert(grioUserProgress)
+        .values({
+          userId: progressData.userId,
+          moduleId: progressData.moduleId,
+          status: progressData.status || 'not_started',
+          progressPercent: progressData.progressPercent || 0,
+          timeSpent: progressData.timeSpent || 0,
+          feedbackRating: progressData.feedbackRating,
+          feedbackText: progressData.feedbackText,
+          completedAt: progressData.completedAt,
+          lastAccessedAt: new Date()
+        })
+        .returning();
+      
+      return created;
+    }
+  }
+
+  async getUserStats(userId: string): Promise<GrioUserStats | undefined> {
+    const [stats] = await db
+      .select()
+      .from(grioUserStats)
+      .where(eq(grioUserStats.userId, userId));
+    
+    if (!stats) {
+      // Create initial stats record
+      const [created] = await db
+        .insert(grioUserStats)
+        .values({
+          userId,
+          totalXp: 0,
+          currentRank: 'Bronze',
+          modulesCompleted: 0,
+          totalTimeSpent: 0,
+          currentStreak: 0,
+          longestStreak: 0,
+          achievements: [],
+          favoriteCategories: []
+        })
+        .returning();
+      
+      return created;
+    }
+    
+    return stats;
+  }
+
+  async updateUserStats(userId: string, updates: {
+    xpGained?: number;
+    moduleCompleted?: boolean;
+    timeSpent?: number;
+  }): Promise<GrioUserStats> {
+    const currentStats = await this.getUserStats(userId);
+    if (!currentStats) {
+      throw new Error('User stats not found');
+    }
+    
+    const newTotalXp = currentStats.totalXp + (updates.xpGained || 0);
+    const newModulesCompleted = currentStats.modulesCompleted + (updates.moduleCompleted ? 1 : 0);
+    const newTotalTimeSpent = currentStats.totalTimeSpent + (updates.timeSpent || 0);
+    
+    // Calculate new rank based on XP
+    let newRank = 'Bronze';
+    if (newTotalXp >= 2500) newRank = 'Diamond';
+    else if (newTotalXp >= 2000) newRank = 'Platinum';
+    else if (newTotalXp >= 1500) newRank = 'Gold';
+    else if (newTotalXp >= 1000) newRank = 'Silver';
+    
+    // Update streak if module completed
+    let newCurrentStreak = currentStats.currentStreak;
+    let newLongestStreak = currentStats.longestStreak;
+    if (updates.moduleCompleted) {
+      newCurrentStreak += 1;
+      newLongestStreak = Math.max(newLongestStreak, newCurrentStreak);
+    }
+    
+    const [updated] = await db
+      .update(grioUserStats)
+      .set({
+        totalXp: newTotalXp,
+        currentRank: newRank,
+        modulesCompleted: newModulesCompleted,
+        totalTimeSpent: newTotalTimeSpent,
+        currentStreak: newCurrentStreak,
+        longestStreak: newLongestStreak,
+        lastLearningDate: updates.moduleCompleted ? new Date() : currentStats.lastLearningDate,
+        updatedAt: new Date()
+      })
+      .where(eq(grioUserStats.userId, userId))
+      .returning();
+    
+    return updated;
+  }
+
+  async getLeaderboard(filters?: {
+    period?: string;
+    industry?: string;
+    region?: string;
+    limit?: number;
+  }): Promise<GrioLeaderboard[]> {
+    let query = db.select().from(grioLeaderboard);
+    
+    const conditions = [eq(grioLeaderboard.isVisible, true)];
+    
+    if (filters?.period) {
+      conditions.push(eq(grioLeaderboard.period, filters.period));
+    }
+    if (filters?.industry) {
+      conditions.push(eq(grioLeaderboard.industry, filters.industry));
+    }
+    if (filters?.region) {
+      conditions.push(eq(grioLeaderboard.region, filters.region));
+    }
+    
+    query = query.where(and(...conditions));
+    
+    return await query
+      .orderBy(asc(grioLeaderboard.position))
+      .limit(filters?.limit || 50);
+  }
+
+  async getUserRanking(userId: string, filters?: {
+    period?: string;
+    industry?: string;
+  }): Promise<{ position: number; totalUsers: number }> {
+    // Get user's leaderboard entry
+    const conditions = [
+      eq(grioLeaderboard.userId, userId),
+      eq(grioLeaderboard.isVisible, true)
+    ];
+    
+    if (filters?.period) {
+      conditions.push(eq(grioLeaderboard.period, filters.period));
+    }
+    if (filters?.industry) {
+      conditions.push(eq(grioLeaderboard.industry, filters.industry));
+    }
+    
+    const [userEntry] = await db
+      .select()
+      .from(grioLeaderboard)
+      .where(and(...conditions));
+    
+    if (!userEntry) {
+      return { position: 0, totalUsers: 0 };
+    }
+    
+    // Get total users count for same filters
+    const totalConditions = [eq(grioLeaderboard.isVisible, true)];
+    if (filters?.period) {
+      totalConditions.push(eq(grioLeaderboard.period, filters.period));
+    }
+    if (filters?.industry) {
+      totalConditions.push(eq(grioLeaderboard.industry, filters.industry));
+    }
+    
+    const totalUsers = await db
+      .select()
+      .from(grioLeaderboard)
+      .where(and(...totalConditions));
+    
+    return {
+      position: userEntry.position,
+      totalUsers: totalUsers.length
+    };
+  }
+
+  async getModuleRecommendations(params: {
+    userId: string;
+    persona?: string;
+    completedModules: string[];
+    userLevel: string;
+  }): Promise<GrioModule[]> {
+    // Get all modules not completed by user
+    const allModules = await this.getGrioModules({
+      persona: params.persona,
+      isActive: true
+    });
+    
+    // Filter out completed modules
+    const availableModules = allModules.filter(
+      module => !params.completedModules.includes(module.id)
+    );
+    
+    // Simple recommendation logic - recommend modules matching user level or beginner level
+    const recommendedModules = availableModules.filter(module => 
+      module.level === 'Beginner' || 
+      (params.userLevel === 'Silver' && module.level === 'Intermediate') ||
+      (params.userLevel === 'Gold' && (module.level === 'Intermediate' || module.level === 'Advanced')) ||
+      (params.userLevel === 'Platinum' && module.level === 'Advanced') ||
+      (params.userLevel === 'Diamond')
+    );
+    
+    // Return top 3 recommendations
+    return recommendedModules.slice(0, 3);
   }
 }

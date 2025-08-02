@@ -308,6 +308,75 @@ export const trends = pgTable("trends", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Grio Academy - Learning Management System
+export const grioModules = pgTable("grio_modules", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  content: text("content"), // lesson content/video links
+  level: text("level").notNull(), // Beginner, Intermediate, Advanced
+  category: text("category").notNull(), // Video Marketing, Content Creation, AI Tools, etc.
+  xpReward: integer("xp_reward").default(100),
+  prerequisites: jsonb("prerequisites").default('[]'), // module IDs that must be completed first
+  estimatedTime: integer("estimated_time"), // minutes
+  videoUrl: text("video_url"),
+  thumbnailUrl: text("thumbnail_url"),
+  transcriptUrl: text("transcript_url"),
+  targetPersonas: jsonb("target_personas").default('[]'), // which personas this is relevant for
+  industry: text("industry"), // specific industry targeting
+  isActive: boolean("is_active").default(true),
+  sortOrder: integer("sort_order").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const grioUserProgress = pgTable("grio_user_progress", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull(),
+  moduleId: uuid("module_id").notNull(),
+  status: text("status").notNull().default("not_started"), // not_started, in_progress, completed
+  progressPercent: integer("progress_percent").default(0), // 0-100
+  timeSpent: integer("time_spent").default(0), // minutes
+  lastAccessedAt: timestamp("last_accessed_at"),
+  completedAt: timestamp("completed_at"),
+  feedbackRating: integer("feedback_rating"), // 1-5 stars
+  feedbackText: text("feedback_text"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const grioUserStats = pgTable("grio_user_stats", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull().unique(),
+  totalXp: integer("total_xp").default(0),
+  currentRank: text("current_rank").default("Bronze"), // Bronze, Silver, Gold, Platinum, Diamond
+  modulesCompleted: integer("modules_completed").default(0),
+  totalTimeSpent: integer("total_time_spent").default(0), // minutes
+  currentStreak: integer("current_streak").default(0), // consecutive days
+  longestStreak: integer("longest_streak").default(0),
+  lastLearningDate: timestamp("last_learning_date"),
+  achievements: jsonb("achievements").default('[]'), // array of achievement IDs
+  favoriteCategories: jsonb("favorite_categories").default('[]'),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const grioLeaderboard = pgTable("grio_leaderboard", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull(),
+  displayName: text("display_name").notNull(),
+  avatar: text("avatar"),
+  totalXp: integer("total_xp").notNull(),
+  rank: text("rank").notNull(),
+  position: integer("position").notNull(),
+  industry: text("industry"), // for industry-specific leaderboards
+  region: text("region"), // for regional leaderboards
+  period: text("period").notNull().default("all_time"), // all_time, monthly, weekly
+  isVisible: boolean("is_visible").default(true), // user privacy setting
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Insert schemas for all tables
 export const insertUserSchema = createInsertSchema(users).pick({
   email: true,
@@ -454,6 +523,61 @@ export const insertTrendSchema = createInsertSchema(trends).pick({
   expiresAt: true,
 });
 
+export const insertGrioModuleSchema = createInsertSchema(grioModules).pick({
+  title: true,
+  description: true,
+  content: true,
+  level: true,
+  category: true,
+  xpReward: true,
+  prerequisites: true,
+  estimatedTime: true,
+  videoUrl: true,
+  thumbnailUrl: true,
+  transcriptUrl: true,
+  targetPersonas: true,
+  industry: true,
+  sortOrder: true,
+});
+
+export const insertGrioUserProgressSchema = createInsertSchema(grioUserProgress).pick({
+  userId: true,
+  moduleId: true,
+  status: true,
+  progressPercent: true,
+  timeSpent: true,
+  lastAccessedAt: true,
+  completedAt: true,
+  feedbackRating: true,
+  feedbackText: true,
+});
+
+export const insertGrioUserStatsSchema = createInsertSchema(grioUserStats).pick({
+  userId: true,
+  totalXp: true,
+  currentRank: true,
+  modulesCompleted: true,
+  totalTimeSpent: true,
+  currentStreak: true,
+  longestStreak: true,
+  lastLearningDate: true,
+  achievements: true,
+  favoriteCategories: true,
+});
+
+export const insertGrioLeaderboardSchema = createInsertSchema(grioLeaderboard).pick({
+  userId: true,
+  displayName: true,
+  avatar: true,
+  totalXp: true,
+  rank: true,
+  position: true,
+  industry: true,
+  region: true,
+  period: true,
+  isVisible: true,
+});
+
 // Type exports
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -487,6 +611,18 @@ export type InsertViviInteraction = z.infer<typeof insertViviInteractionSchema>;
 
 export type Trend = typeof trends.$inferSelect;
 export type InsertTrend = z.infer<typeof insertTrendSchema>;
+
+export type GrioModule = typeof grioModules.$inferSelect;
+export type InsertGrioModule = z.infer<typeof insertGrioModuleSchema>;
+
+export type GrioUserProgress = typeof grioUserProgress.$inferSelect;
+export type InsertGrioUserProgress = z.infer<typeof insertGrioUserProgressSchema>;
+
+export type GrioUserStats = typeof grioUserStats.$inferSelect;
+export type InsertGrioUserStats = z.infer<typeof insertGrioUserStatsSchema>;
+
+export type GrioLeaderboard = typeof grioLeaderboard.$inferSelect;
+export type InsertGrioLeaderboard = z.infer<typeof insertGrioLeaderboardSchema>;
 
 // Re-export custom persona types (these will be created later)
 // export { customPersonas, insertCustomPersonaSchema, updateCustomPersonaSchema } from "./personaSchema";
