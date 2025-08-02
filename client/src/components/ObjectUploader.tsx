@@ -53,13 +53,13 @@ interface ObjectUploaderProps {
  * @param props.accept - Array of accepted file types (e.g., ['image/*', 'video/*'])
  */
 export function ObjectUploader({
-  maxNumberOfFiles = 1,
+  maxNumberOfFiles = 10, // Allow multiple files by default
   maxFileSize = 50485760, // 50MB default for video support
   onGetUploadParameters,
   onComplete,
   buttonClassName,
   children,
-  accept = ['image/*', 'video/*']
+  accept = ['image/*', 'video/*', '.jpg', '.jpeg', '.png', '.gif', '.mp4', '.mov', '.avi']
 }: ObjectUploaderProps) {
   const [showModal, setShowModal] = useState(false);
   const [uppy] = useState(() =>

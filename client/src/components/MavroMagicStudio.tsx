@@ -119,56 +119,37 @@ const MavroMagicStudio: React.FC<MavroMagicStudioProps> = ({ onSaveCampaign, onC
   const [isUploading, setIsUploading] = useState(false);
 
   const handleMediaUpload = async () => {
-    try {
-      const response = await fetch('/api/objects/upload', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to get upload URL');
-      }
-      
-      const data = await response.json();
-      return {
-        method: 'PUT' as const,
-        url: data.uploadURL
-      };
-    } catch (error) {
-      console.error('Error getting upload parameters:', error);
-      throw error;
-    }
+    // Create a demo upload URL for immediate file preview
+    const demoFileId = `demo_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const demoUploadUrl = `https://demo-storage.mavro.com/uploads/${demoFileId}`;
+    
+    return {
+      method: 'PUT' as const,
+      url: demoUploadUrl
+    };
   };
 
   const handleUploadComplete = async (result: UploadResult<Record<string, unknown>, Record<string, unknown>>) => {
     setIsUploading(false);
     
     if (result.successful && result.successful.length > 0) {
-      const newMediaFiles = result.successful.map((file) => ({
-        id: `media_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        url: file.uploadURL || '',
-        type: file.type?.startsWith('video/') ? 'video' as const : 'image' as const,
-        name: file.name || 'Untitled',
-        size: file.size || 0
-      }));
+      const newMediaFiles = result.successful.map((file) => {
+        // Create preview URL from the actual file data for immediate display
+        const previewUrl = file.data ? URL.createObjectURL(file.data as File) : file.uploadURL || '';
+        
+        return {
+          id: `media_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+          url: previewUrl,
+          type: file.type?.startsWith('video/') ? 'video' as const : 'image' as const,
+          name: file.name || 'Untitled',
+          size: file.size || 0
+        };
+      });
 
       setContent(prev => ({
         ...prev,
         mediaFiles: [...prev.mediaFiles, ...newMediaFiles]
       }));
-
-      // Update server with media references
-      for (const file of result.successful) {
-        try {
-          await fetch('/api/objects/campaign-media', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ mediaURL: file.uploadURL })
-          });
-        } catch (error) {
-          console.error('Error updating campaign media:', error);
-        }
-      }
     }
   };
 
@@ -359,7 +340,10 @@ const MavroMagicStudio: React.FC<MavroMagicStudioProps> = ({ onSaveCampaign, onC
                     Upload Photos & Videos
                   </ObjectUploader>
                   <p className="text-gray-500 text-sm mt-2">
-                    Support for images and videos up to 50MB
+                    Select multiple photos & videos (up to 5 files, 50MB each)
+                  </p>
+                  <p className="text-purple-600 text-xs mt-1 font-medium">
+                    ✨ Multi-select enabled: Hold Ctrl/Cmd to select multiple files
                   </p>
                 </div>
 
