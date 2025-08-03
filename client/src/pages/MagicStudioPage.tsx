@@ -5,8 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { FaInstagram, FaFacebook, FaLinkedin, FaTiktok, FaYoutube, FaSnapchat } from 'react-icons/fa';
 import { SiX } from 'react-icons/si';
-import { ObjectUploader } from '@/components/ObjectUploader';
-import type { UploadResult } from '@uppy/core';
 
 interface MediaFile {
   id: string;
@@ -98,42 +96,49 @@ const MagicStudioPage: React.FC = () => {
     }
   ];
 
-  const handleGetUploadParameters = async () => {
-    const demoFileId = `demo_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    const demoUploadUrl = `https://demo-storage.mavro.com/uploads/${demoFileId}`;
+  // File upload handler using native file input
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
     
-    return {
-      method: 'PUT' as const,
-      url: demoUploadUrl
-    };
-  };
-
-  const handleUploadComplete = async (result: UploadResult<Record<string, unknown>, Record<string, unknown>>) => {
+    if (files.length === 0) return;
+    
+    // Validate file types and sizes
+    const validFiles = files.filter(file => {
+      const isValidType = file.type.startsWith('image/') || file.type.startsWith('video/');
+      const isValidSize = file.size <= 50 * 1024 * 1024; // 50MB
+      return isValidType && isValidSize;
+    });
+    
+    if (validFiles.length === 0) {
+      alert('Please select valid image or video files under 50MB');
+      return;
+    }
+    
+    setIsUploading(true);
+    
+    // Create file objects with previews
+    const newFiles = validFiles.map((file, index) => ({
+      id: `media_${Date.now()}_${index}`,
+      url: URL.createObjectURL(file),
+      type: file.type.startsWith('video/') ? 'video' as const : 'image' as const,
+      name: file.name,
+      size: file.size
+    }));
+    
+    setContent(prev => ({
+      ...prev,
+      mediaFiles: [...prev.mediaFiles, ...newFiles]
+    }));
+    
     setIsUploading(false);
     
-    if (result.successful && result.successful.length > 0) {
-      const newMediaFiles = result.successful.map((file) => {
-        const previewUrl = file.data ? URL.createObjectURL(file.data as File) : file.uploadURL || '';
-        
-        return {
-          id: `media_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-          url: previewUrl,
-          type: file.type?.startsWith('video/') ? 'video' as const : 'image' as const,
-          name: file.name || 'Untitled',
-          size: file.size || 0
-        };
-      });
-
-      setContent(prev => ({
-        ...prev,
-        mediaFiles: [...prev.mediaFiles, ...newMediaFiles]
-      }));
-
-      // Auto-advance to step 2 when files are uploaded
-      if (currentStep === 1) {
-        setCurrentStep(2);
-      }
+    // Auto-advance to step 2 when files are uploaded
+    if (currentStep === 1) {
+      setCurrentStep(2);
     }
+    
+    // Reset the input
+    event.target.value = '';
   };
 
   const addHashtag = () => {
@@ -446,17 +451,36 @@ const MagicStudioPage: React.FC = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center">
-                    <ObjectUploader
-                      maxNumberOfFiles={10}
-                      maxFileSize={50485760}
-                      onGetUploadParameters={handleGetUploadParameters}
-                      onComplete={handleUploadComplete}
-                      buttonClassName="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+                  <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-purple-400 transition-colors">
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*,video/*,.jpg,.jpeg,.png,.gif,.mp4,.mov,.avi"
+                      onChange={handleFileUpload}
+                      className="hidden"
+                      id="file-upload"
+                      disabled={isUploading}
+                    />
+                    <label 
+                      htmlFor="file-upload" 
+                      className="cursor-pointer inline-block"
                     >
-                      <Camera className="w-5 h-5 mr-2" />
-                      Upload Photos & Videos
-                    </ObjectUploader>
+                      <div className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-6 py-3 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl">
+                        <div className="flex items-center space-x-2">
+                          {isUploading ? (
+                            <>
+                              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                              <span>Uploading...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Camera className="w-5 h-5" />
+                              <span>Upload Photos & Videos</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </label>
                     <p className="text-gray-500 text-sm mt-2">
                       Select multiple photos & videos (up to 10 files, 50MB each)
                     </p>
