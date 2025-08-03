@@ -61,16 +61,16 @@ const CampaignsPage: React.FC<CampaignsPageProps> = ({ currentPersona = 'demo' }
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [viewMode, setViewMode] = useState<'grid' | 'insights' | 'testing' | 'builder'>('grid');
+  const [viewMode, setViewMode] = useState<'grid' | 'insights' | 'testing' | 'builder'>('builder'); // Start in builder mode to show AI features
   const [loading, setLoading] = useState(true);
   const [extensionActions, setExtensionActions] = useState<any[]>([]);
   const [dismissedActions, setDismissedActions] = useState<Set<string>>(new Set());
   
   // Campaign Builder State
   const [campaignId] = useState(() => `cmp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
-  const [builderStep, setBuilderStep] = useState(1);
-  const [campaignObjective, setCampaignObjective] = useState('');
-  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
+  const [builderStep, setBuilderStep] = useState(3); // Start at step 3 to show AI Generation
+  const [campaignObjective, setCampaignObjective] = useState('Drive local foot traffic'); // Pre-fill objective
+  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(['instagram', 'facebook']); // Pre-select platforms
   const [campaignContent, setCampaignContent] = useState('');
   const [scheduleMode, setScheduleMode] = useState<'auto' | 'manual'>('auto');
   const [campaignMedia, setCampaignMedia] = useState<any[]>([]);
