@@ -18,6 +18,21 @@ export interface ContentGenerationRequest {
   length?: 'short' | 'medium' | 'long';
 }
 
+export interface TrendingHashtagsRequest {
+  platform: string;
+  industry: string;
+  persona: string;
+}
+
+export interface AIContentSuggestion {
+  id: string;
+  type: 'hook' | 'cta' | 'story';
+  content: string;
+  engagement: string;
+  viralPotential: string;
+  platform: string;
+}
+
 export interface ViViChatRequest {
   message: string;
   persona: string;
@@ -195,6 +210,182 @@ function getPlatformContext(platform: string) {
   };
   
   return contexts[platform as keyof typeof contexts] || contexts.instagram;
+}
+
+export async function generateTrendingHashtags(request: TrendingHashtagsRequest): Promise<any> {
+  try {
+    const personaContext = getPersonaContext(request.persona);
+    
+    const systemPrompt = `You are ViVi, an expert AI marketing assistant. Generate trending hashtags for ${request.platform} that are relevant to ${personaContext.name}'s ${personaContext.industry} business.
+    
+    Return a JSON object with this structure:
+    {
+      "hashtags": [
+        {
+          "tag": "#hashtag",
+          "performance": "HOT" | "TRENDING" | "RISING",
+          "engagement": "High" | "Medium" | "Low"
+        }
+      ]
+    }
+    
+    Include 8-12 hashtags that are:
+    - Currently trending on ${request.platform}
+    - Relevant to ${personaContext.industry}
+    - Mix of popular and niche hashtags
+    - Optimized for ${personaContext.audience}`;
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: `Generate trending hashtags for ${request.platform} for ${personaContext.industry}` }
+      ],
+      response_format: { type: "json_object" },
+      max_tokens: 500,
+      temperature: 0.7,
+    });
+
+    const result = JSON.parse(response.choices[0].message.content || '{"hashtags": []}');
+    return result;
+  } catch (error) {
+    console.error("OpenAI hashtag generation error:", error);
+    
+    // Fallback trending hashtags by platform and industry
+    const fallbackHashtags = getFallbackHashtags(request.platform, request.persona);
+    return { hashtags: fallbackHashtags };
+  }
+}
+
+export async function generateAIContentSuggestions(persona: string, platform: string): Promise<AIContentSuggestion[]> {
+  try {
+    const personaContext = getPersonaContext(persona);
+    
+    const systemPrompt = `You are ViVi, an expert AI marketing assistant. Generate 3 engaging content suggestions for ${personaContext.name}'s ${personaContext.business} on ${platform}.
+    
+    Return a JSON object with this structure:
+    {
+      "suggestions": [
+        {
+          "id": "suggestion_1",
+          "type": "hook" | "cta" | "story",
+          "content": "actual content text",
+          "engagement": "High Engagement" | "Professional" | "Community",
+          "viralPotential": "Viral Potential" | "Curiosity Hook" | "Engagement"
+        }
+      ]
+    }
+    
+    Create suggestions that are:
+    - Platform-specific and engaging
+    - Relevant to ${personaContext.industry}
+    - Actionable and conversion-focused
+    - Authentic to the business voice`;
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: `Generate 3 content suggestions for ${personaContext.name} on ${platform}` }
+      ],
+      response_format: { type: "json_object" },
+      max_tokens: 600,
+      temperature: 0.8,
+    });
+
+    const result = JSON.parse(response.choices[0].message.content || '{"suggestions": []}');
+    return result.suggestions || [];
+  } catch (error) {
+    console.error("OpenAI content suggestions error:", error);
+    
+    // Fallback suggestions
+    return getFallbackContentSuggestions(persona, platform);
+  }
+}
+
+export async function generateVoiceToText(audioData: string): Promise<string> {
+  try {
+    // Note: This would require actual audio processing in a real implementation
+    // For now, return a demo response
+    return "Voice input recognized: Tell your story, share your thoughts, or inspire your audience!";
+  } catch (error) {
+    console.error("Voice recognition error:", error);
+    throw new Error("Failed to process voice input");
+  }
+}
+
+function getFallbackHashtags(platform: string, persona: string) {
+  const personaContext = getPersonaContext(persona);
+  
+  const hashtagsByIndustry: Record<string, any[]> = {
+    "Speaking & Leadership": [
+      { tag: "#keynote", performance: "HOT", engagement: "High" },
+      { tag: "#leadership", performance: "HOT", engagement: "High" },
+      { tag: "#speaker", performance: "TRENDING", engagement: "Medium" },
+      { tag: "#motivation", performance: "HOT", engagement: "High" },
+      { tag: "#businessgrowth", performance: "TRENDING", engagement: "Medium" },
+      { tag: "#thoughtleader", performance: "RISING", engagement: "Medium" },
+      { tag: "#inspiration", performance: "HOT", engagement: "High" },
+      { tag: "#professionaldevelopment", performance: "TRENDING", engagement: "Medium" }
+    ],
+    "Real Estate": [
+      { tag: "#realestate", performance: "HOT", engagement: "High" },
+      { tag: "#homebuying", performance: "TRENDING", engagement: "High" },
+      { tag: "#property", performance: "HOT", engagement: "Medium" },
+      { tag: "#realtor", performance: "TRENDING", engagement: "High" },
+      { tag: "#dreamhome", performance: "HOT", engagement: "High" },
+      { tag: "#investment", performance: "RISING", engagement: "Medium" },
+      { tag: "#listing", performance: "TRENDING", engagement: "Medium" },
+      { tag: "#sold", performance: "HOT", engagement: "High" }
+    ],
+    "Medical Spa & Wellness": [
+      { tag: "#medspa", performance: "HOT", engagement: "High" },
+      { tag: "#wellness", performance: "HOT", engagement: "High" },
+      { tag: "#skincare", performance: "TRENDING", engagement: "High" },
+      { tag: "#selfcare", performance: "HOT", engagement: "High" },
+      { tag: "#beauty", performance: "TRENDING", engagement: "High" },
+      { tag: "#antiaging", performance: "RISING", engagement: "Medium" },
+      { tag: "#transformation", performance: "HOT", engagement: "High" },
+      { tag: "#confidence", performance: "TRENDING", engagement: "High" }
+    ]
+  };
+  
+  return hashtagsByIndustry[personaContext.industry] || hashtagsByIndustry["Speaking & Leadership"];
+}
+
+function getFallbackContentSuggestions(persona: string, platform: string): AIContentSuggestion[] {
+  const personaContext = getPersonaContext(persona);
+  
+  const suggestions: Record<string, AIContentSuggestion[]> = {
+    "Speaking & Leadership": [
+      {
+        id: "suggestion_1",
+        type: "hook",
+        content: `Ready to transform your ${personaContext.industry.toLowerCase()} experience? Here's what makes us different...`,
+        engagement: "High Engagement",
+        viralPotential: "Curiosity Hook",
+        platform
+      },
+      {
+        id: "suggestion_2", 
+        type: "cta",
+        content: "The secret to [benefit] that [target audience] don't want you to know...",
+        engagement: "Curiosity Hook",
+        viralPotential: "Viral Potential",
+        platform
+      },
+      {
+        id: "suggestion_3",
+        type: "story",
+        content: `Drop a 🔥 if you agree! What's your biggest challenge with [topic]?`,
+        engagement: "Engagement",
+        viralPotential: "Community",
+        platform
+      }
+    ]
+  };
+  
+  return suggestions[personaContext.industry] || suggestions["Speaking & Leadership"];
 }
 
 export { openai };

@@ -195,6 +195,84 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Enhanced AI Generation API routes
+  app.post("/api/ai/generate-hashtags", async (req, res) => {
+    try {
+      const { generateTrendingHashtags } = await import('./openai');
+      const { platform, persona } = req.body;
+      
+      if (!platform || !persona) {
+        return res.status(400).json({ message: "Platform and persona are required" });
+      }
+      
+      const hashtags = await generateTrendingHashtags({
+        platform,
+        persona,
+        industry: req.body.industry || 'default'
+      });
+      
+      res.json(hashtags);
+    } catch (error) {
+      console.error('Hashtag generation error:', error);
+      res.status(500).json({ message: "Failed to generate hashtags" });
+    }
+  });
+
+  app.post("/api/ai/content-suggestions", async (req, res) => {
+    try {
+      const { generateAIContentSuggestions } = await import('./openai');
+      const { persona, platform } = req.body;
+      
+      if (!persona || !platform) {
+        return res.status(400).json({ message: "Persona and platform are required" });
+      }
+      
+      const suggestions = await generateAIContentSuggestions(persona, platform);
+      res.json({ suggestions });
+    } catch (error) {
+      console.error('Content suggestions error:', error);
+      res.status(500).json({ message: "Failed to generate content suggestions" });
+    }
+  });
+
+  app.post("/api/ai/voice-to-text", async (req, res) => {
+    try {
+      const { generateVoiceToText } = await import('./openai');
+      const { audioData } = req.body;
+      
+      const text = await generateVoiceToText(audioData);
+      res.json({ text });
+    } catch (error) {
+      console.error('Voice to text error:', error);
+      res.status(500).json({ message: "Failed to process voice input" });
+    }
+  });
+
+  app.post("/api/ai/generate-caption", async (req, res) => {
+    try {
+      const { generateContent } = await import('./openai');
+      const { prompt, persona, platform, tone, length } = req.body;
+      
+      if (!prompt || !persona || !platform) {
+        return res.status(400).json({ message: "Prompt, persona, and platform are required" });
+      }
+      
+      const content = await generateContent({
+        prompt,
+        persona,
+        platform,
+        contentType: 'caption',
+        tone: tone || 'professional',
+        length: length || 'medium'
+      });
+      
+      res.json({ content });
+    } catch (error) {
+      console.error('Caption generation error:', error);
+      res.status(500).json({ message: "Failed to generate caption" });
+    }
+  });
+
   // Social Media API routes
   app.post("/api/social-media/connect", socialMediaRoutes.connectAccount);
   app.get("/api/social-media/insights", socialMediaRoutes.getInsights);

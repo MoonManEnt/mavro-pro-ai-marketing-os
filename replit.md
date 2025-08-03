@@ -6,6 +6,7 @@ Mavro Pro is a full-stack AI-powered marketing operating system designed to comb
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 Platform branding: Use only official social media platform logos (no generic icons).
+AI Generation Requirements: Implement fully functional AI content creation with real API integrations for trending hashtags, audio, and social media data. Retain API integration capabilities for beta testing phase.
 
 ## System Architecture
 

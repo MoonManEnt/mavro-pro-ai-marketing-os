@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, Filter, TrendingUp, Users, Target, BarChart3, Play, Pause, Settings, Brain, Sparkles, CalendarIcon, Clock, Hash, MapPin, Zap, CheckCircle, AlertCircle, Wand2 } from 'lucide-react';
+import { Plus, Search, Filter, TrendingUp, Users, Target, BarChart3, Play, Pause, Settings, Brain, Sparkles, CalendarIcon, Clock, Hash, MapPin, Zap, CheckCircle, AlertCircle, Wand2, Mic, MicOff, Music, MessageCircle, ThumbsUp, Lightbulb } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { FaInstagram, FaFacebook, FaLinkedin, FaTiktok, FaYoutube, FaSnapchat } from 'react-icons/fa';
 import { XIcon } from 'lucide-react';
 import CampaignFeedGrid from '@/components/Campaigns/CampaignFeedGrid';
@@ -765,7 +767,7 @@ ${viviSuggestions.hashtags.join(' ')} #TransformWithUs`;
           </CardContent>
         </Card>
 
-        {/* Step 3: Compose Content */}
+        {/* Step 3: Enhanced AI Generation */}
         <Card className={`md:col-span-2 transition-all duration-200 ${step >= 3 ? 'ring-2 ring-purple-200 shadow-lg' : ''}`}>
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
@@ -773,31 +775,18 @@ ${viviSuggestions.hashtags.join(' ')} #TransformWithUs`;
                 <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${step >= 3 ? 'bg-purple-500 text-white' : 'bg-gray-200 text-gray-600'}`}>
                   3
                 </div>
-                <span>Compose Content</span>
+                <span>AI Content Generation</span>
               </div>
-
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              <textarea
-                rows={6}
-                placeholder="Let ViVi help you or paste your draft here..."
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                className="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
-              />
-              <div className="flex justify-end space-x-3">
-                <Button 
-                  variant="outline" 
-                  onClick={generateWithViVi}
-                  className="border-purple-300 text-purple-700 hover:bg-purple-50"
-                >
-                  <Sparkles className="w-4 h-4 mr-2" />
-                  Generate with ViVi
-                </Button>
-              </div>
-            </div>
+            <EnhancedAIGenerationPanel
+              selectedPlatforms={selectedPlatforms}
+              content={content}
+              setContent={setContent}
+              objective={objective}
+              platforms={platforms}
+            />
           </CardContent>
         </Card>
 
@@ -856,6 +845,410 @@ ${viviSuggestions.hashtags.join(' ')} #TransformWithUs`;
           🎉 Launch Campaign
         </Button>
       </div>
+    </div>
+  );
+};
+
+// Enhanced AI Generation Panel Component
+interface EnhancedAIGenerationPanelProps {
+  selectedPlatforms: string[];
+  content: string;
+  setContent: (content: string) => void;
+  objective: string;
+  platforms: any[];
+}
+
+const EnhancedAIGenerationPanel: React.FC<EnhancedAIGenerationPanelProps> = ({
+  selectedPlatforms,
+  content,
+  setContent,
+  objective,
+  platforms
+}) => {
+  const [isVoiceRecording, setIsVoiceRecording] = useState(false);
+  const [trendingHashtags, setTrendingHashtags] = useState<any>({});
+  const [contentSuggestions, setContentSuggestions] = useState<any[]>([]);
+  const [selectedAudio, setSelectedAudio] = useState('');
+  const [customHashtag, setCustomHashtag] = useState('');
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [characterCount, setCharacterCount] = useState(0);
+
+  // Calculate character count
+  useEffect(() => {
+    setCharacterCount(content.length);
+  }, [content]);
+
+  // Load trending hashtags for selected platforms
+  useEffect(() => {
+    if (selectedPlatforms.length > 0) {
+      loadTrendingHashtags();
+      loadContentSuggestions();
+    }
+  }, [selectedPlatforms]);
+
+  const loadTrendingHashtags = async () => {
+    try {
+      const hashtagData: any = {};
+      for (const platform of selectedPlatforms) {
+        const response = await fetch('/api/ai/generate-hashtags', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ platform, persona: 'kemar' })
+        });
+        const data = await response.json();
+        hashtagData[platform] = data.hashtags || [];
+      }
+      setTrendingHashtags(hashtagData);
+    } catch (error) {
+      console.error('Failed to load trending hashtags:', error);
+    }
+  };
+
+  const loadContentSuggestions = async () => {
+    try {
+      const response = await fetch('/api/ai/content-suggestions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ persona: 'kemar', platform: selectedPlatforms[0] || 'instagram' })
+      });
+      const data = await response.json();
+      setContentSuggestions(data.suggestions || []);
+    } catch (error) {
+      console.error('Failed to load content suggestions:', error);
+    }
+  };
+
+  const handleVoiceInput = async () => {
+    if (!isVoiceRecording) {
+      // Start voice recording
+      setIsVoiceRecording(true);
+      
+      // Use Web Speech API
+      if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
+        const recognition = new SpeechRecognition();
+        
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = 'en-US';
+        
+        recognition.onresult = (event: any) => {
+          let finalTranscript = '';
+          for (let i = event.resultIndex; i < event.results.length; i++) {
+            if (event.results[i].isFinal) {
+              finalTranscript += event.results[i][0].transcript;
+            }
+          }
+          if (finalTranscript) {
+            setContent(prevContent => prevContent + ' ' + finalTranscript);
+          }
+        };
+        
+        recognition.onerror = () => {
+          setIsVoiceRecording(false);
+        };
+        
+        recognition.onend = () => {
+          setIsVoiceRecording(false);
+        };
+        
+        recognition.start();
+        
+        // Auto-stop after 30 seconds
+        setTimeout(() => {
+          recognition.stop();
+          setIsVoiceRecording(false);
+        }, 30000);
+      } else {
+        // Fallback for browsers without speech recognition
+        setContent(content + " Voice input recognized: Tell your story, share your thoughts, or inspire your audience!");
+        setIsVoiceRecording(false);
+      }
+    } else {
+      setIsVoiceRecording(false);
+    }
+  };
+
+  const generateWithAI = async () => {
+    setIsGenerating(true);
+    try {
+      const response = await fetch('/api/ai/generate-caption', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt: objective || 'Create engaging social media content',
+          persona: 'kemar',
+          platform: selectedPlatforms[0] || 'instagram',
+          tone: 'professional',
+          length: 'medium'
+        })
+      });
+      const data = await response.json();
+      setContent(data.content);
+    } catch (error) {
+      console.error('Failed to generate content:', error);
+    }
+    setIsGenerating(false);
+  };
+
+  const useContentSuggestion = (suggestion: any) => {
+    setContent(suggestion.content);
+  };
+
+  const addHashtag = (hashtag: string) => {
+    if (!content.includes(hashtag)) {
+      setContent(content + ' ' + hashtag);
+    }
+  };
+
+  const addCustomHashtag = () => {
+    if (customHashtag && !content.includes(customHashtag)) {
+      const formattedHashtag = customHashtag.startsWith('#') ? customHashtag : `#${customHashtag}`;
+      setContent(content + ' ' + formattedHashtag);
+      setCustomHashtag('');
+    }
+  };
+
+  const getPlatformIcon = (platformId: string) => {
+    const platform = platforms.find(p => p.id === platformId);
+    return platform ? platform.icon : FaInstagram;
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Caption Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card className="lg:col-span-2">
+          <CardHeader className="flex flex-row items-center space-y-0 pb-4">
+            <div className="flex items-center space-x-2">
+              <MessageCircle className="w-5 h-5 text-purple-600" />
+              <CardTitle className="text-lg font-semibold">Caption</CardTitle>
+            </div>
+            <div className="ml-auto text-sm text-gray-500">
+              {characterCount}/3350
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <Textarea
+                placeholder="Write your engaging caption here... Tell your story, share your thoughts, or inspire your audience!"
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                className="min-h-[120px] resize-none focus:ring-2 focus:ring-purple-500"
+              />
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Sparkles className="w-4 h-4 text-purple-600" />
+                  <span className="text-sm text-gray-600">AI suggestions available</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleVoiceInput}
+                    className={`${isVoiceRecording ? 'bg-red-50 border-red-300 text-red-700' : 'border-blue-300 text-blue-700'}`}
+                  >
+                    {isVoiceRecording ? <MicOff className="w-4 h-4 mr-2" /> : <Mic className="w-4 h-4 mr-2" />}
+                    {isVoiceRecording ? 'Stop Recording' : 'Voice Input'}
+                  </Button>
+                  <Button
+                    onClick={generateWithAI}
+                    disabled={isGenerating}
+                    className="bg-purple-600 hover:bg-purple-700 text-white"
+                  >
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    {isGenerating ? 'Generating...' : 'Generate with AI'}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Music & Audio Section */}
+        <Card>
+          <CardHeader className="flex flex-row items-center space-y-0 pb-4">
+            <div className="flex items-center space-x-2">
+              <Music className="w-5 h-5 text-red-600" />
+              <CardTitle className="text-lg font-semibold">Music & Audio</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {selectedPlatforms.map(platformId => {
+              const IconComponent = getPlatformIcon(platformId);
+              return (
+                <div key={platformId} className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <IconComponent className="w-4 h-4" />
+                    <span className="text-sm font-medium capitalize">{platformId}</span>
+                    <Badge variant="secondary" className="text-xs">Trending sounds</Badge>
+                  </div>
+                  <Select value={selectedAudio} onValueChange={setSelectedAudio}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select trending audio" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="audio1">Trending Beat #1 - Popular</SelectItem>
+                      <SelectItem value="audio2">Viral Sound Effect - Hot</SelectItem>
+                      <SelectItem value="audio3">Background Music - Trending</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              );
+            })}
+          </CardContent>
+        </Card>
+
+        {/* Trending Hashtags Section */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+            <div className="flex items-center space-x-2">
+              <Hash className="w-5 h-5 text-green-600" />
+              <CardTitle className="text-lg font-semibold">Trending Hashtags</CardTitle>
+            </div>
+            <Badge variant="outline" className="text-xs text-green-600 border-green-200">
+              Powered by TrendTap™
+            </Badge>
+          </CardHeader>
+          <CardContent className="space-y-4 max-h-80 overflow-y-auto">
+            {selectedPlatforms.map(platformId => {
+              const IconComponent = getPlatformIcon(platformId);
+              const hashtags = trendingHashtags[platformId] || [];
+              
+              return (
+                <div key={platformId} className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <IconComponent className="w-4 h-4" />
+                      <span className="text-sm font-medium capitalize">{platformId}</span>
+                      <Badge variant="secondary" className="text-xs">Top performing</Badge>
+                    </div>
+                    <Badge className="bg-green-100 text-green-800 text-xs">LIVE</Badge>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-2">
+                    {hashtags.slice(0, 8).map((hashtag: any, index: number) => (
+                      <button
+                        key={index}
+                        onClick={() => addHashtag(hashtag.tag)}
+                        className={`flex items-center justify-between p-2 rounded-lg border text-left hover:bg-gray-50 transition-colors ${
+                          content.includes(hashtag.tag) ? 'border-purple-300 bg-purple-50' : 'border-gray-200'
+                        }`}
+                      >
+                        <span className="text-sm font-medium">{hashtag.tag}</span>
+                        <Badge 
+                          variant={hashtag.performance === 'HOT' ? 'destructive' : 'secondary'}
+                          className="text-xs"
+                        >
+                          {hashtag.performance}
+                        </Badge>
+                      </button>
+                    ))}
+                  </div>
+                  
+                  {hashtags.length > 8 && (
+                    <button className="text-sm text-gray-600 hover:text-gray-900">
+                      +{hashtags.length - 8} more
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+            
+            {/* Custom Hashtag Input */}
+            <div className="border-t pt-4">
+              <div className="flex items-center space-x-2 mb-2">
+                <Hash className="w-4 h-4 text-orange-600" />
+                <span className="text-sm font-medium">Add Custom Hashtag</span>
+                <Badge className="bg-orange-100 text-orange-800 text-xs">CUSTOM</Badge>
+              </div>
+              <div className="flex space-x-2">
+                <Input
+                  placeholder="Enter custom hashtag"
+                  value={customHashtag}
+                  onChange={(e) => setCustomHashtag(e.target.value)}
+                  className="flex-1"
+                />
+                <Button
+                  onClick={addCustomHashtag}
+                  disabled={!customHashtag}
+                  className="bg-orange-600 hover:bg-orange-700 text-white"
+                >
+                  Add
+                </Button>
+              </div>
+              <div className="mt-2 text-xs text-gray-500 space-y-1">
+                <div>• Use your brand name or unique identifiers</div>
+                <div>• Keep it short and memorable</div>
+                <div>• Check if it's already in use by others</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* AI Content Suggestions */}
+      <Card>
+        <CardHeader className="flex flex-row items-center space-y-0 pb-4">
+          <div className="flex items-center space-x-2">
+            <Lightbulb className="w-5 h-5 text-purple-600" />
+            <CardTitle className="text-lg font-semibold">AI Content Suggestions</CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <Button variant="outline" size="sm" className="justify-start">
+              Hook
+            </Button>
+            <Button variant="outline" size="sm" className="justify-start">
+              CTA
+            </Button>
+            <Button variant="outline" size="sm" className="justify-start">
+              Story
+            </Button>
+          </div>
+
+          <div className="space-y-3">
+            {contentSuggestions.map((suggestion, index) => (
+              <div key={suggestion.id || index} className="p-4 border rounded-lg hover:border-purple-300 transition-colors">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <p className="text-sm text-gray-700 mb-2">{suggestion.content}</p>
+                    <div className="flex items-center space-x-4 text-xs text-gray-500">
+                      <span className="flex items-center space-x-1">
+                        <ThumbsUp className="w-3 h-3" />
+                        <span>{suggestion.engagement}</span>
+                      </span>
+                      <span className="flex items-center space-x-1">
+                        <TrendingUp className="w-3 h-3" />
+                        <span>{suggestion.viralPotential}</span>
+                      </span>
+                    </div>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => useContentSuggestion(suggestion)}
+                    className="ml-4 text-purple-700 border-purple-300 hover:bg-purple-50"
+                  >
+                    Use This
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-4 text-center">
+            <Button
+              variant="outline"
+              onClick={loadContentSuggestions}
+              className="w-full border-purple-300 text-purple-700 hover:bg-purple-50"
+            >
+              Generate More Suggestions
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
