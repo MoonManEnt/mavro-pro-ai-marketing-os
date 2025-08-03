@@ -23,7 +23,7 @@ import GrioAcademyPage from './GrioAcademyPage';
 import InventoryManagerPage from './InventoryManagerPage';
 import ViViStorePage from './ViViStorePage';
 import MavroAIStudio from './MavroAIStudio';
-import MagicStudioPage from './MagicStudioPage';
+
 import BetaFeedbackPage from './BetaFeedbackPage';
 
 
@@ -671,7 +671,6 @@ export default function ExactMavroPlusDashboard({ isDemoMode = false, isBetaUser
   const defaultNavigationItems = [
     { icon: Home, label: 'Command Center', active: currentView === 'dashboard', key: 'dashboard' },
     { icon: Target, label: 'Campaigns', active: currentView === 'campaigns', key: 'campaigns' },
-    { icon: Upload, label: 'Magic Studio™', active: currentView === 'magicstudio', key: 'magicstudio' },
     { icon: MessageCircle, label: 'Reviews', active: currentView === 'reviews', key: 'reviews' },
     { icon: Users, label: 'CRM', active: currentView === 'crm', key: 'crm' },
     { icon: FileText, label: 'FourSIGHT™', active: currentView === 'foursight', key: 'foursight' },
@@ -2105,7 +2104,6 @@ export default function ExactMavroPlusDashboard({ isDemoMode = false, isBetaUser
 
         {/* Other page views */}
         {currentView === 'campaigns' && <CampaignsPage currentPersona={currentPersona} />}
-        {currentView === 'magicstudio' && <MagicStudioPage />}
         {currentView === 'reviews' && <ReviewsPage currentPersona={currentPersona} />}
         {currentView === 'crm' && <CRMPage currentPersona={currentPersona} />}
         {currentView === 'foursight' && <ReportsPage />}
